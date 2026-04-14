@@ -151,6 +151,8 @@
       gap: "12px",
       pointerEvents: "none",
       zIndex: "2",
+      alignItems: "flex-start",
+      flexWrap: "wrap",
     });
 
     const leftCluster = document.createElement("div");
@@ -174,15 +176,17 @@
 
     [statusPill, userPill, controlPill].forEach((pill) => {
       style(pill, {
-        padding: "8px 12px",
+        padding: "9px 13px",
         borderRadius: "999px",
-        border: "1px solid rgba(148, 163, 184, 0.25)",
-        background: "rgba(2, 6, 23, 0.72)",
-        color: "#cbd5e1",
-        fontSize: "12px",
+        border: "1px solid rgba(148, 163, 184, 0.42)",
+        background: "rgba(2, 6, 23, 0.88)",
+        color: "#e2e8f0",
+        fontSize: "13px",
         letterSpacing: "0.04em",
         textTransform: "uppercase",
         backdropFilter: "blur(10px)",
+        whiteSpace: "nowrap",
+        boxShadow: "0 10px 28px rgba(0, 0, 0, 0.28)",
       });
     });
 
@@ -522,17 +526,23 @@
       "Calling WavedashJS.init with deferred events enabled.",
       async () => {
         if (typeof sdk.init === "function") {
-          sdk.init({
+          await Promise.resolve(sdk.init({
             debug: true,
             deferEvents: true,
-          });
+          }));
         }
 
-        const ready = await waitForSdkReady(sdk, 1800);
+        setStatus(shell, "SDK starting", "rgba(250, 204, 21, 0.7)");
+
+        const ready = await waitForSdkReady(sdk, 6000);
+        if (!ready) {
+          throw new Error("WavedashJS did not report ready before the startup timeout.");
+        }
+
         setStatus(
           shell,
-          ready ? "SDK ready" : "SDK waiting",
-          ready ? "rgba(34, 197, 94, 0.7)" : "rgba(250, 204, 21, 0.7)"
+          "SDK ready",
+          "rgba(34, 197, 94, 0.7)"
         );
         refreshUser(shell, sdk);
       }
