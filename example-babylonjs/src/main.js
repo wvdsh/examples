@@ -1,5 +1,5 @@
 import { PongGame } from "./pong.js";
-import { attachSdkListeners, ensureWavedash, waitForSdkReady } from "./wavedash.js";
+import { attachSdkListeners, getRequiredWavedash, waitForSdkReady } from "./wavedash.js";
 
 function style(element, styles) {
   Object.assign(element.style, styles);
@@ -417,11 +417,7 @@ function setPillAccent(pill, text, borderColor) {
 }
 
 function refreshRuntime(shell, sdk) {
-  if (sdk.__localShim) {
-    setPillAccent(shell.runtimePill, "Runtime local shim", "rgba(56, 189, 248, 0.55)");
-  } else {
-    setPillAccent(shell.runtimePill, "Runtime Wavedash SDK", "rgba(34, 197, 94, 0.55)");
-  }
+  setPillAccent(shell.runtimePill, "Runtime Wavedash SDK", "rgba(34, 197, 94, 0.55)");
 }
 
 function refreshUser(shell, sdk) {
@@ -430,14 +426,14 @@ function refreshUser(shell, sdk) {
     const displayName = user?.username || user?.name || user?.id;
 
     if (displayName) {
-      shell.userPill.textContent = `User ${displayName}${sdk.__localShim ? " (shim)" : ""}`;
+      shell.userPill.textContent = `User ${displayName}`;
       return;
     }
   } catch (error) {
     console.warn("[example-babylonjs] Unable to read Wavedash user", error);
   }
 
-  shell.userPill.textContent = sdk.__localShim ? "User Local Player (shim)" : "User unavailable";
+  shell.userPill.textContent = "User unavailable";
 }
 
 function updateLoading(shell, sdk, label, progress, detail) {
@@ -472,15 +468,13 @@ function showFatal(shell, message, error) {
   shell.overlayProgressFill.style.background = "linear-gradient(90deg, #f97316 0%, #ef4444 100%)";
   shell.overlayPercent.textContent = "error";
 
-  const detail = window.location.protocol === "file:"
-    ? "Serve build/web over HTTP instead of opening index.html with file://."
-    : (error && error.message) || String(error);
+  const detail = (error && error.message) || String(error);
 
   shell.overlayDetail.textContent = detail;
 }
 
 async function main() {
-  const sdk = ensureWavedash();
+  const sdk = getRequiredWavedash();
   const target = ensureTarget();
   const shell = createShell(target);
   const input = createInput();
@@ -514,7 +508,7 @@ async function main() {
       sdk,
       "Preparing game shell",
       0.08,
-      "Creating the canvas, HUD, and local load overlay.",
+      "Creating the canvas, HUD, and startup overlay.",
       async () => {}
     );
 

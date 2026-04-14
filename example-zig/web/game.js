@@ -18,77 +18,12 @@
     return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(255, a)) / 255})`;
   }
 
-  function ensureWavedash() {
+  function getRequiredWavedash() {
     if (window.WavedashJS) {
       return window.WavedashJS;
     }
 
-    class LocalWavedash extends EventTarget {
-      constructor() {
-        super();
-        this.Events = SDK_EVENTS;
-        this.__localShim = true;
-        this._ready = false;
-        this._deferEvents = false;
-        this._queuedEvents = [];
-        this._user = {
-          id: "local-player",
-          username: "Local Player",
-        };
-      }
-
-      init(config = {}) {
-        this._ready = true;
-        this._deferEvents = Boolean(config.deferEvents);
-        queueMicrotask(() => {
-          this._emit(this.Events.BACKEND_CONNECTED, {
-            isConnected: true,
-            hasEverConnected: true,
-            connectionCount: 1,
-            connectionRetries: 0,
-          });
-        });
-      }
-
-      isReady() {
-        return this._ready;
-      }
-
-      readyForEvents() {
-        this._deferEvents = false;
-        while (this._queuedEvents.length > 0) {
-          super.dispatchEvent(this._queuedEvents.shift());
-        }
-      }
-
-      updateLoadProgressZeroToOne(progress) {
-        this._progress = progress;
-      }
-
-      loadComplete() {
-        this._loadComplete = true;
-      }
-
-      getUser() {
-        return this._user;
-      }
-
-      getUserId() {
-        return this._user.id;
-      }
-
-      _emit(type, detail) {
-        const event = new CustomEvent(type, { detail });
-        if (this._deferEvents) {
-          this._queuedEvents.push(event);
-        } else {
-          super.dispatchEvent(event);
-        }
-      }
-    }
-
-    window.WavedashJS = new LocalWavedash();
-    return window.WavedashJS;
+    throw new Error("This example must run inside `wavedash dev`, where `window.WavedashJS` is injected.");
   }
 
   function ensureTarget() {
@@ -389,14 +324,14 @@
     try {
       const user = typeof sdk.getUser === "function" ? sdk.getUser() : null;
       if (user && user.username) {
-        shell.userPill.textContent = `User ${user.username}${sdk.__localShim ? " (shim)" : ""}`;
+        shell.userPill.textContent = `User ${user.username}`;
         return;
       }
     } catch (error) {
       console.warn("Unable to read Wavedash user", error);
     }
 
-    shell.userPill.textContent = sdk.__localShim ? "User Local Player (shim)" : "User unavailable";
+    shell.userPill.textContent = "User unavailable";
   }
 
   function attachSdkListeners(shell, sdk) {
@@ -467,9 +402,7 @@
     shell.overlayProgressFill.style.background = "linear-gradient(90deg, #f97316 0%, #ef4444 100%)";
     shell.overlayPercent.textContent = "error";
 
-    const extra = window.location.protocol === "file:"
-      ? "Serve build/web over HTTP instead of opening index.html with file://."
-      : (error && error.message) || String(error);
+    const extra = (error && error.message) || String(error);
     shell.overlayDetail.textContent = extra;
   }
 
@@ -494,7 +427,7 @@
   }
 
   async function main() {
-    const sdk = ensureWavedash();
+    const sdk = getRequiredWavedash();
     const target = ensureTarget();
     const shell = createShell(target);
     const renderer = createRenderer(shell.canvas, target);
@@ -512,7 +445,7 @@
       sdk,
       "Preparing game shell",
       0.08,
-      "Creating the canvas target and local HUD.",
+      "Creating the canvas target and startup HUD.",
       async () => {
         renderer.resize();
       }

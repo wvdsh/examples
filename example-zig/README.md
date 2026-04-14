@@ -9,29 +9,20 @@ It demonstrates:
 - waiting for SDK readiness before gameplay is exposed
 - releasing deferred SDK events with `WavedashJS.readyForEvents()`
 - marking the game as ready with `WavedashJS.loadComplete()`
-- a standalone fallback shim so the same build still runs outside `wavedash dev`
 - a basic Pong game with a hard-but-beatable AI paddle
+- a Wavedash-only startup path that expects the real injected `window.WavedashJS`
 
 ## Layout
 
 - `src/main.zig`: Pong game state, AI, physics, and drawing calls
 - `web/game.js`: Wavedash entrypoint, load steps, SDK init, WASM boot, and browser input
-- `web/index.html`: simple local test harness
 - `wavedash.toml`: Wavedash CLI config for the custom engine entrypoint
-- `build-web.sh`: copies web assets and compiles the Zig source into `build/web/game.wasm`
+- `build-web.sh`: compiles the Zig source and copies the JS entrypoint into `build/web`
 
 ## Build
 
 1. Install Zig.
 2. Run `./build-web.sh`.
-3. Serve `build/web` over HTTP, for example:
-
-```bash
-cd build/web
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000`.
 
 ## Run on Wavedash
 
@@ -40,6 +31,8 @@ Then open `http://localhost:8000`.
 3. Run `wavedash dev`.
 
 Wavedash will load `build/web/game.js` as the custom engine entrypoint.
+
+This example is intentionally Wavedash-only and expects `window.WavedashJS` to be injected by `wavedash dev`.
 
 ## Controls
 

@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Minimal Babylon.js Pong demo for the Wavedash custom-engine lifecycle.",
   "scripts": {
-    "build": "vite build",
-    "preview": "vite preview --host"
+    "build": "vite build"
   },
   "keywords": [
     "wavedash",

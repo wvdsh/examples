@@ -8,89 +8,12 @@ function sleep(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-class LocalWavedash extends EventTarget {
-  constructor() {
-    super();
-    this.Events = SDK_EVENTS;
-    this.__localShim = true;
-    this._ready = false;
-    this._deferEvents = false;
-    this._queuedEvents = [];
-    this._progress = 0;
-    this._loadComplete = false;
-    this._connectTimer = 0;
-    this._user = {
-      id: "local-player",
-      username: "Local Player",
-    };
-  }
-
-  init(config = {}) {
-    console.info("[example-babylonjs] Local Wavedash shim init", config);
-    this._ready = false;
-    this._deferEvents = Boolean(config.deferEvents);
-    this._queuedEvents.length = 0;
-    window.clearTimeout(this._connectTimer);
-
-    this._connectTimer = window.setTimeout(() => {
-      this._ready = true;
-      this._emit(this.Events.BACKEND_CONNECTED, {
-        isConnected: true,
-        hasEverConnected: true,
-        connectionCount: 1,
-        connectionRetries: 0,
-      });
-    }, 150);
-  }
-
-  isReady() {
-    return this._ready;
-  }
-
-  readyForEvents() {
-    console.info("[example-babylonjs] readyForEvents()");
-    this._deferEvents = false;
-
-    while (this._queuedEvents.length > 0) {
-      super.dispatchEvent(this._queuedEvents.shift());
-    }
-  }
-
-  updateLoadProgressZeroToOne(progress) {
-    this._progress = Math.max(0, Math.min(1, progress));
-  }
-
-  loadComplete() {
-    this._loadComplete = true;
-    console.info("[example-babylonjs] loadComplete()");
-  }
-
-  getUser() {
-    return this._user;
-  }
-
-  getUserId() {
-    return this._user.id;
-  }
-
-  _emit(type, detail) {
-    const event = new CustomEvent(type, { detail });
-
-    if (this._deferEvents) {
-      this._queuedEvents.push(event);
-    } else {
-      super.dispatchEvent(event);
-    }
-  }
-}
-
-export function ensureWavedash() {
+export function getRequiredWavedash() {
   if (window.WavedashJS) {
     return window.WavedashJS;
   }
 
-  window.WavedashJS = new LocalWavedash();
-  return window.WavedashJS;
+  throw new Error("This example must run inside `wavedash dev`, where `window.WavedashJS` is injected.");
 }
 
 export function attachSdkListeners(sdk, callbacks) {

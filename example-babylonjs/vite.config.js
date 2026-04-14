@@ -2,7 +2,7 @@ const path = require("node:path");
 const { defineConfig } = require("vite");
 
 module.exports = defineConfig({
-  publicDir: "public",
+  publicDir: false,
   base: "./",
   build: {
     outDir: "build/web",

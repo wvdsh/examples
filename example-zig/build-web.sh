@@ -9,6 +9,7 @@ if ! command -v zig >/dev/null 2>&1; then
   exit 1
 fi
 
+rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
 zig build-exe "$ROOT/src/main.zig" \
@@ -18,7 +19,6 @@ zig build-exe "$ROOT/src/main.zig" \
   -O ReleaseSmall \
   -femit-bin="$OUT_DIR/game.wasm"
 
-cp "$ROOT/web/index.html" "$OUT_DIR/index.html"
 cp "$ROOT/web/game.js" "$OUT_DIR/game.js"
 
 printf '%s\n' "Built web files in $OUT_DIR"

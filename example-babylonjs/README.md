@@ -9,15 +9,14 @@ It demonstrates:
 - waiting for SDK readiness before gameplay is exposed
 - releasing deferred SDK events with `WavedashJS.readyForEvents()`
 - calling `WavedashJS.loadComplete()` only after Pong is ready to play
-- a standalone fallback shim so the same build still runs outside `wavedash dev`
 - a basic Pong game with a hard-but-beatable AI paddle
+- a Wavedash-only startup path that expects the real injected `window.WavedashJS`
 
 ## Layout
 
 - `src/main.js`: Wavedash lifecycle, loading UI, DOM HUD, and boot sequence
 - `src/pong.js`: Babylon.js engine setup, scene meshes, game loop, AI, and physics
-- `src/wavedash.js`: local fallback shim plus SDK readiness helpers
-- `public/index.html`: simple local test harness for `build/web/game.js`
+- `src/wavedash.js`: required SDK lookup, event helpers, and readiness polling
 - `vite.config.js`: deterministic build output into `build/web/game.js`
 - `wavedash.toml`: Wavedash CLI config for the custom-engine entrypoint
 
@@ -25,14 +24,6 @@ It demonstrates:
 
 1. Run `npm install`.
 2. Run `npm run build`.
-3. Serve `build/web` over HTTP, for example:
-
-```bash
-cd build/web
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000`.
 
 ## Run On Wavedash
 
@@ -42,6 +33,8 @@ Then open `http://localhost:8000`.
 4. Run `wavedash dev`.
 
 Wavedash will load `build/web/game.js` as the custom engine entrypoint.
+
+This example is intentionally Wavedash-only and expects `window.WavedashJS` to be injected by `wavedash dev`.
 
 ## Controls
 
