@@ -320,18 +320,8 @@
     shell.statusPill.style.borderColor = borderColor;
   }
 
-  function refreshUser(shell, sdk) {
-    try {
-      const user = typeof sdk.getUser === "function" ? sdk.getUser() : null;
-      if (user && user.username) {
-        shell.userPill.textContent = `User ${user.username}`;
-        return;
-      }
-    } catch (error) {
-      console.warn("Unable to read Wavedash user", error);
-    }
-
-    shell.userPill.textContent = "User unavailable";
+  function setUser(shell, username) {
+    shell.userPill.textContent = username ? `User ${username}` : "User unavailable";
   }
 
   function attachSdkListeners(shell, sdk) {
@@ -339,7 +329,6 @@
 
     sdk.addEventListener(events.BACKEND_CONNECTED, () => {
       setStatus(shell, "SDK connected", "rgba(34, 197, 94, 0.7)");
-      refreshUser(shell, sdk);
     });
 
     sdk.addEventListener(events.BACKEND_DISCONNECTED, () => {
@@ -351,33 +340,14 @@
     });
   }
 
-  async function waitForSdkReady(sdk, timeoutMs) {
-    const start = performance.now();
-
-    while (performance.now() - start < timeoutMs) {
-      try {
-        if (typeof sdk.isReady !== "function" || sdk.isReady()) {
-          return true;
-        }
-      } catch (error) {
-        console.warn("Wavedash readiness check failed", error);
-      }
-      await sleep(50);
-    }
-
-    try {
-      return typeof sdk.isReady !== "function" || sdk.isReady();
-    } catch (error) {
-      return false;
-    }
-  }
-
-  function updateLoading(shell, sdk, label, progress, detail) {
+  function updateLoading(shell, label, progress, detail) {
     shell.overlayStep.textContent = label;
     shell.overlayDetail.textContent = detail;
     shell.overlayPercent.textContent = `${Math.round(progress * 100)}%`;
     shell.overlayProgressFill.style.width = `${Math.max(6, Math.round(progress * 100))}%`;
+  }
 
+  function syncLoadProgress(sdk, progress) {
     try {
       if (typeof sdk.updateLoadProgressZeroToOne === "function") {
         sdk.updateLoadProgressZeroToOne(progress);
@@ -388,7 +358,8 @@
   }
 
   async function runStep(shell, sdk, label, progress, detail, task) {
-    updateLoading(shell, sdk, label, progress, detail);
+    updateLoading(shell, label, progress, detail);
+    syncLoadProgress(sdk, progress);
     await sleep(70);
     return task();
   }
@@ -426,6 +397,29 @@
     return instantiated.instance;
   }
 
+  function decodeWasmString(wasmInstance, textDecoder, ptr, len) {
+    if (!wasmInstance || !wasmInstance.exports.memory || len === 0) {
+      return "";
+    }
+
+    const bytes = new Uint8Array(wasmInstance.exports.memory.buffer, ptr, len);
+    return textDecoder.decode(bytes);
+  }
+
+  function writeWasmString(wasmInstance, textEncoder, ptr, maxLen, value) {
+    if (!wasmInstance || !wasmInstance.exports.memory || maxLen === 0) {
+      return 0;
+    }
+
+    const source = textEncoder.encode(value);
+    const bytes = new Uint8Array(wasmInstance.exports.memory.buffer, ptr, maxLen);
+    const writeLen = Math.min(source.length, maxLen);
+
+    bytes.fill(0);
+    bytes.set(source.subarray(0, writeLen), 0);
+    return writeLen;
+  }
+
   async function main() {
     const sdk = getRequiredWavedash();
     const target = ensureTarget();
@@ -434,18 +428,29 @@
     const input = createInput();
     wireInput(input);
 
-    refreshUser(shell, sdk);
     attachSdkListeners(shell, sdk);
+    setStatus(shell, "SDK pending", "rgba(148, 163, 184, 0.42)");
+    setUser(shell, "");
 
     let wasmInstance = null;
     const textDecoder = new TextDecoder();
+    const textEncoder = new TextEncoder();
+    let hostError = "";
+
+    function captureHostError(label, error) {
+      const detail = `${label}: ${(error && error.message) || String(error)}`;
+      if (!hostError) {
+        hostError = detail;
+      }
+      console.error(detail, error);
+    }
 
     await runStep(
       shell,
       sdk,
       "Preparing game shell",
       0.08,
-      "Creating the canvas target and startup HUD.",
+      "Creating the canvas target, startup HUD, and JS host bridge.",
       async () => {
         renderer.resize();
       }
@@ -454,30 +459,11 @@
     await runStep(
       shell,
       sdk,
-      "Initializing Wavedash SDK",
-      0.24,
-      "Calling WavedashJS.init with deferred events enabled.",
+      "Fetching Zig WASM module",
+      0.18,
+      "Downloading the Zig game binary before handing startup control to WebAssembly.",
       async () => {
-        if (typeof sdk.init === "function") {
-          await Promise.resolve(sdk.init({
-            debug: true,
-            deferEvents: true,
-          }));
-        }
-
-        setStatus(shell, "SDK starting", "rgba(250, 204, 21, 0.7)");
-
-        const ready = await waitForSdkReady(sdk, 6000);
-        if (!ready) {
-          throw new Error("WavedashJS did not report ready before the startup timeout.");
-        }
-
-        setStatus(
-          shell,
-          "SDK ready",
-          "rgba(34, 197, 94, 0.7)"
-        );
-        refreshUser(shell, sdk);
+        /* Progress step only. The actual fetch happens in the next step. */
       }
     );
 
@@ -495,16 +481,105 @@
           ctx.fillRect(x, y, width, height);
         },
         js_draw_text(ptr, len, x, y, size, r, g, b, a) {
-          if (!wasmInstance || !wasmInstance.exports.memory) {
-            return;
-          }
-
-          const bytes = new Uint8Array(wasmInstance.exports.memory.buffer, ptr, len);
-          const text = textDecoder.decode(bytes);
+          const text = decodeWasmString(wasmInstance, textDecoder, ptr, len);
           const ctx = renderer.ctx;
           ctx.fillStyle = rgba(r, g, b, a);
           ctx.font = `700 ${Math.max(12, size)}px Inter, system-ui, sans-serif`;
           ctx.fillText(text, x, y);
+        },
+        js_host_set_loading(stepPtr, stepLen, detailPtr, detailLen, progress) {
+          updateLoading(
+            shell,
+            decodeWasmString(wasmInstance, textDecoder, stepPtr, stepLen),
+            progress,
+            decodeWasmString(wasmInstance, textDecoder, detailPtr, detailLen)
+          );
+        },
+        js_host_set_status(ptr, len, r, g, b, a) {
+          setStatus(shell, decodeWasmString(wasmInstance, textDecoder, ptr, len), rgba(r, g, b, a));
+        },
+        js_host_set_user(ptr, len) {
+          setUser(shell, decodeWasmString(wasmInstance, textDecoder, ptr, len));
+        },
+        js_host_hide_overlay() {
+          shell.overlay.style.opacity = "0";
+          shell.overlay.style.pointerEvents = "none";
+        },
+        js_host_show_fatal(messagePtr, messageLen, detailPtr, detailLen) {
+          showFatal(
+            shell,
+            decodeWasmString(wasmInstance, textDecoder, messagePtr, messageLen),
+            decodeWasmString(wasmInstance, textDecoder, detailPtr, detailLen)
+          );
+        },
+        js_host_has_error() {
+          return hostError ? 1 : 0;
+        },
+        js_host_write_error(ptr, maxLen) {
+          return writeWasmString(wasmInstance, textEncoder, ptr, maxLen, hostError);
+        },
+        js_wd_init(debug, deferEvents) {
+          try {
+            Promise.resolve(
+              sdk.init({
+                debug: Boolean(debug),
+                deferEvents: Boolean(deferEvents),
+              })
+            ).catch((error) => {
+              captureHostError("WavedashJS.init failed", error);
+            });
+          } catch (error) {
+            captureHostError("WavedashJS.init failed", error);
+          }
+        },
+        js_wd_is_ready() {
+          try {
+            return typeof sdk.isReady !== "function" || sdk.isReady() ? 1 : 0;
+          } catch (error) {
+            captureHostError("WavedashJS.isReady failed", error);
+            return 0;
+          }
+        },
+        js_wd_update_load_progress(progress) {
+          try {
+            if (typeof sdk.updateLoadProgressZeroToOne === "function") {
+              sdk.updateLoadProgressZeroToOne(progress);
+            }
+          } catch (error) {
+            captureHostError("WavedashJS.updateLoadProgressZeroToOne failed", error);
+          }
+        },
+        js_wd_ready_for_events() {
+          try {
+            Promise.resolve(
+              typeof sdk.readyForEvents === "function" ? sdk.readyForEvents() : undefined
+            ).catch((error) => {
+              captureHostError("WavedashJS.readyForEvents failed", error);
+            });
+          } catch (error) {
+            captureHostError("WavedashJS.readyForEvents failed", error);
+          }
+        },
+        js_wd_load_complete() {
+          try {
+            Promise.resolve(
+              typeof sdk.loadComplete === "function" ? sdk.loadComplete() : undefined
+            ).catch((error) => {
+              captureHostError("WavedashJS.loadComplete failed", error);
+            });
+          } catch (error) {
+            captureHostError("WavedashJS.loadComplete failed", error);
+          }
+        },
+        js_wd_write_user_name(ptr, maxLen) {
+          try {
+            const user = typeof sdk.getUser === "function" ? sdk.getUser() : null;
+            const username = user && typeof user.username === "string" ? user.username : "";
+            return writeWasmString(wasmInstance, textEncoder, ptr, maxLen, username);
+          } catch (error) {
+            captureHostError("WavedashJS.getUser failed", error);
+            return 0;
+          }
         },
       },
     };
@@ -512,63 +587,23 @@
     await runStep(
       shell,
       sdk,
-      "Fetching Zig WASM module",
-      0.52,
-      "Downloading the Pong game logic compiled from Zig.",
-      async () => {
-        /* Progress step only. The actual fetch happens in the next step. */
-      }
-    );
-
-    await runStep(
-      shell,
-      sdk,
       "Instantiating WebAssembly",
-      0.76,
-      "Binding JS drawing calls and preparing the game loop.",
+      0.30,
+      "Creating the Zig runtime and binding browser host functions.",
       async () => {
         wasmInstance = await instantiateWasm("./game.wasm", imports);
       }
     );
 
-    await runStep(
-      shell,
-      sdk,
-      "Finalizing game startup",
-      0.92,
-      "Sizing the canvas, wiring resize handling, and starting Pong.",
-      async () => {
-        const exports = wasmInstance.exports;
-        exports.wd_init(renderer.width, renderer.height);
-
-        window.addEventListener("resize", () => {
-          renderer.resize();
-          exports.wd_resize(renderer.width, renderer.height);
-        });
-      }
-    );
-
-    await runStep(
-      shell,
-      sdk,
-      "Loading complete",
-      1.0,
-      "Releasing deferred SDK events and handing over to gameplay.",
-      async () => {
-        if (typeof sdk.readyForEvents === "function") {
-          sdk.readyForEvents();
-        }
-        if (typeof sdk.loadComplete === "function") {
-          sdk.loadComplete();
-        }
-      }
-    );
-
-    shell.overlay.style.opacity = "0";
-    shell.overlay.style.pointerEvents = "none";
-
     let lastFrame = performance.now();
     const exports = wasmInstance.exports;
+
+    exports.wd_init(renderer.width, renderer.height);
+
+    window.addEventListener("resize", () => {
+      renderer.resize();
+      exports.wd_resize(renderer.width, renderer.height);
+    });
 
     function frame(now) {
       const dt = Math.min(0.05, (now - lastFrame) / 1000);

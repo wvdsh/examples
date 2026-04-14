@@ -4,9 +4,31 @@ const GameMode = enum(u8) {
     game_over,
 };
 
+const StartupPhase = enum(u8) {
+    prepare_game,
+    init_sdk,
+    wait_for_sdk,
+    finalize_startup,
+    ready,
+    fatal,
+};
+
 extern fn js_clear(r: u8, g: u8, b: u8, a: u8) void;
 extern fn js_fill_rect(x: f32, y: f32, width: f32, height: f32, r: u8, g: u8, b: u8, a: u8) void;
 extern fn js_draw_text(ptr: [*]const u8, len: usize, x: f32, y: f32, size: f32, r: u8, g: u8, b: u8, a: u8) void;
+extern fn js_host_set_loading(step_ptr: [*]const u8, step_len: usize, detail_ptr: [*]const u8, detail_len: usize, progress: f32) void;
+extern fn js_host_set_status(ptr: [*]const u8, len: usize, r: u8, g: u8, b: u8, a: u8) void;
+extern fn js_host_set_user(ptr: [*]const u8, len: usize) void;
+extern fn js_host_hide_overlay() void;
+extern fn js_host_show_fatal(message_ptr: [*]const u8, message_len: usize, detail_ptr: [*]const u8, detail_len: usize) void;
+extern fn js_host_has_error() u8;
+extern fn js_host_write_error(ptr: [*]u8, max_len: usize) usize;
+extern fn js_wd_init(debug: u8, defer_events: u8) void;
+extern fn js_wd_is_ready() u8;
+extern fn js_wd_update_load_progress(progress: f32) void;
+extern fn js_wd_ready_for_events() void;
+extern fn js_wd_load_complete() void;
+extern fn js_wd_write_user_name(ptr: [*]u8, max_len: usize) usize;
 
 const win_score: i32 = 7;
 
@@ -28,8 +50,13 @@ var player_score: i32 = 0;
 var ai_score: i32 = 0;
 var winner: i32 = 0;
 var mode: GameMode = .serve;
+var startup_phase: StartupPhase = .prepare_game;
+var startup_phase_elapsed: f32 = 0.0;
+var fatal_visible = false;
 
 var rng_state: u32 = 0x13572468;
+var user_name_buf: [64]u8 = undefined;
+var host_error_buf: [192]u8 = undefined;
 
 fn absf(value: f32) f32 {
     return if (value < 0.0) -value else value;
@@ -115,6 +142,145 @@ fn score_text(score: i32) []const u8 {
         8 => "8",
         else => "9",
     };
+}
+
+fn host_set_loading(step: []const u8, detail: []const u8, progress: f32) void {
+    js_host_set_loading(step.ptr, step.len, detail.ptr, detail.len, progress);
+    js_wd_update_load_progress(progress);
+}
+
+fn host_set_status(text: []const u8, r: u8, g: u8, b: u8, a: u8) void {
+    js_host_set_status(text.ptr, text.len, r, g, b, a);
+}
+
+fn host_set_user(name: []const u8) void {
+    js_host_set_user(name.ptr, name.len);
+}
+
+fn sync_user_from_sdk() void {
+    const len = js_wd_write_user_name(&user_name_buf, user_name_buf.len);
+    if (len > 0) {
+        host_set_user(user_name_buf[0..len]);
+    } else {
+        host_set_user("");
+    }
+}
+
+fn show_fatal(message: []const u8, detail: []const u8) void {
+    if (!fatal_visible) {
+        js_host_show_fatal(message.ptr, message.len, detail.ptr, detail.len);
+        fatal_visible = true;
+    }
+    startup_phase = .fatal;
+}
+
+fn show_host_error() void {
+    const len = js_host_write_error(&host_error_buf, host_error_buf.len);
+    const detail = if (len > 0) host_error_buf[0..len] else "Unknown host error.";
+    show_fatal("The Zig startup bridge hit an error.", detail);
+}
+
+fn check_host_error() bool {
+    if (js_host_has_error() == 0) {
+        return false;
+    }
+
+    show_host_error();
+    return true;
+}
+
+fn transition_startup(next: StartupPhase) void {
+    startup_phase = next;
+    startup_phase_elapsed = 0.0;
+
+    switch (next) {
+        .prepare_game => {
+            host_set_status("SDK pending", 148, 163, 184, 255);
+            host_set_user("");
+            host_set_loading(
+                "Preparing Zig game state",
+                "Handing Wavedash startup control to Zig.",
+                0.42,
+            );
+        },
+        .init_sdk => {
+            host_set_status("SDK starting", 250, 204, 21, 255);
+            host_set_loading(
+                "Initializing Wavedash SDK",
+                "Calling imported Wavedash bindings from Zig.",
+                0.58,
+            );
+            js_wd_init(1, 1);
+        },
+        .wait_for_sdk => {
+            host_set_loading(
+                "Waiting for SDK readiness",
+                "Polling WavedashJS.isReady() before gameplay begins.",
+                0.82,
+            );
+        },
+        .finalize_startup => {
+            host_set_loading(
+                "Finalizing game startup",
+                "Preparing the first playable Pong serve state.",
+                0.96,
+            );
+        },
+        .ready => {
+            host_set_loading(
+                "Loading complete",
+                "Releasing deferred SDK events and handing over to gameplay.",
+                1.0,
+            );
+            js_wd_ready_for_events();
+            js_wd_load_complete();
+            js_host_hide_overlay();
+        },
+        .fatal => {},
+    }
+}
+
+fn update_startup(dt: f32) void {
+    if (startup_phase == .ready or startup_phase == .fatal) {
+        return;
+    }
+
+    if (check_host_error()) {
+        return;
+    }
+
+    startup_phase_elapsed += dt;
+
+    switch (startup_phase) {
+        .prepare_game => {
+            if (startup_phase_elapsed >= 0.08) {
+                transition_startup(.init_sdk);
+            }
+        },
+        .init_sdk => {
+            if (startup_phase_elapsed >= 0.08) {
+                transition_startup(.wait_for_sdk);
+            }
+        },
+        .wait_for_sdk => {
+            if (js_wd_is_ready() != 0) {
+                host_set_status("SDK ready", 34, 197, 94, 255);
+                sync_user_from_sdk();
+                transition_startup(.finalize_startup);
+            } else if (startup_phase_elapsed >= 6.0) {
+                show_fatal(
+                    "Wavedash SDK did not become ready.",
+                    "WavedashJS.isReady() did not report ready before the startup timeout.",
+                );
+            }
+        },
+        .finalize_startup => {
+            if (startup_phase_elapsed >= 0.08) {
+                transition_startup(.ready);
+            }
+        },
+        .ready, .fatal => {},
+    }
 }
 
 fn center_paddles() void {
@@ -354,7 +520,9 @@ fn render() void {
 export fn wd_init(width: f32, height: f32) void {
     world_w = if (width > 320.0) width else 960.0;
     world_h = if (height > 240.0) height else 540.0;
+    fatal_visible = false;
     restart_match();
+    transition_startup(.prepare_game);
     render();
 }
 
@@ -372,6 +540,20 @@ export fn wd_resize(width: f32, height: f32) void {
 
 export fn wd_tick(dt_seconds: f32, move_up: u8, move_down: u8, action_pressed: u8) void {
     const dt = clampf(dt_seconds, 0.0, 0.033);
+
+    if (check_host_error()) {
+        return;
+    }
+
+    if (startup_phase == .fatal) {
+        return;
+    }
+
+    if (startup_phase != .ready) {
+        update_startup(dt);
+        render();
+        return;
+    }
 
     if (action_pressed != 0) {
         if (mode == .serve) {

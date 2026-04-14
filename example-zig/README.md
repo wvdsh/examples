@@ -4,6 +4,7 @@
 
 It demonstrates:
 
+- a Zig-owned Wavedash startup flow via imported browser host bindings
 - staged loading via `WavedashJS.updateLoadProgressZeroToOne(...)`
 - SDK initialization with `WavedashJS.init({ debug: true, deferEvents: true })`
 - waiting for SDK readiness before gameplay is exposed
@@ -14,8 +15,8 @@ It demonstrates:
 
 ## Layout
 
-- `src/main.zig`: Pong game state, AI, physics, and drawing calls
-- `web/game.js`: Wavedash entrypoint, load steps, SDK init, WASM boot, and browser input
+- `src/main.zig`: Pong game state, AI, physics, drawing calls, and the Zig-owned Wavedash startup state machine
+- `web/game.js`: thin browser host that loads wasm, renders the canvas, and forwards browser/Wavedash bindings into Zig
 - `wavedash.toml`: Wavedash CLI config for the custom engine entrypoint
 - `build-web.sh`: compiles the Zig source and copies the JS entrypoint into `build/web`
 
