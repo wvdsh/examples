@@ -1,0 +1,4 @@
+# Keep the example tiny and predictable: load the short story up front.
+- image game/**
+- music game/**
+- voice game/**

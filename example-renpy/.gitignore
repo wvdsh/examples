@@ -1,0 +1,4 @@
+/build/
+*.rpyc
+errors.txt
+log.txt

@@ -1,0 +1,27 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+AttributeError: module 'renpy' has no attribute 'load_module'
+
+-- Full Traceback ------------------------------------------------------------
+
+Traceback (most recent call last):
+  File "renpy/common/00library.rpy", line 456, in script
+    init 1700 python hide:
+  File "/private/tmp/example-renpy-sdk/renpy-8.5.2-sdk/renpy/ast.py", line 1187, in execute
+    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/example-renpy-sdk/renpy-8.5.2-sdk/renpy/python.py", line 1273, in py_exec_bytecode
+    exec(bytecode, globals, locals)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "renpy/common/00library.rpy", line 456, in <module>
+    init 1700 python hide:
+  File "renpy/common/00library.rpy", line 463, in _execute_python_hide
+    renpy.load_module("_developer/developer")
+    ^^^^^^^^^^^^^^^^^                        
+AttributeError: module 'renpy' has no attribute 'load_module'
+
+macOS-26.4.1-arm64-arm-64bit arm64
+Ren'Py 8.5.2.26010301
+example-renpy 1.0
+Tue Apr 14 16:12:34 2026
