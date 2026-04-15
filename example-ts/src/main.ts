@@ -13,7 +13,6 @@ declare global {
 const WavedashJS = await window.WavedashJS;
 
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 
 /* ── Canvas & context ─────────────────────────────── */
 
@@ -29,7 +28,6 @@ function resize(): void {
 resize();
 window.addEventListener("resize", resize);
 
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 
 /* ── Constants ────────────────────────────────────── */
 
@@ -57,7 +55,6 @@ let serveDir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
 const playerScoreEl = document.getElementById("playerScore") as HTMLSpanElement;
 const aiScoreEl = document.getElementById("aiScore") as HTMLSpanElement;
 
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 
 /* ── Input ────────────────────────────────────────── */
 
@@ -203,7 +200,6 @@ function update(dt: number): void {
 /* ── Main loop ────────────────────────────────────── */
 
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
 
 let last = performance.now();
 function loop(now: number): void {
