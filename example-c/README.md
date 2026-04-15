@@ -1,6 +1,6 @@
 # example-c
 
-`example-c` is a minimal pure C + WebAssembly pong demo that uses the Wavedash custom-engine flow.
+`example-c` is a minimal pure C and WebAssembly pong demo that uses the Wavedash custom-engine flow.
 
 C owns the startup state machine, gameplay, AI, collision, and draw calls. JavaScript only owns the browser shell, input collection, and the thin bridge to `window.WavedashJS`.
 
