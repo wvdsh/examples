@@ -1,7 +1,6 @@
 const WavedashJS = await window.WavedashJS;
 
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 
 /* ── constants ── */
 const W = 800, H = 450;
@@ -28,7 +27,6 @@ window.addEventListener("keydown", e => { if (UP.has(e.code)) { keys.up = true; 
 window.addEventListener("keyup",   e => { if (UP.has(e.code)) { keys.up = false; e.preventDefault(); } if (DN.has(e.code)) { keys.down = false; e.preventDefault(); } });
 window.addEventListener("blur", () => { keys.up = false; keys.down = false; });
 
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 
 /* ── Phaser scene ── */
 class PongScene extends Phaser.Scene {
@@ -132,7 +130,6 @@ function afterScore() {
   resetRound();
 }
 
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 
 /* ── launch ── */
 const game = new Phaser.Game({
@@ -148,4 +145,3 @@ const game = new Phaser.Game({
 });
 
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
