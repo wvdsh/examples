@@ -1,0 +1,19 @@
+{
+  "name": "example-ts",
+  "version": "1.0.0",
+  "description": "Minimal pure-TypeScript Canvas 2D Pong demo for the Wavedash custom-engine lifecycle.",
+  "scripts": {
+    "build": "tsc --noEmit && vite build"
+  },
+  "keywords": [
+    "wavedash",
+    "typescript",
+    "pong"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.2"
+  },
+  "private": true
+}
