@@ -1,3 +1,3 @@
-game_id = "replace-with-your-game-id"
+game_id = "YOUR_GAME_ID_HERE"
 upload_dir = "./build/web"
 entrypoint = "index.html"
