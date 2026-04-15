@@ -7,6 +7,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-babylonjs`: Babylon.js pong demo that initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-bevy`: Bevy pong demo that initializes the SDK from Rust, updates loading progress, and then starts gameplay.
 - `example-c`: Pure C + WebAssembly pong demo that initializes the SDK from C, updates loading progress, releases deferred events when ready, and then starts gameplay.
+- `example-cpp`: C++ + WebAssembly pong demo that initializes the SDK from C++, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-construct`: Construct 3 folder-project pong demo that initializes the SDK from Construct scripts, updates loading progress during startup, releases deferred events when the first playable state is ready, and then starts gameplay.
 - `example-phaser`: Phaser 3 pong demo that initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-pixi`: PixiJS pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
