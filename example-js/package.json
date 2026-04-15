@@ -1,0 +1,19 @@
+{
+  "name": "example-js",
+  "version": "1.0.0",
+  "description": "Minimal pure-JavaScript Canvas 2D Pong demo for the Wavedash custom-engine lifecycle.",
+  "scripts": {
+    "build": "vite build"
+  },
+  "keywords": [
+    "wavedash",
+    "javascript",
+    "pong"
+  ],
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "vite": "^6.3.2"
+  },
+  "private": true
+}
