@@ -1,0 +1,156 @@
+{
+ "projectFormatVersion": 1,
+ "savedWithRelease": 45802,
+ "name": "example-construct",
+ "runtime": "c3",
+ "useWorker": "auto",
+ "bundleAddons": false,
+ "usedAddons": [
+ {
+ "type": "plugin",
+ "id": "Text",
+ "name": "Text",
+ "author": "Scirra",
+ "bundled": false
+ }
+ ],
+ "uniqueId": "constructpongtext1",
+ "objectTypes": {
+ "items": [
+ "TitleText",
+ "InfoText",
+ "FieldText",
+ "FooterText"
+ ],
+ "subfolders": []
+ },
+ "autosaveData": null,
+ "containers": [],
+ "families": {
+ "items": [],
+ "subfolders": []
+ },
+ "layouts": {
+ "items": [
+ "Game"
+ ],
+ "subfolders": []
+ },
+ "eventSheets": {
+ "items": [
+ "Game"
+ ],
+ "subfolders": []
+ },
+ "rootFileFolders": {
+ "script": {
+ "items": [
+ {
+ "name": "main.js",
+ "type": "application/javascript",
+ "sid": 835201000000001
+ },
+ {
+ "name": "pong.js",
+ "type": "application/javascript",
+ "sid": 835201000000002
+ },
+ {
+ "name": "wavedash.js",
+ "type": "application/javascript",
+ "sid": 835201000000003
+ }
+ ],
+ "subfolders": []
+ },
+ "sound": {
+ "items": [],
+ "subfolders": []
+ },
+ "music": {
+ "items": [],
+ "subfolders": []
+ },
+ "video": {
+ "items": [],
+ "subfolders": []
+ },
+ "font": {
+ "items": [],
+ "subfolders": []
+ },
+ "icon": {
+ "items": [],
+ "subfolders": []
+ },
+ "general": {
+ "items": [],
+ "subfolders": []
+ }
+ },
+ "timelines": {
+ "items": [],
+ "subfolders": []
+ },
+ "flowcharts": {
+ "items": [],
+ "subfolders": []
+ },
+ "properties": {
+ "description": "Minimal Construct 3 Pong demo for the Wavedash HTML5 export flow.",
+ "version": "1.0.0.0",
+ "autoIncrementVersion": false,
+ "author": "Wavedash",
+ "authorEmail": "",
+ "authorWebsite": "",
+ "appId": "",
+ "pixelRounding": true,
+ "zAxisScale": "regular",
+ "fov": 0.7853981633974483,
+ "useLoaderLayout": false,
+ "fullscreenMode": "letterbox-scale",
+ "fullscreenQuality": "high",
+ "viewportFit": "auto",
+ "backgroundColor": [
+ 0.011764705882352941,
+ 0.06666666666666667,
+ 0.13725490196078433,
+ 1
+ ],
+ "splashColor": [
+ 0.011764705882352941,
+ 0.06666666666666667,
+ 0.13725490196078433,
+ 1
+ ],
+ "useThemeColor": false,
+ "themeColor": [
+ 1,
+ 1,
+ 1,
+ 0
+ ],
+ "orientations": "landscape",
+ "webgpu": "auto",
+ "multitexturing": "auto",
+ "gpuPreference": "high-performance",
+ "framerateMode": "vsync",
+ "sampling": "nearest",
+ "downscaling": "medium",
+ "renderingMode": "auto",
+ "anisotropicFiltering": "auto",
+ "zNear": 1,
+ "zFar": 10000,
+ "maxSpriteSheetSize": 2048,
+ "loaderStyle": "progress",
+ "preloadSounds": false,
+ "uidAllocationMode": "random",
+ "cordovaiOSScheme": "app",
+ "cordovaAndroidScheme": "https",
+ "exportFileStructure": "folders",
+ "scriptsType": "module"
+ },
+ "viewportWidth": 640,
+ "viewportHeight": 360,
+ "firstLayout": "Game"
+}

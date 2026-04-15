@@ -1,0 +1,222 @@
+{
+ "name": "Game",
+ "layers": [
+ {
+ "name": "UI",
+ "overriden": 0,
+ "subLayers": [],
+ "instances": [
+ {
+ "type": "TitleText",
+ "properties": {
+ "text": "example-construct",
+ "enable-bbcode": false,
+ "font": "Arial",
+ "size": 18,
+ "line-height": 0,
+ "bold": true,
+ "italic": false,
+ "color": [
+ 0.9686274509803922,
+ 0.9725490196078431,
+ 0.9803921568627451,
+ 1
+ ],
+ "horizontal-alignment": "left",
+ "vertical-alignment": "top",
+ "wrapping": "word",
+ "initially-visible": true,
+ "origin": "top-left"
+ },
+ "uid": 1,
+ "instanceVariables": {},
+ "behaviors": {},
+ "world": {
+ "x": 16,
+ "y": 12,
+ "width": 608,
+ "height": 28,
+ "originX": 0,
+ "originY": 0,
+ "color": [
+ 1,
+ 1,
+ 1,
+ 1
+ ],
+ "angle": 0,
+ "zElevation": 0
+ }
+ },
+ {
+ "type": "InfoText",
+ "properties": {
+ "text": "Runtime: Construct 3 folder project\\nSDK: pending | User: pending | Phase: booting",
+ "enable-bbcode": false,
+ "font": "monospace",
+ "size": 10,
+ "line-height": 0,
+ "bold": false,
+ "italic": false,
+ "color": [
+ 0.6941176470588235,
+ 0.7725490196078432,
+ 0.8549019607843137,
+ 1
+ ],
+ "horizontal-alignment": "left",
+ "vertical-alignment": "top",
+ "wrapping": "character",
+ "initially-visible": true,
+ "origin": "top-left"
+ },
+ "uid": 2,
+ "instanceVariables": {},
+ "behaviors": {},
+ "world": {
+ "x": 16,
+ "y": 44,
+ "width": 608,
+ "height": 32,
+ "originX": 0,
+ "originY": 0,
+ "color": [
+ 1,
+ 1,
+ 1,
+ 1
+ ],
+ "angle": 0,
+ "zElevation": 0
+ }
+ },
+ {
+ "type": "FieldText",
+ "properties": {
+ "text": "Construct is booting...",
+ "enable-bbcode": false,
+ "font": "monospace",
+ "size": 12,
+ "line-height": 0,
+ "bold": false,
+ "italic": false,
+ "color": [
+ 0.9607843137254902,
+ 0.9607843137254902,
+ 0.9607843137254902,
+ 1
+ ],
+ "horizontal-alignment": "left",
+ "vertical-alignment": "top",
+ "wrapping": "character",
+ "initially-visible": true,
+ "origin": "top-left"
+ },
+ "uid": 3,
+ "instanceVariables": {},
+ "behaviors": {},
+ "world": {
+ "x": 16,
+ "y": 88,
+ "width": 608,
+ "height": 224,
+ "originX": 0,
+ "originY": 0,
+ "color": [
+ 1,
+ 1,
+ 1,
+ 1
+ ],
+ "angle": 0,
+ "zElevation": 0
+ }
+ },
+ {
+ "type": "FooterText",
+ "properties": {
+ "text": "Controls: W/S or ArrowUp/ArrowDown move | Space or Enter serves and restarts",
+ "enable-bbcode": false,
+ "font": "monospace",
+ "size": 10,
+ "line-height": 0,
+ "bold": false,
+ "italic": false,
+ "color": [
+ 0.5764705882352941,
+ 0.6549019607843137,
+ 0.7254901960784313,
+ 1
+ ],
+ "horizontal-alignment": "left",
+ "vertical-alignment": "top",
+ "wrapping": "character",
+ "initially-visible": true,
+ "origin": "top-left"
+ },
+ "uid": 4,
+ "instanceVariables": {},
+ "behaviors": {},
+ "world": {
+ "x": 16,
+ "y": 320,
+ "width": 608,
+ "height": 24,
+ "originX": 0,
+ "originY": 0,
+ "color": [
+ 1,
+ 1,
+ 1,
+ 1
+ ],
+ "angle": 0,
+ "zElevation": 0
+ }
+ }
+ ],
+ "sid": 835201000300001,
+ "effectTypes": [],
+ "isInitiallyVisible": true,
+ "isInitiallyInteractive": true,
+ "isHTMLElementsLayer": false,
+ "color": [
+ 1,
+ 1,
+ 1,
+ 1
+ ],
+ "backgroundColor": [
+ 0.011764705882352941,
+ 0.06666666666666667,
+ 0.13725490196078433,
+ 1
+ ],
+ "isTransparent": false,
+ "parallaxX": 1,
+ "parallaxY": 1,
+ "scaleRate": 1,
+ "forceOwnTexture": false,
+ "renderingMode": "2d",
+ "drawOrder": "z-order",
+ "useRenderCells": false,
+ "blendMode": "normal",
+ "zElevation": 0,
+ "global": false
+ }
+ ],
+ "scene-graphs-folder-root": {
+ "items": [],
+ "subfolders": []
+ },
+ "sid": 835201000300000,
+ "nonworld-instances": [],
+ "effectTypes": [],
+ "width": 640,
+ "height": 360,
+ "unboundedScrolling": false,
+ "vpX": 0.5,
+ "vpY": 0.5,
+ "projection": "perspective",
+ "eventSheet": "Game"
+}
