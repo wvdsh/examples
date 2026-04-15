@@ -2,9 +2,9 @@
 
 `example-construct` is a minimal Construct 3 folder project that uses the Wavedash HTML5 export flow.
 
-To keep the source easy to diff and review, this demo stays text-first: the Construct project metadata, layouts, event sheet, scripts, and even the Pong playfield all live in source-controlled text files.
+To keep the source easy to diff and review, this demo stays text-first: the Construct project metadata, layouts, event sheet, scripts, and even the pong playfield all live in source-controlled text files.
 
-The event sheet is intentionally empty. Construct still owns the project format, layout, and script lifecycle, while the Wavedash integration and Pong logic live in the project scripts where they are easy to inspect in git.
+The event sheet is intentionally empty. Construct still owns the project format, layout, and script lifecycle, while the Wavedash integration and pong logic live in the project scripts where they are easy to inspect in git.
 
 It demonstrates:
 
@@ -14,14 +14,14 @@ It demonstrates:
 - waiting for SDK readiness before gameplay is exposed
 - releasing deferred SDK events with `WavedashJS.readyForEvents()`
 - calling `WavedashJS.loadComplete()` only after the first playable state is ready
-- a small Construct-scripted Pong demo with a hard-but-beatable AI paddle
+- a small Construct-scripted pong demo with a hard-but-beatable AI paddle
 - a Wavedash-only runtime path that expects the real injected `window.WavedashJS`
 
 ## Ownership split
 
 - `Construct`: owns the project format, layout, text rendering, scripting lifecycle, and HTML5 export
 - `scripts/main.js`: owns the Wavedash startup sequence from inside Construct
-- `scripts/pong.js`: owns the Pong simulation and ASCII field rendering through Construct Text instances
+- `scripts/pong.js`: owns the pong simulation and ASCII field rendering through Construct Text instances
 - `scripts/wavedash.js`: owns SDK lookup, readiness polling, and optional backend event listeners
 - `Wavedash`: injects `window.WavedashJS` and serves the exported `build/web/index.html`
 
@@ -32,7 +32,7 @@ It demonstrates:
 - `eventSheets/Game.json`: intentionally minimal event sheet; the lifecycle lives in the scripts
 - `objectTypes/*.json`: Construct object definitions for the text objects
 - `scripts/main.js`: main script entrypoint that Construct auto-runs
-- `scripts/pong.js`: ASCII Pong gameplay loop, input helpers, and renderer
+- `scripts/pong.js`: ASCII pong gameplay loop, input helpers, and renderer
 - `scripts/wavedash.js`: Wavedash SDK helpers used by the main script
 - `wavedash.toml`: Wavedash upload config pointing at the exported HTML5 entrypoint
 - `build/web/`: export target for Construct's Web (HTML5) exporter
@@ -54,7 +54,7 @@ Binary assets and generated exports would make this example harder to review tha
 
 - the Construct folder-project structure is source-controlled
 - the startup flow is readable in `scripts/main.js`
-- the Pong logic is readable in `scripts/pong.js`
+- the pong logic is readable in `scripts/pong.js`
 - the Wavedash handshake is readable in `scripts/wavedash.js`
 
 This repo keeps the generated export out of source control, so re-export into `build/web` whenever you want to run the example.

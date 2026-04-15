@@ -1,6 +1,6 @@
 # example-rust
 
-`example-rust` is a minimal Rust + WebAssembly Pong demo that uses the Wavedash custom-engine flow.
+`example-rust` is a minimal Rust + WebAssembly pong demo that uses the Wavedash custom-engine flow.
 
 Rust owns the startup state machine, gameplay, AI, collision, and draw calls. JavaScript only owns the browser shell, input collection, and the thin bridge to `window.WavedashJS`.
 
@@ -12,7 +12,7 @@ It demonstrates:
 - waiting for SDK readiness before gameplay is exposed
 - releasing deferred SDK events with `WavedashJS.readyForEvents()`
 - marking the game as ready with `WavedashJS.loadComplete()`
-- a basic Pong game with a hard-but-beatable AI paddle
+- a basic pong game with a hard-but-beatable AI paddle
 - a Wavedash-only startup path that expects the real injected `window.WavedashJS`
 
 ## Ownership split
@@ -26,7 +26,7 @@ It demonstrates:
 
 ## Layout
 
-- `src/lib.rs`: Pong game state, AI, physics, drawing calls, and the Rust-owned Wavedash startup state machine
+- `src/lib.rs`: pong game state, AI, physics, drawing calls, and the Rust-owned Wavedash startup state machine
 - `web/game.js`: thin browser host that loads wasm, renders the canvas, and forwards browser/Wavedash bindings into Rust
 - `wavedash.toml`: Wavedash CLI config for the custom engine entrypoint
 - `build-web.sh`: compiles the Rust source and copies the JS entrypoint into `build/web`

@@ -8,8 +8,8 @@ It demonstrates:
 - SDK initialization with `WavedashJS.init({ debug: true, deferEvents: true })`
 - waiting for SDK readiness before gameplay is exposed
 - releasing deferred SDK events with `WavedashJS.readyForEvents()`
-- calling `WavedashJS.loadComplete()` only after Pong is ready to play
-- a basic Pong game with a hard-but-beatable AI paddle
+- calling `WavedashJS.loadComplete()` only after pong is ready to play
+- a basic pong game with a hard-but-beatable AI paddle
 - a Wavedash-only startup path that expects the real injected `window.WavedashJS`
 
 ## Layout

@@ -10,12 +10,12 @@ It demonstrates:
 - waiting for SDK readiness before gameplay is exposed
 - releasing deferred SDK events with `WavedashJS.readyForEvents()`
 - marking the game as ready with `WavedashJS.loadComplete()`
-- a basic Pong game with a hard-but-beatable AI paddle
+- a basic pong game with a hard-but-beatable AI paddle
 - a Wavedash-only startup path that expects the real injected `window.WavedashJS`
 
 ## Layout
 
-- `src/main.zig`: Pong game state, AI, physics, drawing calls, and the Zig-owned Wavedash startup state machine
+- `src/main.zig`: pong game state, AI, physics, drawing calls, and the Zig-owned Wavedash startup state machine
 - `web/game.js`: thin browser host that loads wasm, renders the canvas, and forwards browser/Wavedash bindings into Zig
 - `wavedash.toml`: Wavedash CLI config for the custom engine entrypoint
 - `build-web.sh`: compiles the Zig source and copies the JS entrypoint into `build/web`

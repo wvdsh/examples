@@ -12,7 +12,7 @@ It demonstrates:
 - waiting for SDK readiness before the story becomes playable
 - releasing deferred events with `WavedashJS.readyForEvents()` only after the first interactive Ren'Py screen is visible
 - calling `WavedashJS.loadComplete()` only after that first playable state is exposed
-- a short visual novel about the invention of Pong and why it mattered
+- a short visual novel about the invention of pong and why it mattered
 
 ## Layout
 

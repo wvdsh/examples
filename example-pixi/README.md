@@ -6,7 +6,7 @@ It demonstrates:
 
 - staged loading via `WavedashJS.updateLoadProgressZeroToOne(...)`
 - SDK initialization with `WavedashJS.init()`
-- a basic 2D Pong game with a beatable AI paddle
+- a basic 2D pong game with a beatable AI paddle
 - a Wavedash-only startup path that expects the real injected `window.WavedashJS`
 
 ## Layout
