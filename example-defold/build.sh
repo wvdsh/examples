@@ -17,11 +17,22 @@ if [[ ! -f "$BOB_JAR" ]]; then
   exit 1
 fi
 
+rm -rf bundle
 java -jar "$BOB_JAR" \
   --platform js-web \
   --architectures wasm-web \
   --archive \
-  --bundle-output build/web \
+  --bundle-output bundle \
   resolve build bundle
 
-echo "HTML5 build written to build/web/"
+# Defold writes to bundle/example-defold/ (or similar subfolder) — flatten to dist/
+rm -rf dist
+mkdir -p dist
+BUNDLE_SUBDIR="$(find bundle -maxdepth 1 -mindepth 1 -type d | head -1)"
+if [ -n "$BUNDLE_SUBDIR" ]; then
+  cp -R "$BUNDLE_SUBDIR/"* dist/
+else
+  cp -R bundle/* dist/
+fi
+
+echo "HTML5 build written to dist/"

@@ -385,14 +385,12 @@ function init(self)
     self.ball_vy         = 0
 
     wavedash.init()
-    wavedash.update_load_progress(0.5)
 
     setup_court(self)
     restart_match(self)
     sync_nodes(self)
 
     wavedash.update_load_progress(1)
-    wavedash.load_complete()
 end
 
 function update(self, dt)
