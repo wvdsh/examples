@@ -1,7 +1,6 @@
 const WavedashJS = await window.WavedashJS;
 
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 
 /* ── constants ─────────────────────────────────────────────── */
 
@@ -35,7 +34,6 @@ const container = document.getElementById("pixiCanvas");
 const app = new PIXI.Application();
 await app.init({ background: BG, resizeTo: container, antialias: true });
 container.appendChild(app.canvas);
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 
 /* ── scene objects ─────────────────────────────────────────── */
 
@@ -50,7 +48,6 @@ app.stage.addChild(board, topRail, bottomRail, dashes, playerGfx, aiGfx, ballGfx
 
 const playerScoreEl = document.getElementById("playerScore");
 const aiScoreEl = document.getElementById("aiScore");
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 
 /* ── game state ────────────────────────────────────────────── */
 
@@ -256,7 +253,6 @@ recalcScale();
 draw();
 
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
 
 app.ticker.add((ticker) => {
   const dt = Math.min(0.05, ticker.deltaMS / 1000);
