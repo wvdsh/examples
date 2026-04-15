@@ -1,11 +1,9 @@
 const WavedashJS = await window.WavedashJS;
 
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 
 const scene = new BABYLON.Scene(engine);
 scene.clearColor = new BABYLON.Color4(0.067, 0.067, 0.067, 1);
@@ -27,7 +25,6 @@ let ballVel = new BABYLON.Vector3(BALL_SPEED, BALL_SPEED * 0.5, 0);
 const playerScoreEl = document.getElementById("playerScore");
 const aiScoreEl = document.getElementById("aiScore");
 let playerScore = 0, aiScore = 0;
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 
 const input = { up: false, down: false };
 const MOVE_KEYS = new Set(["KeyW", "ArrowUp", "KeyS", "ArrowDown"]);
@@ -55,7 +52,6 @@ function resetBall(direction) {
 }
 
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
 
 engine.runRenderLoop(() => {
   if (input.up) player.position.y += PADDLE_SPEED;
