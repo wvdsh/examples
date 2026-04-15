@@ -322,7 +322,7 @@ export class PongGame {
   updatePlayer(dt, input) {
     const minY = -(FIELD_HEIGHT * 0.5) + (PADDLE_HEIGHT * 0.5);
     const maxY = (FIELD_HEIGHT * 0.5) - (PADDLE_HEIGHT * 0.5);
-    const direction = (input.up ? -1 : 0) + (input.down ? 1 : 0);
+    const direction = (input.up ? 1 : 0) + (input.down ? -1 : 0);
 
     this.playerY = clamp(this.playerY + direction * PLAYER_SPEED * dt, minY, maxY);
   }
