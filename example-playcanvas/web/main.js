@@ -1,7 +1,6 @@
 const WavedashJS = await window.WavedashJS;
 
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 
 /* ── PlayCanvas application ─────────────────────────────────── */
 
@@ -13,7 +12,6 @@ app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
 app.setCanvasResolution(pc.RESOLUTION_AUTO);
 window.addEventListener("resize", () => app.resizeCanvas());
 
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 
 /* ── Scene: camera + light ──────────────────────────────────── */
 
@@ -76,7 +74,6 @@ const ball   = makeBox("ball",   BALL_SIZE, BALL_SIZE, BALL_SIZE, ballMat);
 player.setPosition(PLAYER_X, 0, 0);
 ai.setPosition(AI_X, 0, 0);
 
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 
 /* ── Score ───────────────────────────────────────────────────── */
 
@@ -129,7 +126,6 @@ resetBall(1);
 /* ── Update loop ─────────────────────────────────────────────── */
 
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
 
 app.on("update", (rawDt) => {
   const dt = Math.min(rawDt, 0.05);
