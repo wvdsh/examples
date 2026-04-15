@@ -1,23 +1,14 @@
-Try it out on wavedash.com here: https://wavedash.com/playtest/bevy-example/6b8bfb41-d6f7-43fb-9f23-cf6e4bfe8e94
+See it here: https://wavedash.com/playtest/bevy-example/6b8bfb41-d6f7-43fb-9f23-cf6e4bfe8e94
 
-# Pong
+Install [Rust](https://rust-lang.org/tools/install/)
+Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
 
-Minimal Pong built with [Bevy](https://bevyengine.org/) 0.18.
+Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-bevy/wavedash.toml)
 
-## Run
-
-```
-cargo run
-```
-
-## Web build
-
+Run
 ```
 rustup target install wasm32-unknown-unknown
 cargo install trunk
 trunk build --release --public-url ./
+wavedash dev
 ```
-
-
-Replace game_id in wavedash.toml
-Output is in `dist/`. Serve with `wavedash dev` for local dev.
