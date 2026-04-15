@@ -1,12 +1,12 @@
 # examples
 
-Different ways of interacting with the Wavedash SDK.
+Small, runnable examples showing how to integrate Wavedash across different engines and stacks.
 
 ## Included examples
 
-- `example-babylonjs`: Babylon.js Pong demo with staged Wavedash loading, SDK init, deferred events, and a Wavedash-only startup flow.
-- `example-renpy`: Ren'Py web-export visual novel with a Ren'Py-owned Wavedash startup flow, staged loading, deferred events, and a Wavedash-only runtime path.
-- `example-phaser`: Phaser 3 Pong demo with staged Wavedash loading, SDK init, and a Wavedash-only startup flow.
-- `example-pixi`: PixiJS Pong demo with staged Wavedash loading, SDK init, and a Wavedash-only startup flow.
-- `example-playcanvas`: PlayCanvas 3D Pong demo with staged Wavedash loading, SDK init, and a Wavedash-only startup flow.
-- `example-zig`: Zig + WebAssembly Pong demo with a Zig-owned Wavedash startup flow, staged loading, deferred events, and a Wavedash-only runtime path.
+- `example-babylonjs`: Babylon.js pong demo that initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
+- `example-renpy`: Ren'Py web-export visual novel that initializes the SDK, updates loading progress during startup, releases deferred events when the first playable scene is ready, and then enters the story.
+- `example-phaser`: Phaser 3 pong demo that initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
+- `example-pixi`: PixiJS pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
+- `example-playcanvas`: PlayCanvas 3D pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
+- `example-zig`: Zig + WebAssembly pong demo that initializes the SDK from Zig, updates loading progress, releases deferred events when ready, and then starts gameplay.
