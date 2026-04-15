@@ -1,0 +1,16 @@
+key_trigger {
+  input: KEY_W
+  action: "move_up"
+}
+key_trigger {
+  input: KEY_S
+  action: "move_down"
+}
+key_trigger {
+  input: KEY_UP
+  action: "move_up"
+}
+key_trigger {
+  input: KEY_DOWN
+  action: "move_down"
+}

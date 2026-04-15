@@ -1,0 +1,421 @@
+local wavedash = require("main.wavedash")
+
+local WIN_SCORE = 7
+local FIELD_WIDTH = 16
+local FIELD_HEIGHT = 9
+local PADDLE_WIDTH = 0.32
+local PADDLE_HEIGHT = 1.95
+local BALL_SIZE = 0.32
+local PLAYER_SPEED = 9.2
+local AI_SPEED = 5.5
+local START_BALL_SPEED_X = 6.7
+local START_BALL_SPEED_Y = 2.8
+local MAX_BALL_SPEED_X = 12.5
+local MAX_BALL_SPEED_Y = 8.5
+
+local PLAYER_X = -(FIELD_WIDTH * 0.5) + 0.9
+local AI_X = FIELD_WIDTH * 0.5 - 0.9
+
+local HASH_MOVE_UP = hash("move_up")
+local HASH_MOVE_DOWN = hash("move_down")
+
+local function clamp(value, low, high)
+    return math.min(math.max(value, low), high)
+end
+
+local function random_range(low, high)
+    return low + math.random() * (high - low)
+end
+
+local function reflect_y(value, min_y, max_y)
+    local reflected = value
+    local guard = 0
+    while (reflected < min_y or reflected > max_y) and guard < 8 do
+        if reflected < min_y then
+            reflected = min_y + (min_y - reflected)
+        else
+            reflected = max_y - (reflected - max_y)
+        end
+        guard = guard + 1
+    end
+    return clamp(reflected, min_y, max_y)
+end
+
+-- ---------------------------------------------------------------------------
+-- Coordinate conversion: game units (origin at center, Y-up) to GUI pixels
+-- (origin at bottom-left, Y-up). Both systems share the same Y direction so
+-- the conversion is a simple scale-and-translate.
+-- ---------------------------------------------------------------------------
+
+local function to_screen_x(self, game_x)
+    return self.center_x + game_x * self.pixels_per_unit
+end
+
+local function to_screen_y(self, game_y)
+    return self.center_y + game_y * self.pixels_per_unit
+end
+
+local function set_box(self, node, game_x, game_y, game_width, game_height)
+    local ppu = self.pixels_per_unit
+    gui.set_position(node, vmath.vector3(
+        to_screen_x(self, game_x),
+        to_screen_y(self, game_y),
+        0
+    ))
+    gui.set_size(node, vmath.vector3(game_width * ppu, game_height * ppu, 0))
+end
+
+-- ---------------------------------------------------------------------------
+-- Court layout — called once from init to position every static element.
+-- ---------------------------------------------------------------------------
+
+local function setup_court(self)
+    gui.set_position(self.node_background,
+        vmath.vector3(self.center_x, self.center_y, 0))
+    gui.set_size(self.node_background,
+        vmath.vector3(self.screen_width, self.screen_height, 0))
+
+    set_box(self, self.node_court,  0, 0, FIELD_WIDTH + 1.2, FIELD_HEIGHT + 0.8)
+    set_box(self, self.node_rail_top,    0,  (FIELD_HEIGHT * 0.5 + 0.24), FIELD_WIDTH + 1.4, 0.16)
+    set_box(self, self.node_rail_bottom, 0, -(FIELD_HEIGHT * 0.5 + 0.24), FIELD_WIDTH + 1.4, 0.16)
+
+    local dash_index = 1
+    local y = -(FIELD_HEIGHT * 0.5) + 0.7
+    while y <= FIELD_HEIGHT * 0.5 - 0.7 do
+        if dash_index <= #self.dash_nodes then
+            set_box(self, self.dash_nodes[dash_index], 0, y, 0.08, 0.42)
+        end
+        dash_index = dash_index + 1
+        y = y + 0.9
+    end
+
+    local score_y = self.screen_height - 30
+    gui.set_position(self.node_score_panel,
+        vmath.vector3(self.center_x, score_y, 0))
+    gui.set_size(self.node_score_panel, vmath.vector3(130, 40, 0))
+    gui.set_position(self.node_player_score,
+        vmath.vector3(self.center_x - 25, score_y, 0))
+    gui.set_position(self.node_divider,
+        vmath.vector3(self.center_x, score_y, 0))
+    gui.set_position(self.node_ai_score,
+        vmath.vector3(self.center_x + 25, score_y, 0))
+
+    local ppu = self.pixels_per_unit
+    gui.set_size(self.node_player_paddle,
+        vmath.vector3(PADDLE_WIDTH * ppu, PADDLE_HEIGHT * ppu, 0))
+    gui.set_size(self.node_ai_paddle,
+        vmath.vector3(PADDLE_WIDTH * ppu, PADDLE_HEIGHT * ppu, 0))
+    gui.set_size(self.node_ball,
+        vmath.vector3(BALL_SIZE * ppu, BALL_SIZE * ppu, 0))
+end
+
+-- ---------------------------------------------------------------------------
+-- Per-frame display sync — update only positions and score text.  Sizes are
+-- set once in setup_court and never change.
+-- ---------------------------------------------------------------------------
+
+local function sync_nodes(self)
+    gui.set_position(self.node_player_paddle, vmath.vector3(
+        to_screen_x(self, PLAYER_X), to_screen_y(self, self.player_y), 0))
+    gui.set_position(self.node_ai_paddle, vmath.vector3(
+        to_screen_x(self, AI_X), to_screen_y(self, self.ai_y), 0))
+    gui.set_position(self.node_ball, vmath.vector3(
+        to_screen_x(self, self.ball_x), to_screen_y(self, self.ball_y), 0))
+
+    gui.set_text(self.node_player_score, tostring(self.player_score))
+    gui.set_text(self.node_ai_score, tostring(self.ai_score))
+end
+
+-- ---------------------------------------------------------------------------
+-- Game-state helpers
+-- ---------------------------------------------------------------------------
+
+local function reset_ball(self)
+    self.ball_x = 0
+    self.ball_y = 0
+    self.ball_vx = 0
+    self.ball_vy = 0
+end
+
+local function prepare_serve(self, direction)
+    self.mode = "serve"
+    self.serve_direction = direction
+    self.ai_retarget_in = 0
+    self.ai_target_y = 0
+    self.player_y = 0
+    self.ai_y = 0
+    reset_ball(self)
+end
+
+local function restart_match(self)
+    self.player_score = 0
+    self.ai_score = 0
+    prepare_serve(self, math.random() < 0.5 and -1 or 1)
+end
+
+local function award_point(self, player_scored)
+    if player_scored then
+        self.player_score = self.player_score + 1
+        if self.player_score >= WIN_SCORE then
+            self.mode = "game_over"
+            reset_ball(self)
+            return
+        end
+        prepare_serve(self, 1)
+        return
+    end
+
+    self.ai_score = self.ai_score + 1
+    if self.ai_score >= WIN_SCORE then
+        self.mode = "game_over"
+        reset_ball(self)
+        return
+    end
+    prepare_serve(self, -1)
+end
+
+local function start_serve(self)
+    self.mode = "play"
+    self.ball_x = 0
+    self.ball_y = 0
+    self.ball_vx = self.serve_direction * START_BALL_SPEED_X
+    self.ball_vy = random_range(-START_BALL_SPEED_Y, START_BALL_SPEED_Y)
+    if math.abs(self.ball_vy) < 1.2 then
+        self.ball_vy = self.ball_vy < 0 and -1.5 or 1.5
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Physics
+-- ---------------------------------------------------------------------------
+
+local function bounce_from_paddle(self, left_side, paddle_y)
+    local impact = clamp(
+        (self.ball_y - paddle_y) / (PADDLE_HEIGHT * 0.5), -1, 1
+    )
+    local next_speed_x = math.min(
+        math.abs(self.ball_vx) * 1.05 + 0.45, MAX_BALL_SPEED_X
+    )
+    local next_speed_y = clamp(
+        self.ball_vy + impact * 3.6, -MAX_BALL_SPEED_Y, MAX_BALL_SPEED_Y
+    )
+
+    if math.abs(next_speed_y) < 1.25 then
+        next_speed_y = impact < 0 and -1.5 or 1.5
+    end
+    next_speed_y = next_speed_y + random_range(-0.25, 0.25)
+
+    if left_side then
+        self.ball_x = PLAYER_X + PADDLE_WIDTH * 0.5 + BALL_SIZE * 0.5
+        self.ball_vx = next_speed_x
+    else
+        self.ball_x = AI_X - PADDLE_WIDTH * 0.5 - BALL_SIZE * 0.5
+        self.ball_vx = -next_speed_x
+    end
+    self.ball_vy = next_speed_y
+end
+
+-- ---------------------------------------------------------------------------
+-- Per-frame simulation
+-- ---------------------------------------------------------------------------
+
+local function update_player(self, dt)
+    local min_y = -(FIELD_HEIGHT * 0.5) + PADDLE_HEIGHT * 0.5
+    local max_y =  (FIELD_HEIGHT * 0.5) - PADDLE_HEIGHT * 0.5
+    local direction = (self.input_up and 1 or 0) + (self.input_down and -1 or 0)
+    self.player_y = clamp(self.player_y + direction * PLAYER_SPEED * dt, min_y, max_y)
+end
+
+local function update_ai(self, dt)
+    local min_y = -(FIELD_HEIGHT * 0.5) + PADDLE_HEIGHT * 0.5
+    local max_y =  (FIELD_HEIGHT * 0.5) - PADDLE_HEIGHT * 0.5
+
+    if self.mode == "play" and self.ball_vx > 0 then
+        self.ai_retarget_in = self.ai_retarget_in - dt
+        if self.ai_retarget_in <= 0 then
+            self.ai_retarget_in = random_range(0.18, 0.35)
+
+            local distance_to_paddle = AI_X - self.ball_x
+            local lead_time = (self.ball_vx > 0 and distance_to_paddle > 0)
+                and (distance_to_paddle / self.ball_vx)
+                or 0
+
+            local projected_y = reflect_y(
+                self.ball_y + self.ball_vy * lead_time,
+                -(FIELD_HEIGHT * 0.5) + BALL_SIZE * 0.5,
+                  (FIELD_HEIGHT * 0.5) - BALL_SIZE * 0.5
+            )
+            local miss_window = PADDLE_HEIGHT * random_range(0.35, 0.75)
+            self.ai_target_y = projected_y + random_range(-miss_window, miss_window)
+        end
+    else
+        self.ai_retarget_in = 0
+        self.ai_target_y = 0
+    end
+
+    local max_move = AI_SPEED * dt
+    local move = clamp(self.ai_target_y - self.ai_y, -max_move, max_move)
+    self.ai_y = clamp(self.ai_y + move, min_y, max_y)
+end
+
+local function update_ball(self, dt)
+    if self.mode ~= "play" then return end
+
+    local half_ball = BALL_SIZE * 0.5
+    local half_paddle_width = PADDLE_WIDTH * 0.5
+    local half_paddle_height = PADDLE_HEIGHT * 0.5
+    local field_top = FIELD_HEIGHT * 0.5
+    local field_bottom = -field_top
+    local field_right = FIELD_WIDTH * 0.5
+    local field_left = -field_right
+
+    self.ball_x = self.ball_x + self.ball_vx * dt
+    self.ball_y = self.ball_y + self.ball_vy * dt
+
+    if self.ball_y + half_ball >= field_top then
+        self.ball_y = field_top - half_ball
+        self.ball_vy = -math.abs(self.ball_vy)
+    elseif self.ball_y - half_ball <= field_bottom then
+        self.ball_y = field_bottom + half_ball
+        self.ball_vy = math.abs(self.ball_vy)
+    end
+
+    local ball_min_x = self.ball_x - half_ball
+    local ball_max_x = self.ball_x + half_ball
+    local ball_min_y = self.ball_y - half_ball
+    local ball_max_y = self.ball_y + half_ball
+
+    local player_min_x = PLAYER_X - half_paddle_width
+    local player_max_x = PLAYER_X + half_paddle_width
+    local player_min_y = self.player_y - half_paddle_height
+    local player_max_y = self.player_y + half_paddle_height
+
+    if self.ball_vx < 0
+        and ball_min_x <= player_max_x
+        and ball_max_x >= player_min_x
+        and ball_min_y <= player_max_y
+        and ball_max_y >= player_min_y
+    then
+        bounce_from_paddle(self, true, self.player_y)
+    end
+
+    local ai_min_x = AI_X - half_paddle_width
+    local ai_max_x = AI_X + half_paddle_width
+    local ai_min_y = self.ai_y - half_paddle_height
+    local ai_max_y = self.ai_y + half_paddle_height
+
+    if self.ball_vx > 0
+        and ball_max_x >= ai_min_x
+        and ball_min_x <= ai_max_x
+        and ball_min_y <= ai_max_y
+        and ball_max_y >= ai_min_y
+    then
+        bounce_from_paddle(self, false, self.ai_y)
+    end
+
+    if self.ball_x + half_ball < field_left then
+        award_point(self, false)
+    elseif self.ball_x - half_ball > field_right then
+        award_point(self, true)
+    end
+end
+
+local function step(self, dt)
+    if self.mode == "serve" then
+        start_serve(self)
+    elseif self.mode == "game_over" then
+        restart_match(self)
+    end
+    update_player(self, dt)
+    update_ai(self, dt)
+    update_ball(self, dt)
+end
+
+-- ===========================================================================
+-- Defold lifecycle
+-- ===========================================================================
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+
+    self.screen_width  = tonumber(sys.get_config("display.width"))
+    self.screen_height = tonumber(sys.get_config("display.height"))
+    self.center_x = self.screen_width * 0.5
+    self.center_y = self.screen_height * 0.5
+    self.pixels_per_unit = math.min(
+        self.screen_width  / (FIELD_WIDTH  + 1.4),
+        self.screen_height / (FIELD_HEIGHT + 1.4)
+    )
+
+    self.node_background    = gui.get_node("background")
+    self.node_court         = gui.get_node("court")
+    self.node_rail_top      = gui.get_node("rail_top")
+    self.node_rail_bottom   = gui.get_node("rail_bottom")
+    self.node_player_paddle = gui.get_node("player_paddle")
+    self.node_ai_paddle     = gui.get_node("ai_paddle")
+    self.node_ball          = gui.get_node("ball")
+    self.node_score_panel   = gui.get_node("score_panel")
+    self.node_player_score  = gui.get_node("player_score")
+    self.node_divider       = gui.get_node("divider")
+    self.node_ai_score      = gui.get_node("ai_score")
+
+    self.dash_nodes = {}
+    local i = 0
+    local y = -(FIELD_HEIGHT * 0.5) + 0.7
+    while y <= FIELD_HEIGHT * 0.5 - 0.7 do
+        table.insert(self.dash_nodes, gui.get_node("dash_" .. i))
+        i = i + 1
+        y = y + 0.9
+    end
+
+    self.input_up   = false
+    self.input_down = false
+
+    self.mode            = "serve"
+    self.serve_direction = 1
+    self.player_score    = 0
+    self.ai_score        = 0
+    self.player_y        = 0
+    self.ai_y            = 0
+    self.ai_target_y     = 0
+    self.ai_retarget_in  = 0
+    self.ball_x          = 0
+    self.ball_y          = 0
+    self.ball_vx         = 0
+    self.ball_vy         = 0
+
+    wavedash.init()
+    wavedash.update_load_progress(0.5)
+
+    setup_court(self)
+    restart_match(self)
+    sync_nodes(self)
+
+    wavedash.update_load_progress(1)
+    wavedash.load_complete()
+end
+
+function update(self, dt)
+    dt = math.min(dt, 0.05)
+    step(self, dt)
+    sync_nodes(self)
+end
+
+function on_input(self, action_id, action)
+    if action_id == HASH_MOVE_UP then
+        if action.pressed then
+            self.input_up = true
+        elseif action.released then
+            self.input_up = false
+        end
+        return true
+    elseif action_id == HASH_MOVE_DOWN then
+        if action.pressed then
+            self.input_down = true
+        elseif action.released then
+            self.input_down = false
+        end
+        return true
+    end
+    return false
+end
