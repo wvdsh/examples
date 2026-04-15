@@ -1,113 +1,87 @@
 using System;
+using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
-// C# owns the startup state machine and gameplay. The JS host only provides
-// browser bindings, canvas drawing primitives, input, and WavedashJS access.
+// ---------------------------------------------------------------------------
+// JS interop — [JSImport] calls into browser globals, [JSExport] is called
+// from game.js via getAssemblyExports("Pong.dll").
+// ---------------------------------------------------------------------------
 
-readonly struct Color(byte r, byte g, byte b, byte a)
+public static partial class Interop
 {
-    public readonly byte R = r, G = g, B = b, A = a;
+    // Wavedash SDK (minimal: init + progress)
+    [JSImport("globalThis.wavedashInit")]
+    public static partial void WavedashInit();
+
+    [JSImport("globalThis.wavedashProgress")]
+    public static partial void WavedashProgress(double p);
+
+    // Canvas drawing
+    [JSImport("globalThis.jsClear")]
+    public static partial void JsClear(int r, int g, int b);
+
+    [JSImport("globalThis.jsFillRect")]
+    public static partial void JsFillRect(double x, double y, double w, double h, int r, int g, int b);
+
+    // Score DOM update
+    [JSImport("globalThis.jsUpdateScore")]
+    public static partial void JsUpdateScore(int player, int ai);
+
+    // Called from game.js after runtime boots
+    [JSExport]
+    public static void WdInit(int width, int height)
+    {
+        Game.Init(width, height);
+    }
+
+    [JSExport]
+    public static void WdResize(int width, int height)
+    {
+        Game.Resize(width, height);
+    }
+
+    [JSExport]
+    public static void WdTick(double dt, int up, int down)
+    {
+        Game.Tick((float)dt, up != 0, down != 0);
+    }
 }
 
-enum GameMode : byte
+// ---------------------------------------------------------------------------
+// Program — required entry point (empty; JS drives via WdInit/WdTick)
+// ---------------------------------------------------------------------------
+
+public static class Program
 {
-    Serve,
-    Play,
-    GameOver,
+    public static void Main() { }
 }
 
-enum StartupPhase : byte
+// ---------------------------------------------------------------------------
+// Game — pure Pong gameplay + rendering via JS interop
+// ---------------------------------------------------------------------------
+
+static class Game
 {
-    PrepareGame,
-    InitSdk,
-    WaitForSdk,
-    FinalizeStartup,
-    Ready,
-    Fatal,
-}
+    // --- Constants ---
 
-unsafe struct State
-{
-    public float WorldW;
-    public float WorldH;
-    public float PlayerY;
-    public float AiY;
-    public float AiTargetY;
-    public float AiRetargetIn;
-    public float BallX;
-    public float BallY;
-    public float BallVx;
-    public float BallVy;
-    public float ServeDirection;
-    public int PlayerScore;
-    public int AiScore;
-    public int Winner;
-    public GameMode Mode;
-    public StartupPhase Phase;
-    public float PhaseElapsed;
-    public bool FatalVisible;
-    public uint RngState;
-    public fixed byte UserNameBuf[64];
-    public fixed byte HostErrorBuf[192];
-}
+    const float DefaultW = 960f;
+    const float DefaultH = 540f;
+    const float MinW = 320f;
+    const float MinH = 240f;
+    const float ServeDelay = 0.5f;
+    const uint InitialRng = 0x13572468u;
 
-static unsafe class Game
-{
-    const float DefaultWorldW = 960f;
-    const float DefaultWorldH = 540f;
-    const float MinWorldW = 320f;
-    const float MinWorldH = 240f;
-    const int WinScore = 7;
-    const float StartupStepDelay = 0.08f;
-    const float StartupTimeout = 6f;
-    const uint InitialRngState = 0x13572468u;
-    const int UserNameCapacity = 64;
-    const int HostErrorCapacity = 192;
+    // --- State ---
 
-    // --- WASM imports -------------------------------------------------------
+    static float _worldW, _worldH;
+    static float _playerY, _aiY, _aiTargetY, _aiRetargetIn;
+    static float _ballX, _ballY, _ballVx, _ballVy;
+    static float _serveDir, _serveTimer;
+    static int _playerScore, _aiScore;
+    static bool _serving;
+    static uint _rng;
 
-    [DllImport("env")] static extern void js_clear(byte r, byte g, byte b, byte a);
-    [DllImport("env")] static extern void js_fill_rect(float x, float y, float w, float h, byte r, byte g, byte b, byte a);
-    [DllImport("env")] static extern void js_draw_text(byte* ptr, int len, float x, float y, float size, byte r, byte g, byte b, byte a);
-
-    [DllImport("env")] static extern void js_host_set_loading(byte* stepPtr, int stepLen, byte* detailPtr, int detailLen, float progress);
-    [DllImport("env")] static extern void js_host_set_status(byte* ptr, int len, byte r, byte g, byte b, byte a);
-    [DllImport("env")] static extern void js_host_set_user(byte* ptr, int len);
-    [DllImport("env")] static extern void js_host_hide_overlay();
-    [DllImport("env")] static extern void js_host_show_fatal(byte* msgPtr, int msgLen, byte* detailPtr, int detailLen);
-    [DllImport("env")] static extern byte js_host_has_error();
-    [DllImport("env")] static extern int js_host_write_error(byte* ptr, int maxLen);
-
-    [DllImport("env")] static extern void js_wd_init(byte debug, byte deferEvents);
-    [DllImport("env")] static extern byte js_wd_is_ready();
-    [DllImport("env")] static extern void js_wd_update_load_progress(float progress);
-    [DllImport("env")] static extern void js_wd_ready_for_events();
-    [DllImport("env")] static extern void js_wd_load_complete();
-    [DllImport("env")] static extern int js_wd_write_user_name(byte* ptr, int maxLen);
-
-    // --- Colors -------------------------------------------------------------
-
-    static readonly Color StatusPending  = new(148, 163, 184, 255);
-    static readonly Color StatusStarting = new(250, 204, 21,  255);
-    static readonly Color StatusReady    = new(34,  197, 94,  255);
-    static readonly Color Background     = new(3,   7,   18,  255);
-    static readonly Color ArenaEdge      = new(8,   15,  36,  255);
-    static readonly Color CenterDash     = new(119, 138, 160, 110);
-    static readonly Color PlayerColor    = new(92,  227, 255, 255);
-    static readonly Color CpuColor       = new(255, 181, 71,  255);
-    static readonly Color BallColor      = new(248, 250, 252, 255);
-    static readonly Color LabelColor     = new(148, 163, 184, 255);
-    static readonly Color ScorePlayer    = new(230, 244, 255, 255);
-    static readonly Color ScoreCpu       = new(255, 237, 213, 255);
-    static readonly Color BannerPanel    = new(8,   15,  30,  170);
-    static readonly Color BannerText     = new(226, 232, 240, 255);
-
-    // --- State --------------------------------------------------------------
-
-    static State _s;
-
-    // --- Helpers ------------------------------------------------------------
+    // --- Layout helpers ---
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static float Abs(float v) => v < 0f ? -v : v;
@@ -118,534 +92,283 @@ static unsafe class Game
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static float Min(float a, float b) => a < b ? a : b;
 
-    // --- Drawing helpers ----------------------------------------------------
-
-    static void ClearScreen(Color c) => js_clear(c.R, c.G, c.B, c.A);
-
-    static void FillRect(float x, float y, float w, float h, Color c) =>
-        js_fill_rect(x, y, w, h, c.R, c.G, c.B, c.A);
-
-    static void DrawText(ReadOnlySpan<byte> text, float x, float y, float size, Color c)
+    static float Scale()
     {
-        fixed (byte* ptr = text)
-            js_draw_text(ptr, text.Length, x, y, size, c.R, c.G, c.B, c.A);
-    }
-
-    // --- Layout helpers -----------------------------------------------------
-
-    static float ScaleFactor()
-    {
-        float sx = _s.WorldW / DefaultWorldW;
-        float sy = _s.WorldH / DefaultWorldH;
+        float sx = _worldW / DefaultW;
+        float sy = _worldH / DefaultH;
         return sx < sy ? sx : sy;
     }
 
-    static float PaddleW() => 18f * ScaleFactor();
-    static float PaddleH() => 108f * ScaleFactor();
-    static float BallSize() => 16f * ScaleFactor();
-    static float PlayerSpeed() => 520f * ScaleFactor();
-    static float AiSpeed() => 430f * ScaleFactor();
-    static float PlayerX() => 40f * ScaleFactor();
-    static float AiX() => _s.WorldW - PaddleW() - 40f * ScaleFactor();
+    static float PaddleW() => 18f * Scale();
+    static float PaddleH() => 108f * Scale();
+    static float BallSize() => 16f * Scale();
+    static float PlayerSpeed() => 520f * Scale();
+    static float AiSpeed() => 430f * Scale();
+    static float PlayerX() => 40f * Scale();
+    static float AiX() => _worldW - PaddleW() - 40f * Scale();
 
-    static float RandomUnit()
+    static float Rng01()
     {
-        const uint mask = 0x00ffffffu;
-        _s.RngState = _s.RngState * 1664525u + 1013904223u;
-        return (float)((_s.RngState >> 8) & mask) / 16777215f;
+        _rng = _rng * 1664525u + 1013904223u;
+        return (float)((_rng >> 8) & 0x00FFFFFFu) / 16777215f;
     }
 
-    static float ReflectY(float value, float minY, float maxY)
+    static float ReflectY(float v, float lo, float hi)
     {
-        float reflected = value;
-        for (byte guard = 0; (reflected < minY || reflected > maxY) && guard < 8; guard++)
+        for (byte g = 0; (v < lo || v > hi) && g < 8; g++)
         {
-            if (reflected < minY)
-                reflected = minY + (minY - reflected);
-            else
-                reflected = maxY - (reflected - maxY);
+            if (v < lo) v = lo + (lo - v);
+            else v = hi - (v - hi);
         }
-        return Clamp(reflected, minY, maxY);
+        return Clamp(v, lo, hi);
     }
 
-    // --- Host bridge helpers ------------------------------------------------
+    // --- Init / Resize ---
 
-    static void HostSetLoading(ReadOnlySpan<byte> step, ReadOnlySpan<byte> detail, float progress)
+    public static void Init(int w, int h)
     {
-        fixed (byte* sp = step)
-        fixed (byte* dp = detail)
-        {
-            js_host_set_loading(sp, step.Length, dp, detail.Length, progress);
-            js_wd_update_load_progress(progress);
-        }
+        _worldW = w > MinW ? w : DefaultW;
+        _worldH = h > MinH ? h : DefaultH;
+        _rng = InitialRng;
+
+        Interop.WavedashInit();
+        Interop.WavedashProgress(1.0);
+
+        RestartMatch();
+        Render();
     }
 
-    static void HostSetStatus(ReadOnlySpan<byte> text, Color c)
+    public static void Resize(int w, int h)
     {
-        fixed (byte* ptr = text)
-            js_host_set_status(ptr, text.Length, c.R, c.G, c.B, c.A);
+        _worldW = w > MinW ? w : _worldW;
+        _worldH = h > MinH ? h : _worldH;
+        ClampEntities();
+        Render();
     }
 
-    static void HostSetUser(ReadOnlySpan<byte> name)
+    // --- Match control ---
+
+    static void RestartMatch()
     {
-        fixed (byte* ptr = name)
-            js_host_set_user(ptr, name.Length);
+        _playerScore = 0;
+        _aiScore = 0;
+        PrepareServe(Rng01() < 0.5f ? -1f : 1f);
     }
 
-    static void SyncUserFromSdk()
+    static void PrepareServe(float dir)
     {
-        int len = js_wd_write_user_name(_s.UserNameBuf, UserNameCapacity);
-        if (len > 0)
-            HostSetUser(new ReadOnlySpan<byte>(_s.UserNameBuf, len));
-        else
-            HostSetUser(""u8);
-    }
-
-    static void ShowFatal(ReadOnlySpan<byte> message, ReadOnlySpan<byte> detail)
-    {
-        if (!_s.FatalVisible)
-        {
-            fixed (byte* mp = message)
-            fixed (byte* dp = detail)
-                js_host_show_fatal(mp, message.Length, dp, detail.Length);
-            _s.FatalVisible = true;
-        }
-        _s.Phase = StartupPhase.Fatal;
-    }
-
-    static void ShowHostError()
-    {
-        int len = js_host_write_error(_s.HostErrorBuf, HostErrorCapacity);
-        ReadOnlySpan<byte> detail = len > 0
-            ? new ReadOnlySpan<byte>(_s.HostErrorBuf, len)
-            : "Unknown host error."u8;
-        ShowFatal("The C# startup bridge hit an error."u8, detail);
-    }
-
-    static bool CheckHostError()
-    {
-        if (js_host_has_error() == 0) return false;
-        ShowHostError();
-        return true;
-    }
-
-    // --- Startup state machine ----------------------------------------------
-
-    static void TransitionStartup(StartupPhase next)
-    {
-        _s.Phase = next;
-        _s.PhaseElapsed = 0f;
-
-        switch (next)
-        {
-            case StartupPhase.PrepareGame:
-                HostSetStatus("SDK pending"u8, StatusPending);
-                HostSetUser(""u8);
-                HostSetLoading(
-                    "Preparing C# game state"u8,
-                    "Handing Wavedash startup control to C#."u8,
-                    0.42f
-                );
-                break;
-            case StartupPhase.InitSdk:
-                HostSetStatus("SDK starting"u8, StatusStarting);
-                HostSetLoading(
-                    "Initializing Wavedash SDK"u8,
-                    "Calling imported Wavedash bindings from C#."u8,
-                    0.58f
-                );
-                js_wd_init(1, 1);
-                break;
-            case StartupPhase.WaitForSdk:
-                HostSetLoading(
-                    "Waiting for SDK readiness"u8,
-                    "Polling WavedashJS.isReady() before gameplay begins."u8,
-                    0.82f
-                );
-                break;
-            case StartupPhase.FinalizeStartup:
-                HostSetLoading(
-                    "Finalizing game startup"u8,
-                    "Preparing the first playable Pong serve state."u8,
-                    0.96f
-                );
-                break;
-            case StartupPhase.Ready:
-                HostSetLoading(
-                    "Loading complete"u8,
-                    "Releasing deferred SDK events and handing over to gameplay."u8,
-                    1f
-                );
-                js_wd_ready_for_events();
-                js_wd_load_complete();
-                js_host_hide_overlay();
-                break;
-            case StartupPhase.Fatal:
-                break;
-        }
-    }
-
-    static void UpdateStartup(float dt)
-    {
-        if (_s.Phase is StartupPhase.Ready or StartupPhase.Fatal) return;
-        if (CheckHostError()) return;
-
-        _s.PhaseElapsed += dt;
-
-        switch (_s.Phase)
-        {
-            case StartupPhase.PrepareGame:
-                if (_s.PhaseElapsed >= StartupStepDelay)
-                    TransitionStartup(StartupPhase.InitSdk);
-                break;
-            case StartupPhase.InitSdk:
-                if (_s.PhaseElapsed >= StartupStepDelay)
-                    TransitionStartup(StartupPhase.WaitForSdk);
-                break;
-            case StartupPhase.WaitForSdk:
-                if (js_wd_is_ready() != 0)
-                {
-                    HostSetStatus("SDK ready"u8, StatusReady);
-                    SyncUserFromSdk();
-                    TransitionStartup(StartupPhase.FinalizeStartup);
-                }
-                else if (_s.PhaseElapsed >= StartupTimeout)
-                {
-                    ShowFatal(
-                        "Wavedash SDK did not become ready."u8,
-                        "WavedashJS.isReady() did not report ready before the startup timeout."u8
-                    );
-                }
-                break;
-            case StartupPhase.FinalizeStartup:
-                if (_s.PhaseElapsed >= StartupStepDelay)
-                    TransitionStartup(StartupPhase.Ready);
-                break;
-        }
-    }
-
-    // --- Gameplay -----------------------------------------------------------
-
-    static void ResetState(float width, float height)
-    {
-        _s = default;
-        _s.WorldW = width > MinWorldW ? width : DefaultWorldW;
-        _s.WorldH = height > MinWorldH ? height : DefaultWorldH;
-        _s.ServeDirection = 1f;
-        _s.Mode = GameMode.Serve;
-        _s.Phase = StartupPhase.PrepareGame;
-        _s.RngState = InitialRngState;
-    }
-
-    static void ClampEntitiesToWorld()
-    {
-        _s.PlayerY = Clamp(_s.PlayerY, 0f, _s.WorldH - PaddleH());
-        _s.AiY = Clamp(_s.AiY, 0f, _s.WorldH - PaddleH());
-        _s.BallX = Clamp(_s.BallX, 0f, _s.WorldW - BallSize());
-        _s.BallY = Clamp(_s.BallY, 0f, _s.WorldH - BallSize());
-    }
-
-    static void CenterPaddles()
-    {
-        float centered = (_s.WorldH - PaddleH()) * 0.5f;
-        _s.PlayerY = centered;
-        _s.AiY = centered;
-        _s.AiTargetY = _s.WorldH * 0.5f;
-    }
-
-    static void ResetBall()
-    {
-        float size = BallSize();
-        _s.BallX = (_s.WorldW - size) * 0.5f;
-        _s.BallY = (_s.WorldH - size) * 0.5f;
-        _s.BallVx = 0f;
-        _s.BallVy = 0f;
-    }
-
-    static void PrepareServe(float direction)
-    {
-        _s.ServeDirection = direction;
-        _s.Mode = GameMode.Serve;
-        _s.AiRetargetIn = 0f;
+        _serveDir = dir;
+        _serving = true;
+        _serveTimer = ServeDelay;
+        _aiRetargetIn = 0f;
         CenterPaddles();
         ResetBall();
     }
 
-    static void RestartMatch()
+    static void CenterPaddles()
     {
-        _s.PlayerScore = 0;
-        _s.AiScore = 0;
-        _s.Winner = 0;
-        PrepareServe(RandomUnit() < 0.5f ? -1f : 1f);
+        float cy = (_worldH - PaddleH()) * 0.5f;
+        _playerY = cy;
+        _aiY = cy;
+        _aiTargetY = _worldH * 0.5f;
+    }
+
+    static void ResetBall()
+    {
+        float s = BallSize();
+        _ballX = (_worldW - s) * 0.5f;
+        _ballY = (_worldH - s) * 0.5f;
+        _ballVx = 0f;
+        _ballVy = 0f;
     }
 
     static void StartServe()
     {
-        float sf = ScaleFactor();
-        _s.Mode = GameMode.Play;
-        _s.BallX = (_s.WorldW - BallSize()) * 0.5f;
-        _s.BallY = (_s.WorldH - BallSize()) * 0.5f;
-        _s.BallVx = _s.ServeDirection * 350f * sf;
-        _s.BallVy = (RandomUnit() * 2f - 1f) * 160f * sf;
-
-        if (Abs(_s.BallVy) < 70f * sf)
-            _s.BallVy = _s.BallVy < 0f ? -90f * sf : 90f * sf;
+        float sf = Scale();
+        _serving = false;
+        _ballX = (_worldW - BallSize()) * 0.5f;
+        _ballY = (_worldH - BallSize()) * 0.5f;
+        _ballVx = _serveDir * 350f * sf;
+        _ballVy = (Rng01() * 2f - 1f) * 160f * sf;
+        if (Abs(_ballVy) < 70f * sf)
+            _ballVy = _ballVy < 0f ? -90f * sf : 90f * sf;
     }
 
     static void AwardPoint(bool playerScored)
     {
         if (playerScored)
         {
-            _s.PlayerScore++;
-            if (_s.PlayerScore >= WinScore)
-            {
-                _s.Winner = 1;
-                _s.Mode = GameMode.GameOver;
-                ResetBall();
-                return;
-            }
+            _playerScore++;
             PrepareServe(1f);
         }
         else
         {
-            _s.AiScore++;
-            if (_s.AiScore >= WinScore)
-            {
-                _s.Winner = 2;
-                _s.Mode = GameMode.GameOver;
-                ResetBall();
-                return;
-            }
+            _aiScore++;
             PrepareServe(-1f);
         }
+        Interop.JsUpdateScore(_playerScore, _aiScore);
     }
 
-    static void UpdatePlayer(float dt, bool moveUp, bool moveDown)
+    static void ClampEntities()
     {
-        float direction = 0f;
-        if (moveUp) direction -= 1f;
-        if (moveDown) direction += 1f;
-        _s.PlayerY = Clamp(
-            _s.PlayerY + direction * PlayerSpeed() * dt,
-            0f, _s.WorldH - PaddleH()
-        );
+        _playerY = Clamp(_playerY, 0f, _worldH - PaddleH());
+        _aiY = Clamp(_aiY, 0f, _worldH - PaddleH());
+        _ballX = Clamp(_ballX, 0f, _worldW - BallSize());
+        _ballY = Clamp(_ballY, 0f, _worldH - BallSize());
     }
+
+    // --- Tick ---
+
+    public static void Tick(float dtRaw, bool up, bool down)
+    {
+        float dt = Clamp(dtRaw, 0f, 0.033f);
+
+        if (_serving)
+        {
+            _serveTimer -= dt;
+            if (_serveTimer <= 0f) StartServe();
+        }
+
+        UpdatePlayer(dt, up, down);
+        UpdateAi(dt);
+        UpdateBall(dt);
+        Render();
+    }
+
+    // --- Player ---
+
+    static void UpdatePlayer(float dt, bool up, bool down)
+    {
+        float dir = 0f;
+        if (up) dir -= 1f;
+        if (down) dir += 1f;
+        _playerY = Clamp(_playerY + dir * PlayerSpeed() * dt, 0f, _worldH - PaddleH());
+    }
+
+    // --- AI ---
 
     static void UpdateAi(float dt)
     {
-        float size = BallSize();
+        float s = BallSize();
         float ph = PaddleH();
 
-        if (_s.Mode == GameMode.Play && _s.BallVx > 0f)
+        if (!_serving && _ballVx > 0f)
         {
-            _s.AiRetargetIn -= dt;
-            if (_s.AiRetargetIn <= 0f)
+            _aiRetargetIn -= dt;
+            if (_aiRetargetIn <= 0f)
             {
-                float ballCx = _s.BallX + size * 0.5f;
-                float ballCy = _s.BallY + size * 0.5f;
-                float distToPaddle = AiX() - ballCx;
-                float leadTime = (_s.BallVx > 0f && distToPaddle > 0f)
-                    ? distToPaddle / _s.BallVx : 0f;
-                float projected = ReflectY(
-                    ballCy + _s.BallVy * leadTime,
-                    size * 0.5f,
-                    _s.WorldH - size * 0.5f
-                );
-                float missWindow = ph * (0.18f + RandomUnit() * 0.32f);
-
-                _s.AiRetargetIn = 0.08f + RandomUnit() * 0.09f;
-                _s.AiTargetY = projected + (RandomUnit() * 2f - 1f) * missWindow;
+                float bcx = _ballX + s * 0.5f;
+                float bcy = _ballY + s * 0.5f;
+                float dist = AiX() - bcx;
+                float lead = (_ballVx > 0f && dist > 0f) ? dist / _ballVx : 0f;
+                float proj = ReflectY(bcy + _ballVy * lead, s * 0.5f, _worldH - s * 0.5f);
+                float miss = ph * (0.18f + Rng01() * 0.32f);
+                _aiRetargetIn = 0.08f + Rng01() * 0.09f;
+                _aiTargetY = proj + (Rng01() * 2f - 1f) * miss;
             }
         }
         else
         {
-            _s.AiRetargetIn = 0f;
-            _s.AiTargetY = _s.WorldH * 0.5f;
+            _aiRetargetIn = 0f;
+            _aiTargetY = _worldH * 0.5f;
         }
 
-        float currentCenter = _s.AiY + ph * 0.5f;
-        float maxMove = AiSpeed() * dt;
-        float move = _s.AiTargetY - currentCenter;
-        if (move > maxMove) move = maxMove;
-        if (move < -maxMove) move = -maxMove;
-        _s.AiY = Clamp(_s.AiY + move, 0f, _s.WorldH - ph);
+        float cc = _aiY + ph * 0.5f;
+        float maxM = AiSpeed() * dt;
+        float mv = _aiTargetY - cc;
+        if (mv > maxM) mv = maxM;
+        if (mv < -maxM) mv = -maxM;
+        _aiY = Clamp(_aiY + mv, 0f, _worldH - ph);
     }
 
-    static void BounceFromPaddle(bool leftSide, float paddleTop, float paddleLeft)
+    // --- Ball ---
+
+    static void BounceFromPaddle(bool left, float paddleTop, float paddleLeft)
     {
-        float sf = ScaleFactor();
-        float size = BallSize();
+        float sf = Scale();
+        float s = BallSize();
         float ph = PaddleH();
         float impact = Clamp(
-            ((_s.BallY + size * 0.5f) - (paddleTop + ph * 0.5f)) / (ph * 0.5f),
+            ((_ballY + s * 0.5f) - (paddleTop + ph * 0.5f)) / (ph * 0.5f),
             -1f, 1f
         );
-        float nextSpeedX = Min(Abs(_s.BallVx) * 1.05f + 22f * sf, 820f * sf);
-        float nextSpeedY = Clamp(
-            _s.BallVy + impact * 250f * sf,
-            -560f * sf, 560f * sf
-        );
+        float nsx = Min(Abs(_ballVx) * 1.05f + 22f * sf, 820f * sf);
+        float nsy = Clamp(_ballVy + impact * 250f * sf, -560f * sf, 560f * sf);
+        if (Abs(nsy) < 80f * sf)
+            nsy = impact < 0f ? -100f * sf : 100f * sf;
+        nsy += (Rng01() * 2f - 1f) * 22f * sf;
 
-        if (Abs(nextSpeedY) < 80f * sf)
-            nextSpeedY = impact < 0f ? -100f * sf : 100f * sf;
-
-        nextSpeedY += (RandomUnit() * 2f - 1f) * 22f * sf;
-
-        if (leftSide)
+        if (left)
         {
-            _s.BallX = paddleLeft + PaddleW();
-            _s.BallVx = nextSpeedX;
+            _ballX = paddleLeft + PaddleW();
+            _ballVx = nsx;
         }
         else
         {
-            _s.BallX = paddleLeft - size;
-            _s.BallVx = -nextSpeedX;
+            _ballX = paddleLeft - s;
+            _ballVx = -nsx;
         }
-        _s.BallVy = nextSpeedY;
+        _ballVy = nsy;
     }
 
     static void UpdateBall(float dt)
     {
-        if (_s.Mode != GameMode.Play) return;
+        if (_serving) return;
 
-        float size = BallSize();
+        float s = BallSize();
         float pw = PaddleW();
         float ph = PaddleH();
         float px = PlayerX();
         float ax = AiX();
 
-        _s.BallX += _s.BallVx * dt;
-        _s.BallY += _s.BallVy * dt;
+        _ballX += _ballVx * dt;
+        _ballY += _ballVy * dt;
 
-        if (_s.BallY <= 0f)
-        {
-            _s.BallY = 0f;
-            _s.BallVy = Abs(_s.BallVy);
-        }
-        else if (_s.BallY + size >= _s.WorldH)
-        {
-            _s.BallY = _s.WorldH - size;
-            _s.BallVy = -Abs(_s.BallVy);
-        }
+        // Top/bottom bounce
+        if (_ballY <= 0f) { _ballY = 0f; _ballVy = Abs(_ballVy); }
+        else if (_ballY + s >= _worldH) { _ballY = _worldH - s; _ballVy = -Abs(_ballVy); }
 
-        if (_s.BallVx < 0f && _s.BallX <= px + pw && _s.BallX + size >= px
-            && _s.BallY + size >= _s.PlayerY && _s.BallY <= _s.PlayerY + ph)
-        {
-            BounceFromPaddle(true, _s.PlayerY, px);
-        }
-        else if (_s.BallVx > 0f && _s.BallX + size >= ax && _s.BallX <= ax + pw
-                 && _s.BallY + size >= _s.AiY && _s.BallY <= _s.AiY + ph)
-        {
-            BounceFromPaddle(false, _s.AiY, ax);
-        }
+        // Player paddle
+        if (_ballVx < 0f && _ballX <= px + pw && _ballX + s >= px
+            && _ballY + s >= _playerY && _ballY <= _playerY + ph)
+            BounceFromPaddle(true, _playerY, px);
+        // AI paddle
+        else if (_ballVx > 0f && _ballX + s >= ax && _ballX <= ax + pw
+                 && _ballY + s >= _aiY && _ballY <= _aiY + ph)
+            BounceFromPaddle(false, _aiY, ax);
 
-        if (_s.BallX + size < 0f)
-            AwardPoint(false);
-        else if (_s.BallX > _s.WorldW)
-            AwardPoint(true);
+        // Score
+        if (_ballX + s < 0f) AwardPoint(false);
+        else if (_ballX > _worldW) AwardPoint(true);
     }
 
-    // --- Text helpers -------------------------------------------------------
-
-    static ReadOnlySpan<byte> ScoreText(int score) => score switch
-    {
-        0 => "0"u8, 1 => "1"u8, 2 => "2"u8, 3 => "3"u8, 4 => "4"u8,
-        5 => "5"u8, 6 => "6"u8, 7 => "7"u8, 8 => "8"u8, _ => "9"u8,
-    };
-
-    static ReadOnlySpan<byte> CurrentBanner() => _s.Mode switch
-    {
-        GameMode.Serve => "PRESS SPACE TO SERVE"u8,
-        GameMode.GameOver when _s.Winner == 1 => "YOU WIN - PRESS SPACE TO PLAY AGAIN"u8,
-        GameMode.GameOver => "CPU WINS - PRESS SPACE TO TRY AGAIN"u8,
-        _ => "FIRST TO 7"u8,
-    };
-
-    static ReadOnlySpan<byte> CurrentSubtitle() => _s.Mode switch
-    {
-        GameMode.Serve => "W/S or arrow keys move the paddle"u8,
-        GameMode.Play => "Hard AI, but it can be beaten with angled returns"u8,
-        _ => "Mix in quick direction changes to beat the CPU"u8,
-    };
-
-    // --- Rendering ----------------------------------------------------------
+    // --- Render ---
 
     static void Render()
     {
-        float sf = ScaleFactor();
-        float size = BallSize();
+        float sf = Scale();
+        float s = BallSize();
         float pw = PaddleW();
         float ph = PaddleH();
 
-        ClearScreen(Background);
+        // Background #111 → (17,17,17)
+        Interop.JsClear(17, 17, 17);
 
-        for (float dashY = 28f * sf; dashY < _s.WorldH - 28f * sf; dashY += 32f * sf)
-            FillRect(_s.WorldW * 0.5f - 3f * sf, dashY, 6f * sf, 18f * sf, CenterDash);
+        // Center dashes
+        for (float dy = 28f * sf; dy < _worldH - 28f * sf; dy += 32f * sf)
+            Interop.JsFillRect(_worldW * 0.5 - 3.0 * sf, dy, 6.0 * sf, 18.0 * sf, 119, 138, 160);
 
-        FillRect(0f, 0f, _s.WorldW, 6f * sf, ArenaEdge);
-        FillRect(0f, _s.WorldH - 6f * sf, _s.WorldW, 6f * sf, ArenaEdge);
+        // Top/bottom edges
+        Interop.JsFillRect(0, 0, _worldW, 6.0 * sf, 30, 30, 30);
+        Interop.JsFillRect(0, _worldH - 6.0 * sf, _worldW, 6.0 * sf, 30, 30, 30);
 
-        FillRect(PlayerX(), _s.PlayerY, pw, ph, PlayerColor);
-        FillRect(AiX(), _s.AiY, pw, ph, CpuColor);
-        FillRect(_s.BallX, _s.BallY, size, size, BallColor);
+        // Player paddle (cyan: 92,227,255)
+        Interop.JsFillRect(PlayerX(), _playerY, pw, ph, 92, 227, 255);
 
-        DrawText("PLAYER"u8, _s.WorldW * 0.20f, 46f * sf, 18f * sf, LabelColor);
-        DrawText("CPU"u8, _s.WorldW * 0.73f, 46f * sf, 18f * sf, LabelColor);
-        DrawText(ScoreText(_s.PlayerScore), _s.WorldW * 0.41f, 78f * sf, 54f * sf, ScorePlayer);
-        DrawText(ScoreText(_s.AiScore), _s.WorldW * 0.55f, 78f * sf, 54f * sf, ScoreCpu);
+        // AI paddle (orange: 255,181,71)
+        Interop.JsFillRect(AiX(), _aiY, pw, ph, 255, 181, 71);
 
-        FillRect(_s.WorldW * 0.19f, _s.WorldH * 0.74f, _s.WorldW * 0.62f, 76f * sf, BannerPanel);
-
-        DrawText(CurrentBanner(), _s.WorldW * 0.24f, _s.WorldH * 0.80f, 22f * sf, BannerText);
-        DrawText(CurrentSubtitle(), _s.WorldW * 0.24f, _s.WorldH * 0.86f, 14f * sf, LabelColor);
-    }
-
-    // --- WASM exports -------------------------------------------------------
-
-    [UnmanagedCallersOnly(EntryPoint = "wd_init")]
-    public static void WdInit(float width, float height)
-    {
-        ResetState(width, height);
-        RestartMatch();
-        TransitionStartup(StartupPhase.PrepareGame);
-        Render();
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "wd_resize")]
-    public static void WdResize(float width, float height)
-    {
-        _s.WorldW = width > MinWorldW ? width : _s.WorldW;
-        _s.WorldH = height > MinWorldH ? height : _s.WorldH;
-        ClampEntitiesToWorld();
-        Render();
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "wd_tick")]
-    public static void WdTick(float dtSeconds, byte moveUp, byte moveDown, byte actionPressed)
-    {
-        float dt = Clamp(dtSeconds, 0f, 0.033f);
-
-        if (CheckHostError()) return;
-        if (_s.Phase == StartupPhase.Fatal) return;
-
-        if (_s.Phase != StartupPhase.Ready)
-        {
-            UpdateStartup(dt);
-            Render();
-            return;
-        }
-
-        if (actionPressed != 0)
-        {
-            if (_s.Mode == GameMode.Serve)
-                StartServe();
-            else if (_s.Mode == GameMode.GameOver)
-                RestartMatch();
-        }
-
-        UpdatePlayer(dt, moveUp != 0, moveDown != 0);
-        UpdateAi(dt);
-        UpdateBall(dt);
-        Render();
+        // Ball (white: 248,250,252)
+        Interop.JsFillRect(_ballX, _ballY, s, s, 248, 250, 252);
     }
 }

@@ -2,14 +2,10 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-    <PublishAot>true</PublishAot>
-    <NativeLib>Shared</NativeLib>
+    <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <InvariantGlobalization>true</InvariantGlobalization>
     <AssemblyName>Pong</AssemblyName>
-    <OptimizationPreference>Size</OptimizationPreference>
-    <IlcDisableReflection>true</IlcDisableReflection>
-    <StackTraceSupport>false</StackTraceSupport>
-    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <WasmMainJSPath>main.js</WasmMainJSPath>
   </PropertyGroup>
 </Project>
