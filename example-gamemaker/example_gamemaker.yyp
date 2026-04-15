@@ -1,0 +1,112 @@
+{
+  "$GMProject": "",
+  "%Name": "example_gamemaker",
+  "resourceType": "GMProject",
+  "resourceVersion": "2.0",
+  "name": "example_gamemaker",
+  "AudioGroups": [
+    {
+      "resourceType": "GMAudioGroup",
+      "resourceVersion": "2.0",
+      "name": "audiogroup_default",
+      "targets": -1
+    }
+  ],
+  "configs": {
+    "children": [],
+    "name": "Default",
+    "resourceType": "GMProjectConfigs",
+    "resourceVersion": "2.0"
+  },
+  "defaultScriptType": 1,
+  "Folders": [
+    {
+      "resourceType": "GMFolder",
+      "resourceVersion": "2.0",
+      "name": "Extensions",
+      "folderPath": "folders/Extensions.yy"
+    },
+    {
+      "resourceType": "GMFolder",
+      "resourceVersion": "2.0",
+      "name": "Objects",
+      "folderPath": "folders/Objects.yy"
+    },
+    {
+      "resourceType": "GMFolder",
+      "resourceVersion": "2.0",
+      "name": "Rooms",
+      "folderPath": "folders/Rooms.yy"
+    },
+    {
+      "resourceType": "GMFolder",
+      "resourceVersion": "2.0",
+      "name": "Scripts",
+      "folderPath": "folders/Scripts.yy"
+    }
+  ],
+  "IncludedFiles": [],
+  "isEcma": false,
+  "LibraryEmitters": [],
+  "MetaData": {
+    "IDEVersion": "2024.8.1.218"
+  },
+  "resources": [
+    {
+      "id": {
+        "name": "ext_wavedash",
+        "path": "extensions/ext_wavedash/ext_wavedash.yy"
+      }
+    },
+    {
+      "id": {
+        "name": "scr_wavedash",
+        "path": "scripts/scr_wavedash/scr_wavedash.yy"
+      }
+    },
+    {
+      "id": {
+        "name": "scr_pong",
+        "path": "scripts/scr_pong/scr_pong.yy"
+      }
+    },
+    {
+      "id": {
+        "name": "obj_game",
+        "path": "objects/obj_game/obj_game.yy"
+      }
+    },
+    {
+      "id": {
+        "name": "rm_main",
+        "path": "rooms/rm_main/rm_main.yy"
+      }
+    }
+  ],
+  "RoomOrderNodes": [
+    {
+      "resourceType": "GMRoomOrderNode",
+      "resourceVersion": "2.0",
+      "roomId": {
+        "name": "rm_main",
+        "path": "rooms/rm_main/rm_main.yy"
+      }
+    }
+  ],
+  "TextureGroups": [
+    {
+      "resourceType": "GMTextureGroup",
+      "resourceVersion": "2.0",
+      "name": "Default",
+      "autocrop": true,
+      "border": 2,
+      "compressFormat": "bz2",
+      "directory": "",
+      "groupParent": null,
+      "isScaled": true,
+      "loadType": "default",
+      "mipsToGenerate": 0,
+      "targets": -1
+    }
+  ]
+}
