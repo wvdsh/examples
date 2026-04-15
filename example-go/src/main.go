@@ -622,13 +622,11 @@ func main() {
 
 	log("Initializing Wavedash SDK")
 	sdk.Call("init")
-	sdk.Call("updateLoadProgressZeroToOne", 0.5)
+	sdk.Call("updateLoadProgressZeroToOne", 1)
 
 	log("Creating Canvas 2D pong game")
 	game := newPongGame(sh.canvas, sh.playerScore, sh.aiScore)
 	game.setup()
-	sdk.Call("updateLoadProgressZeroToOne", 1)
-	sdk.Call("loadComplete")
 
 	log("Starting game")
 	game.start(input)

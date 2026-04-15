@@ -1,7 +1,6 @@
 const WavedashJS = await window.WavedashJS;
 
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 
 /* ── Canvas & context ─────────────────────────────── */
 
@@ -17,7 +16,6 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 
 /* ── Constants ────────────────────────────────────── */
 
@@ -45,7 +43,6 @@ let serveDir = Math.random() < 0.5 ? 1 : -1;
 const playerScoreEl = document.getElementById("playerScore");
 const aiScoreEl = document.getElementById("aiScore");
 
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 
 /* ── Input ────────────────────────────────────────── */
 
@@ -192,7 +189,6 @@ function update(dt) {
 /* ── Main loop ────────────────────────────────────── */
 
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
 
 let last = performance.now();
 (function loop(now) {

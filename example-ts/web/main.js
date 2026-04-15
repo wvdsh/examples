@@ -1,7 +1,6 @@
 // src/main.ts
 var WavedashJS = await window.WavedashJS;
 WavedashJS.init({ debug: true });
-WavedashJS.updateLoadProgressZeroToOne(0.2);
 var canvas = document.getElementById("gameCanvas");
 var ctx = canvas.getContext("2d");
 function resize() {
@@ -12,7 +11,6 @@ function resize() {
 }
 resize();
 window.addEventListener("resize", resize);
-WavedashJS.updateLoadProgressZeroToOne(0.5);
 var FIELD_W = 16;
 var FIELD_H = 9;
 var PADDLE_W = 0.35;
@@ -37,7 +35,6 @@ var serving = true;
 var serveDir = Math.random() < 0.5 ? 1 : -1;
 var playerScoreEl = document.getElementById("playerScore");
 var aiScoreEl = document.getElementById("aiScore");
-WavedashJS.updateLoadProgressZeroToOne(0.8);
 var input = { up: false, down: false };
 var MOVE_KEYS = /* @__PURE__ */ new Set(["KeyW", "ArrowUp", "KeyS", "ArrowDown"]);
 window.addEventListener("keydown", (e) => {
@@ -160,7 +157,6 @@ function update(dt) {
   }
 }
 WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.loadComplete();
 var last = performance.now();
 function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1e3);
