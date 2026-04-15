@@ -1,0 +1,6 @@
+game_id = "replace-with-your-game-id"
+upload_dir = "./build/web"
+
+[custom]
+version = "0.1.0"
+entrypoint = "game.js"
