@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>example-cpp</title>
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+      #renderCanvas { width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+      #scoreboard {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 48px;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        user-select: none;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="renderCanvas"></canvas>
+    <div id="scoreboard"><span id="playerScore">0</span><span id="aiScore">0</span></div>
+    <script type="module">
+      // Canvas context before emcc module loads
+      const c = document.getElementById("renderCanvas");
+      const dpr = window.devicePixelRatio || 1;
+      c.width = window.innerWidth * dpr;
+      c.height = window.innerHeight * dpr;
+      c.style.width = window.innerWidth + "px";
+      c.style.height = window.innerHeight + "px";
+      window.__ctx = c.getContext("2d");
+      window.__ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Resolve the WavedashJS promise injected by wavedash dev
+      window.WavedashJS = await window.WavedashJS;
+
+      // Dynamically load the emcc-generated module
+      const s = document.createElement("script");
+      s.src = "./game.js";
+      document.body.appendChild(s);
+    </script>
+  </body>
+</html>
