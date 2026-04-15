@@ -1,0 +1,13 @@
+[package]
+name = "pong"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bevy = "0.18.1"
+wasm-bindgen = "0.2"
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = "s"
+strip = "debuginfo"
