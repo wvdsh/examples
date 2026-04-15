@@ -4,36 +4,29 @@ const GameMode = enum(u8) {
     game_over,
 };
 
-const StartupPhase = enum(u8) {
-    prepare_game,
-    init_sdk,
-    wait_for_sdk,
-    finalize_startup,
-    ready,
-    fatal,
-};
+// --- Imports from JS host ---------------------------------------------------
 
 extern fn js_clear(r: u8, g: u8, b: u8, a: u8) void;
 extern fn js_fill_rect(x: f32, y: f32, width: f32, height: f32, r: u8, g: u8, b: u8, a: u8) void;
 extern fn js_draw_text(ptr: [*]const u8, len: usize, x: f32, y: f32, size: f32, r: u8, g: u8, b: u8, a: u8) void;
-extern fn js_host_set_loading(step_ptr: [*]const u8, step_len: usize, detail_ptr: [*]const u8, detail_len: usize, progress: f32) void;
-extern fn js_host_set_status(ptr: [*]const u8, len: usize, r: u8, g: u8, b: u8, a: u8) void;
-extern fn js_host_set_user(ptr: [*]const u8, len: usize) void;
-extern fn js_host_hide_overlay() void;
-extern fn js_host_show_fatal(message_ptr: [*]const u8, message_len: usize, detail_ptr: [*]const u8, detail_len: usize) void;
-extern fn js_host_has_error() u8;
-extern fn js_host_write_error(ptr: [*]u8, max_len: usize) usize;
-extern fn js_wd_init(debug: u8, defer_events: u8) void;
-extern fn js_wd_is_ready() u8;
-extern fn js_wd_update_load_progress(progress: f32) void;
-extern fn js_wd_ready_for_events() void;
-extern fn js_wd_load_complete() void;
-extern fn js_wd_write_user_name(ptr: [*]u8, max_len: usize) usize;
+extern fn js_update_score(player: i32, ai: i32) void;
 
+// Wavedash SDK -- matches bevy's two calls.
+extern fn wavedash_init() void;
+extern fn wavedash_update_progress(p: f32) void;
+
+// --- Constants --------------------------------------------------------------
+
+const default_world_w: f32 = 960.0;
+const default_world_h: f32 = 540.0;
+const min_world_w: f32 = 320.0;
+const min_world_h: f32 = 240.0;
 const win_score: i32 = 7;
 
-var world_w: f32 = 960.0;
-var world_h: f32 = 540.0;
+// --- Game state (module-level) ----------------------------------------------
+
+var world_w: f32 = default_world_w;
+var world_h: f32 = default_world_h;
 
 var player_y: f32 = 0.0;
 var ai_y: f32 = 0.0;
@@ -50,13 +43,10 @@ var player_score: i32 = 0;
 var ai_score: i32 = 0;
 var winner: i32 = 0;
 var mode: GameMode = .serve;
-var startup_phase: StartupPhase = .prepare_game;
-var startup_phase_elapsed: f32 = 0.0;
-var fatal_visible = false;
 
 var rng_state: u32 = 0x13572468;
-var user_name_buf: [64]u8 = undefined;
-var host_error_buf: [192]u8 = undefined;
+
+// --- Math helpers -----------------------------------------------------------
 
 fn absf(value: f32) f32 {
     return if (value < 0.0) -value else value;
@@ -72,9 +62,11 @@ fn minf(a: f32, b: f32) f32 {
     return if (a < b) a else b;
 }
 
+// --- Layout helpers ---------------------------------------------------------
+
 fn scale_factor() f32 {
-    const sx = world_w / 960.0;
-    const sy = world_h / 540.0;
+    const sx = world_w / default_world_w;
+    const sy = world_h / default_world_h;
     return if (sx < sy) sx else sy;
 }
 
@@ -125,163 +117,17 @@ fn reflect_y(value: f32, min_y: f32, max_y: f32) f32 {
     return clampf(reflected, min_y, max_y);
 }
 
+// --- Draw helpers -----------------------------------------------------------
+
 fn draw_text(text: []const u8, x: f32, y: f32, size: f32, r: u8, g: u8, b: u8, a: u8) void {
     js_draw_text(text.ptr, text.len, x, y, size, r, g, b, a);
 }
 
-fn score_text(score: i32) []const u8 {
-    return switch (score) {
-        0 => "0",
-        1 => "1",
-        2 => "2",
-        3 => "3",
-        4 => "4",
-        5 => "5",
-        6 => "6",
-        7 => "7",
-        8 => "8",
-        else => "9",
-    };
+fn sync_score() void {
+    js_update_score(player_score, ai_score);
 }
 
-fn host_set_loading(step: []const u8, detail: []const u8, progress: f32) void {
-    js_host_set_loading(step.ptr, step.len, detail.ptr, detail.len, progress);
-    js_wd_update_load_progress(progress);
-}
-
-fn host_set_status(text: []const u8, r: u8, g: u8, b: u8, a: u8) void {
-    js_host_set_status(text.ptr, text.len, r, g, b, a);
-}
-
-fn host_set_user(name: []const u8) void {
-    js_host_set_user(name.ptr, name.len);
-}
-
-fn sync_user_from_sdk() void {
-    const len = js_wd_write_user_name(&user_name_buf, user_name_buf.len);
-    if (len > 0) {
-        host_set_user(user_name_buf[0..len]);
-    } else {
-        host_set_user("");
-    }
-}
-
-fn show_fatal(message: []const u8, detail: []const u8) void {
-    if (!fatal_visible) {
-        js_host_show_fatal(message.ptr, message.len, detail.ptr, detail.len);
-        fatal_visible = true;
-    }
-    startup_phase = .fatal;
-}
-
-fn show_host_error() void {
-    const len = js_host_write_error(&host_error_buf, host_error_buf.len);
-    const detail = if (len > 0) host_error_buf[0..len] else "Unknown host error.";
-    show_fatal("The Zig startup bridge hit an error.", detail);
-}
-
-fn check_host_error() bool {
-    if (js_host_has_error() == 0) {
-        return false;
-    }
-
-    show_host_error();
-    return true;
-}
-
-fn transition_startup(next: StartupPhase) void {
-    startup_phase = next;
-    startup_phase_elapsed = 0.0;
-
-    switch (next) {
-        .prepare_game => {
-            host_set_status("SDK pending", 148, 163, 184, 255);
-            host_set_user("");
-            host_set_loading(
-                "Preparing Zig game state",
-                "Handing Wavedash startup control to Zig.",
-                0.42,
-            );
-        },
-        .init_sdk => {
-            host_set_status("SDK starting", 250, 204, 21, 255);
-            host_set_loading(
-                "Initializing Wavedash SDK",
-                "Calling imported Wavedash bindings from Zig.",
-                0.58,
-            );
-            js_wd_init(1, 1);
-        },
-        .wait_for_sdk => {
-            host_set_loading(
-                "Waiting for SDK readiness",
-                "Polling WavedashJS.isReady() before gameplay begins.",
-                0.82,
-            );
-        },
-        .finalize_startup => {
-            host_set_loading(
-                "Finalizing game startup",
-                "Preparing the first playable Pong serve state.",
-                0.96,
-            );
-        },
-        .ready => {
-            host_set_loading(
-                "Loading complete",
-                "Releasing deferred SDK events and handing over to gameplay.",
-                1.0,
-            );
-            js_wd_ready_for_events();
-            js_wd_load_complete();
-            js_host_hide_overlay();
-        },
-        .fatal => {},
-    }
-}
-
-fn update_startup(dt: f32) void {
-    if (startup_phase == .ready or startup_phase == .fatal) {
-        return;
-    }
-
-    if (check_host_error()) {
-        return;
-    }
-
-    startup_phase_elapsed += dt;
-
-    switch (startup_phase) {
-        .prepare_game => {
-            if (startup_phase_elapsed >= 0.08) {
-                transition_startup(.init_sdk);
-            }
-        },
-        .init_sdk => {
-            if (startup_phase_elapsed >= 0.08) {
-                transition_startup(.wait_for_sdk);
-            }
-        },
-        .wait_for_sdk => {
-            if (js_wd_is_ready() != 0) {
-                host_set_status("SDK ready", 34, 197, 94, 255);
-                sync_user_from_sdk();
-                transition_startup(.finalize_startup);
-            } else if (startup_phase_elapsed >= 6.0) {
-                show_fatal(
-                    "Wavedash SDK did not become ready.",
-                    "WavedashJS.isReady() did not report ready before the startup timeout.",
-                );
-            }
-        },
-        .finalize_startup => {
-            if (startup_phase_elapsed >= 0.08) {
-                transition_startup(.ready);
-            }
-        },
-        .ready, .fatal => {},
-    }
-}
+// --- Gameplay ---------------------------------------------------------------
 
 fn center_paddles() void {
     const centered = (world_h - paddle_h()) * 0.5;
@@ -304,6 +150,7 @@ fn prepare_serve(direction: f32) void {
     ai_retarget_in = 0.0;
     center_paddles();
     reset_ball();
+    start_serve();
 }
 
 fn restart_match() void {
@@ -311,6 +158,7 @@ fn restart_match() void {
     ai_score = 0;
     winner = 0;
     prepare_serve(if (random_unit() < 0.5) -1.0 else 1.0);
+    sync_score();
 }
 
 fn start_serve() void {
@@ -329,23 +177,12 @@ fn start_serve() void {
 fn award_point(player_scored: bool) void {
     if (player_scored) {
         player_score += 1;
-        if (player_score >= win_score) {
-            winner = 1;
-            mode = .game_over;
-            reset_ball();
-            return;
-        }
         prepare_serve(1.0);
     } else {
         ai_score += 1;
-        if (ai_score >= win_score) {
-            winner = 2;
-            mode = .game_over;
-            reset_ball();
-            return;
-        }
         prepare_serve(-1.0);
     }
+    sync_score();
 }
 
 fn update_player(dt: f32, move_up: bool, move_down: bool) void {
@@ -388,13 +225,13 @@ fn update_ai(dt: f32) void {
     }
 
     const current_center = ai_y + ph * 0.5;
-    var move = ai_target_y - current_center;
+    var movement = ai_target_y - current_center;
     const max_move = ai_speed() * dt;
 
-    if (move > max_move) move = max_move;
-    if (move < -max_move) move = -max_move;
+    if (movement > max_move) movement = max_move;
+    if (movement < -max_move) movement = -max_move;
 
-    ai_y = clampf(ai_y + move, 0.0, world_h - ph);
+    ai_y = clampf(ai_y + movement, 0.0, world_h - ph);
 }
 
 fn bounce_from_paddle(left_side: bool, paddle_top: f32, paddle_left: f32) void {
@@ -471,6 +308,8 @@ fn update_ball(dt: f32) void {
     }
 }
 
+// --- Rendering --------------------------------------------------------------
+
 fn current_banner() []const u8 {
     return switch (mode) {
         .serve => "PRESS SPACE TO SERVE",
@@ -493,42 +332,51 @@ fn render() void {
     const pw = paddle_w();
     const ph = paddle_h();
 
+    // Background
     js_clear(3, 7, 18, 255);
 
+    // Center dashes
     var dash_y = 28.0 * sf;
     while (dash_y < world_h - 28.0 * sf) : (dash_y += 32.0 * sf) {
         js_fill_rect(world_w * 0.5 - 3.0 * sf, dash_y, 6.0 * sf, 18.0 * sf, 119, 138, 160, 110);
     }
 
+    // Top/bottom edges
     js_fill_rect(0.0, 0.0, world_w, 6.0 * sf, 8, 15, 36, 255);
     js_fill_rect(0.0, world_h - 6.0 * sf, world_w, 6.0 * sf, 8, 15, 36, 255);
 
+    // Paddles and ball
     js_fill_rect(player_x(), player_y, pw, ph, 92, 227, 255, 255);
     js_fill_rect(ai_x(), ai_y, pw, ph, 255, 181, 71, 255);
     js_fill_rect(ball_x, ball_y, size, size, 248, 250, 252, 255);
 
-    draw_text("PLAYER", world_w * 0.20, 46.0 * sf, 18.0 * sf, 148, 163, 184, 255);
-    draw_text("CPU", world_w * 0.73, 46.0 * sf, 18.0 * sf, 148, 163, 184, 255);
-    draw_text(score_text(player_score), world_w * 0.41, 78.0 * sf, 54.0 * sf, 230, 244, 255, 255);
-    draw_text(score_text(ai_score), world_w * 0.55, 78.0 * sf, 54.0 * sf, 255, 237, 213, 255);
-
-    js_fill_rect(world_w * 0.19, world_h * 0.74, world_w * 0.62, 76.0 * sf, 8, 15, 30, 170);
-    draw_text(current_banner(), world_w * 0.24, world_h * 0.80, 22.0 * sf, 226, 232, 240, 255);
-    draw_text(current_subtitle(), world_w * 0.24, world_h * 0.86, 14.0 * sf, 148, 163, 184, 255);
 }
 
+fn init_dimension(measured: f32, minimum: f32, fallback: f32) f32 {
+    return if (measured > minimum) measured else fallback;
+}
+
+fn resize_dimension(measured: f32, minimum: f32, current: f32) f32 {
+    return if (measured > minimum) measured else current;
+}
+
+// --- WASM exports -----------------------------------------------------------
+
 export fn wd_init(width: f32, height: f32) void {
-    world_w = if (width > 320.0) width else 960.0;
-    world_h = if (height > 240.0) height else 540.0;
-    fatal_visible = false;
+    world_w = init_dimension(width, min_world_w, default_world_w);
+    world_h = init_dimension(height, min_world_h, default_world_h);
     restart_match();
-    transition_startup(.prepare_game);
+
+    // Wavedash SDK -- same two calls as example-bevy.
+    wavedash_update_progress(1.0);
+    wavedash_init();
+
     render();
 }
 
 export fn wd_resize(width: f32, height: f32) void {
-    world_w = if (width > 320.0) width else world_w;
-    world_h = if (height > 240.0) height else world_h;
+    world_w = resize_dimension(width, min_world_w, world_w);
+    world_h = resize_dimension(height, min_world_h, world_h);
 
     player_y = clampf(player_y, 0.0, world_h - paddle_h());
     ai_y = clampf(ai_y, 0.0, world_h - paddle_h());
@@ -541,27 +389,7 @@ export fn wd_resize(width: f32, height: f32) void {
 export fn wd_tick(dt_seconds: f32, move_up: u8, move_down: u8, action_pressed: u8) void {
     const dt = clampf(dt_seconds, 0.0, 0.033);
 
-    if (check_host_error()) {
-        return;
-    }
-
-    if (startup_phase == .fatal) {
-        return;
-    }
-
-    if (startup_phase != .ready) {
-        update_startup(dt);
-        render();
-        return;
-    }
-
-    if (action_pressed != 0) {
-        if (mode == .serve) {
-            start_serve();
-        } else if (mode == .game_over) {
-            restart_match();
-        }
-    }
+    _ = action_pressed;
 
     update_player(dt, move_up != 0, move_down != 0);
     update_ai(dt);

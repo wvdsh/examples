@@ -20,5 +20,6 @@ zig build-exe "$ROOT/src/main.zig" \
   -femit-bin="$OUT_DIR/game.wasm"
 
 cp "$ROOT/web/game.js" "$OUT_DIR/game.js"
+cp "$ROOT/web/index.html" "$OUT_DIR/index.html"
 
 printf '%s\n' "Built web files in $OUT_DIR"
