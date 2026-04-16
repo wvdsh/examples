@@ -1,4 +1,4 @@
-game_id = "j97f1s6hep0cxtezntq3es1qk984txfz"
+game_id = "your_game_id_here"
 upload_dir = "."
 
 [godot]
