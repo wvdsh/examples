@@ -1,10 +1,16 @@
-Install [Node.js](https://nodejs.org/)
+# TypeScript
 
-Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+A minimal TypeScript Pong game on Wavedash, compiled with esbuild.
 
-Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-ts/wavedash.toml)
+## Prerequisites
 
-Run
+- [Node.js](https://nodejs.org/)
+- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+
+## Quick start
+
+Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID, then:
+
 ```
 npm install
 npm run build

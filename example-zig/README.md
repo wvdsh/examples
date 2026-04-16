@@ -1,10 +1,16 @@
-Install [Zig](https://ziglang.org/download/)
+# Zig
 
-Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+A minimal Zig Pong game on Wavedash, compiled to WebAssembly.
 
-Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-zig/wavedash.toml)
+## Prerequisites
 
-Run
+- [Zig](https://ziglang.org/download/)
+- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+
+## Quick start
+
+Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID, then:
+
 ```
 ./build.sh
 wavedash dev

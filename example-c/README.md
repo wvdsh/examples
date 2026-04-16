@@ -1,10 +1,16 @@
-Install [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) and activate it (`source ./emsdk_env.sh`)
+# C
 
-Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+A minimal C Pong game on Wavedash, compiled to WebAssembly via Emscripten.
 
-Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-c/wavedash.toml)
+## Prerequisites
 
-Run
+- [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) — activate with `source ./emsdk_env.sh` before building
+- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+
+## Quick start
+
+Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID, then:
+
 ```
 ./build.sh
 wavedash dev

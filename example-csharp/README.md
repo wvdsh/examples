@@ -1,12 +1,22 @@
-Install [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+# C#
 
-Install the WASM workload: `dotnet workload install wasm-tools-net9`
+A minimal C# Pong game on Wavedash, compiled to WebAssembly via the .NET WASM runtime (`[JSImport]`/`[JSExport]`).
 
-Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+## Prerequisites
 
-Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-csharp/wavedash.toml)
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
 
-Run
+## Quick start
+
+The first time you build, install the .NET WASM build tools workload:
+
+```
+dotnet workload install wasm-tools-net9
+```
+
+Then replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID and run:
+
 ```
 ./build.sh
 wavedash dev
