@@ -1,16 +1,15 @@
 local M = {}
 
+local function run(code)
+    if html5 then html5.run(code) end
+end
+
 function M.init()
-    if not html5 then return end
-    html5.run("window.WavedashJS && window.WavedashJS.init()")
+    run("window.WavedashJS && window.WavedashJS.init()")
 end
 
 function M.update_load_progress(fraction)
-    if not html5 then return end
-    html5.run(
-        "window.WavedashJS && window.WavedashJS.updateLoadProgressZeroToOne("
-        .. tostring(fraction) .. ")"
-    )
+    run("window.WavedashJS && window.WavedashJS.updateLoadProgressZeroToOne(" .. tostring(fraction) .. ")")
 end
 
 return M
