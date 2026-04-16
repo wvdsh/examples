@@ -1,6 +1,5 @@
 const WavedashJS = await window.WavedashJS;
 
-WavedashJS.init({ debug: true });
 
 /* ── PlayCanvas application ─────────────────────────────────── */
 
@@ -126,6 +125,7 @@ resetBall(1);
 /* ── Update loop ─────────────────────────────────────────────── */
 
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });
 
 app.on("update", (rawDt) => {
   const dt = Math.min(rawDt, 0.05);

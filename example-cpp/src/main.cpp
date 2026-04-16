@@ -283,8 +283,6 @@ static void tick() {
 // --- Entry point ------------------------------------------------------------
 
 int main() {
-    wavedash_init();
-
     resize_canvas();
 
     // Register input handlers (via EM_ASM since they set up event listeners)
@@ -324,6 +322,7 @@ int main() {
     g_state.reset_ball();
 
     wavedash_progress(1.0);
+    wavedash_init();
 
     g_last_time = emscripten_get_now() / 1000.0;
     emscripten_set_main_loop(tick, 0, 1);

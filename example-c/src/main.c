@@ -221,8 +221,8 @@ int main(void) {
     setup_canvas();
     setup_input();
 
-    wavedash_init();
     wavedash_progress(1.0);
+    wavedash_init();
 
     new_game();
     last_time = emscripten_get_now() / 1000.0;

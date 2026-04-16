@@ -12,7 +12,6 @@ declare global {
 
 const WavedashJS = await window.WavedashJS;
 
-WavedashJS.init({ debug: true });
 
 /* ── Canvas & context ─────────────────────────────── */
 
@@ -200,6 +199,7 @@ function update(dt: number): void {
 /* ── Main loop ────────────────────────────────────── */
 
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });
 
 let last = performance.now();
 function loop(now: number): void {

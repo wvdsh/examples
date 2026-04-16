@@ -1,6 +1,5 @@
 const WavedashJS = await window.WavedashJS;
 
-WavedashJS.init({ debug: true });
 
 /* ── Canvas & context ─────────────────────────────── */
 
@@ -189,6 +188,7 @@ function update(dt) {
 /* ── Main loop ────────────────────────────────────── */
 
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });
 
 let last = performance.now();
 (function loop(now) {

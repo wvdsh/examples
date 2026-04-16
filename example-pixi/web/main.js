@@ -1,6 +1,5 @@
 const WavedashJS = await window.WavedashJS;
 
-WavedashJS.init({ debug: true });
 
 /* ── constants ─────────────────────────────────────────────── */
 
@@ -253,6 +252,7 @@ recalcScale();
 draw();
 
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });
 
 app.ticker.add((ticker) => {
   const dt = Math.min(0.05, ticker.deltaMS / 1000);

@@ -1,6 +1,5 @@
 const WavedashJS = await window.WavedashJS;
 
-WavedashJS.init({ debug: true });
 
 /* ── constants ── */
 const W = 800, H = 450;
@@ -145,3 +144,4 @@ const game = new Phaser.Game({
 });
 
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });

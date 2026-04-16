@@ -1,7 +1,5 @@
 const WavedashJS = await window.WavedashJS;
 
-WavedashJS.init({ debug: true });
-
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
 
@@ -52,6 +50,7 @@ function resetBall(direction) {
 }
 
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });
 
 engine.runRenderLoop(() => {
   if (input.up) player.position.y += PADDLE_SPEED;

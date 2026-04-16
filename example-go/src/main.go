@@ -620,13 +620,13 @@ func main() {
 	input := &inputState{}
 	wireInput(input)
 
-	log("Initializing Wavedash SDK")
-	sdk.Call("init")
-	sdk.Call("updateLoadProgressZeroToOne", 1)
-
 	log("Creating Canvas 2D pong game")
 	game := newPongGame(sh.canvas, sh.playerScore, sh.aiScore)
 	game.setup()
+
+	log("Initializing Wavedash SDK")
+	sdk.Call("updateLoadProgressZeroToOne", 1)
+	sdk.Call("init")
 
 	log("Starting game")
 	game.start(input)

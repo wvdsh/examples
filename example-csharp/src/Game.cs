@@ -131,8 +131,8 @@ static class Game
         _worldH = h > MinH ? h : DefaultH;
         _rng = InitialRng;
 
-        Interop.WavedashInit();
         Interop.WavedashProgress(1.0);
+        Interop.WavedashInit();
 
         RestartMatch();
         Render();
