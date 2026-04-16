@@ -1,13 +1,21 @@
-Install [Defold](https://defold.com/) or [Java](https://adoptium.net/) + [bob.jar](https://github.com/defold/defold/releases)
+# Defold
 
-Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+A minimal Defold Pong game on Wavedash, exported to HTML5.
 
-Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-defold/wavedash.toml)
+## Prerequisites
 
-Run
+- [Defold editor](https://defold.com/) (GUI build), **or** [Java](https://adoptium.net/) + [bob.jar](https://github.com/defold/defold/releases) (CLI build)
+- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+
+## Quick start
+
+Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID, then either:
+
+- **Editor**: Open the project in Defold and pick **Project → Bundle → HTML5 Application**, set output directory to `dist/`.
+- **CLI**: Run `./build.sh` (requires `bob.jar` in the project root).
+
+Then:
+
 ```
-./build.sh
 wavedash dev
 ```
-
-Or export via Defold's editor: Project → Bundle → HTML5 Application, output dir `build/web`.

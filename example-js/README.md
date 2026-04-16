@@ -1,8 +1,15 @@
-Install [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+# JavaScript
 
-Replace w/ your Wavedash game_id in [./wavedash.toml](https://github.com/wvdsh/examples/blob/main/example-js/wavedash.toml)
+A minimal vanilla JavaScript Pong game on Wavedash, rendered with Canvas 2D.
 
-Run
+## Prerequisites
+
+- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
+
+## Quick start
+
+Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID, then:
+
 ```
 wavedash dev
 ```
