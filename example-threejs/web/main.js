@@ -1,6 +1,7 @@
 import * as THREE from "./vendor/three.module.js";
 
 const WavedashJS = await window.WavedashJS;
+WavedashJS.updateLoadProgressZeroToOne(0.3);
 
 /* ── Constants ────────────────────────────────────── */
 
