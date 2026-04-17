@@ -1,0 +1,13 @@
+{
+  "name": "example-threejs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Three.js Pong example for Wavedash.",
+  "scripts": {
+    "sync-three": "cp node_modules/three/build/three.module.js node_modules/three/build/three.core.js web/vendor/",
+    "postinstall": "mkdir -p web/vendor && npm run sync-three"
+  },
+  "dependencies": {
+    "three": "^0.184.0"
+  }
+}

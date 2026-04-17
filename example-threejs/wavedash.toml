@@ -1,0 +1,4 @@
+game_id = "your_game_id_here"
+upload_dir = "./web"
+
+entrypoint = "index.html"

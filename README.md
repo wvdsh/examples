@@ -23,6 +23,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-renpy`: Ren'Py web-export visual novel that initializes the SDK, updates loading progress during startup, releases deferred events when the first playable scene is ready, and then enters the story.
 - `example-rpgmaker`: RPG Maker MZ web-export Pong Quest demo that initializes the SDK during Scene_Boot, waits for readiness before the first interactive scene, then launches a tiny self-contained RPG from a blank-project-friendly plugin.
 - `example-rust`: Rust and WebAssembly pong demo that initializes the SDK from Rust, updates loading progress, releases deferred events when ready, and then starts gameplay.
+- `example-threejs`: Three.js pong demo with local and online multiplayer modes — initializes the SDK from JavaScript, browses and joins lobbies, and uses Wavedash P2P to sync paddle positions (channel 0, unreliable) and score events (channel 1, reliable).
 - `example-ts`: Pure TypeScript and Canvas 2D pong demo that initializes the SDK, updates loading progress, and then starts gameplay with no external game engine.
 - `example-unity`: Unity P2P pong demo that uses Netcode for GameObjects with the Wavedash transport, exported to WebGL.
 - `example-zig`: Zig and WebAssembly pong demo that initializes the SDK from Zig, updates loading progress, releases deferred events when ready, and then starts gameplay.
