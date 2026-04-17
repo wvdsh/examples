@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://gipubop1lmw2"]
+[gd_scene load_steps=4 format=3 uid="uid://gipubop1lmw2"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_main"]
 [ext_resource type="Script" path="res://ball.gd" id="2_ball"]
+[ext_resource type="Script" path="res://hud_menu.gd" id="3_hud"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -51,3 +52,168 @@ offset_bottom = 60.0
 theme_override_font_sizes/font_size = 28
 text = "Guest: 0"
 horizontal_alignment = 2
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("3_hud")
+
+[node name="MainMenu" type="Panel" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -130.0
+offset_right = 180.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/MainMenu"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="HUD/MainMenu/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Wavedash Pong"
+horizontal_alignment = 1
+
+[node name="PlayLocalButton" type="Button" parent="HUD/MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Play Local"
+
+[node name="PlayOnlineButton" type="Button" parent="HUD/MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Play Online"
+
+[node name="OnlineMenu" type="Panel" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBox" type="HBoxContainer" parent="HUD/OnlineMenu"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="LeftPanel" type="VBoxContainer" parent="HUD/OnlineMenu/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="LeftTitle" type="Label" parent="HUD/OnlineMenu/HBox/LeftPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Online"
+horizontal_alignment = 1
+
+[node name="CreateLobbyButton" type="Button" parent="HUD/OnlineMenu/HBox/LeftPanel"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Create Lobby"
+
+[node name="RefreshButton" type="Button" parent="HUD/OnlineMenu/HBox/LeftPanel"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "Refresh List"
+
+[node name="BackButton" type="Button" parent="HUD/OnlineMenu/HBox/LeftPanel"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "Back"
+
+[node name="RightPanel" type="VBoxContainer" parent="HUD/OnlineMenu/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RightTitle" type="Label" parent="HUD/OnlineMenu/HBox/RightPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Lobbies"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HUD/OnlineMenu/HBox/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LobbyList" type="VBoxContainer" parent="HUD/OnlineMenu/HBox/RightPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="EmptyLabel" type="Label" parent="HUD/OnlineMenu/HBox/RightPanel/ScrollContainer/LobbyList"]
+layout_mode = 2
+text = "No lobbies — create one!"
+horizontal_alignment = 1
+
+[node name="LobbyView" type="Panel" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -130.0
+offset_right = 220.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/LobbyView"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="LobbyHeader" type="Label" parent="HUD/LobbyView/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Lobby"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="HUD/LobbyView/VBox"]
+layout_mode = 2
+text = "Waiting..."
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="HUD/LobbyView/VBox"]
+visible = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Click to Start"
