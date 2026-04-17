@@ -12,7 +12,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-defold`: Defold pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
 - `example-gamemaker`: GameMaker HTML5 pong demo that initializes the SDK through a JavaScript extension, updates loading progress during startup, releases deferred events when the first playable state is ready, and then starts gameplay.
 - `example-go`: Go and WebAssembly pong demo that owns the full browser stack via `syscall/js`, initializes the SDK, updates loading progress, and then starts gameplay.
-- `example-godot`: Godot 4 pong demo that initializes the SDK from GDScript, updates loading progress, and then starts gameplay, exported to HTML5.
+- `example-godot`: Godot 4 pong demo with local and online multiplayer modes — initializes the SDK from GDScript, browses and joins lobbies, and uses Wavedash P2P to sync paddle positions (channel 0, unreliable) and score events (channel 1, reliable), exported to HTML5.
 - `example-construct`: Construct 3 folder-project pong demo that initializes the SDK from Construct scripts, updates loading progress during startup, releases deferred events when the first playable state is ready, and then starts gameplay.
 - `example-js`: Pure JavaScript and Canvas 2D pong demo that initializes the SDK, updates loading progress, and then starts gameplay with no external game engine.
 - `example-monogame`: MonoGame-style C# and WebAssembly pong demo that uses MonoGame's Game1 lifecycle pattern and portable framework types, initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
