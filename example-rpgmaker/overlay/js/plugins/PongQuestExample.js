@@ -13,14 +13,6 @@
   const GAME_TITLE = "Pong Quest";
   const TITLE_COMMAND_LABEL = GAME_TITLE;
   const MAX_LOG_LINES = 6;
-  const BOOT_TIMEOUT_MS = 6000;
-  const POLL_INTERVAL_MS = 50;
-
-  const SDK_EVENTS = Object.freeze({
-    BACKEND_CONNECTED: "BackendConnected",
-    BACKEND_DISCONNECTED: "BackendDisconnected",
-    BACKEND_RECONNECTING: "BackendReconnecting",
-  });
 
   const COLORS = Object.freeze({
     neutral: "rgba(148, 163, 184, 0.42)",
@@ -109,13 +101,8 @@
   const state = {
     sdk: null,
     shell: null,
-    bootPromise: null,
-    bootComplete: false,
-    bootFailed: false,
+    bootStarted: false,
     firstPlayableReported: false,
-    readyForEventsSent: false,
-    loadCompleteSent: false,
-    detachSdkListeners: () => {},
   };
 
   function log(message, detail) {
@@ -125,10 +112,6 @@
     }
 
     console.info(`${LOG_PREFIX} ${message}`, detail);
-  }
-
-  function sleep(ms) {
-    return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
   function style(element, styles) {
@@ -379,33 +362,6 @@
     shell.overlayProgressFill.style.background = "linear-gradient(90deg, #f97316 0%, #ef4444 100%)";
   }
 
-  function normalizeProgress(progress) {
-    const numeric = Number(progress);
-    if (!Number.isFinite(numeric)) {
-      return 0;
-    }
-
-    return clamp(numeric, 0, 1);
-  }
-
-  function updateLoading(step, progress, detail) {
-    const shell = ensureShell();
-    const clampedProgress = normalizeProgress(progress);
-
-    shell.overlayStep.textContent = step;
-    shell.overlayDetail.textContent = detail;
-    shell.overlayPercent.textContent = `${Math.round(clampedProgress * 100)}%`;
-    shell.overlayProgressFill.style.width = `${Math.max(6, Math.round(clampedProgress * 100))}%`;
-
-    if (state.sdk && typeof state.sdk.updateLoadProgressZeroToOne === "function") {
-      try {
-        state.sdk.updateLoadProgressZeroToOne(clampedProgress);
-      } catch (error) {
-        console.warn(`${LOG_PREFIX} Unable to update Wavedash load progress`, error);
-      }
-    }
-  }
-
   function getRequiredWavedash() {
     if (window.WavedashJS) {
       return window.WavedashJS;
@@ -436,168 +392,40 @@
     shell.userPill.textContent = displayName ? `User ${displayName}` : "User unavailable";
   }
 
-  function attachSdkListeners(sdk) {
-    if (!sdk || typeof sdk.addEventListener !== "function") {
-      return () => {};
+  function startBootFlow() {
+    if (state.bootStarted) {
+      return;
     }
 
-    const shell = ensureShell();
-    const events = sdk.Events || SDK_EVENTS;
-    const listeners = [
-      [
-        events.BACKEND_CONNECTED,
-        () => {
-          log("Backend connected event received");
-          setPill(shell.statusPill, "SDK connected", COLORS.success);
-          refreshUser();
-        },
-      ],
-      [
-        events.BACKEND_DISCONNECTED,
-        () => {
-          log("Backend disconnected event received");
-          setPill(shell.statusPill, "SDK disconnected", COLORS.danger);
-        },
-      ],
-      [
-        events.BACKEND_RECONNECTING,
-        () => {
-          log("Backend reconnecting event received");
-          setPill(shell.statusPill, "SDK reconnecting", COLORS.warning);
-        },
-      ],
-    ];
-
-    listeners.forEach(([eventName, handler]) => {
-      sdk.addEventListener(eventName, handler);
-    });
-
-    return () => {
-      listeners.forEach(([eventName, handler]) => {
-        if (typeof sdk.removeEventListener === "function") {
-          sdk.removeEventListener(eventName, handler);
-        }
-      });
-    };
-  }
-
-  async function waitForSdkReady(sdk, timeoutMs) {
-    if (!sdk || typeof sdk.isReady !== "function") {
-      return true;
-    }
-
-    const startedAt = performance.now();
-
-    while (performance.now() - startedAt < timeoutMs) {
-      try {
-        if (sdk.isReady()) {
-          return true;
-        }
-      } catch (error) {
-        console.warn(`${LOG_PREFIX} Wavedash readiness check failed`, error);
-      }
-
-      await sleep(POLL_INTERVAL_MS);
-    }
+    state.bootStarted = true;
 
     try {
-      return sdk.isReady();
-    } catch (error) {
-      console.warn(`${LOG_PREFIX} Final Wavedash readiness check failed`, error);
-      return false;
-    }
-  }
-
-  function startBootFlow() {
-    if (state.bootPromise) {
-      return state.bootPromise;
-    }
-
-    state.bootPromise = (async () => {
       const shell = ensureShell();
-
       setPill(shell.runtimePill, "Runtime RPG Maker MZ", COLORS.info);
       setPill(shell.enginePill, "Pong Quest Demo", COLORS.info);
-      updateLoading(
-        "RPG Maker runtime available",
-        0.12,
-        "The deployed web build is running and the Pong Quest plugin loaded during Scene_Boot."
-      );
 
-      try {
-        state.sdk = getRequiredWavedash();
-        refreshUser();
-        state.detachSdkListeners = attachSdkListeners(state.sdk);
-
-        setPill(shell.statusPill, "SDK starting", COLORS.warning);
-        updateLoading(
-          "Initializing Wavedash SDK",
-          0.38,
-          "Calling WavedashJS.init({ debug: true, deferEvents: true }) from Scene_Boot."
-        );
-
-        if (typeof state.sdk.init === "function") {
-          await Promise.resolve(
-            state.sdk.init({
-              debug: true,
-              deferEvents: true,
-            })
-          );
-        }
-
-        updateLoading(
-          "Waiting for SDK readiness",
-          0.62,
-          "Scene_Boot stays active until the SDK reports ready."
-        );
-
-        const ready = await waitForSdkReady(state.sdk, BOOT_TIMEOUT_MS);
-        if (!ready) {
-          throw new Error("WavedashJS did not report ready before the startup timeout.");
-        }
-
-        setPill(shell.statusPill, "SDK ready", COLORS.success);
-        refreshUser();
-        updateLoading(
-          "Preparing first playable scene",
-          0.88,
-          "The first interactive title or map scene will release deferred events."
-        );
-        state.bootComplete = true;
-      } catch (error) {
-        state.bootFailed = true;
-        log("Boot failed", error);
-        showFatal("Failed to boot example-rpgmaker.", error);
-      }
-    })();
-
-    return state.bootPromise;
+      state.sdk = getRequiredWavedash();
+      refreshUser();
+    } catch (error) {
+      log("Boot failed", error);
+      showFatal("Failed to boot example-rpgmaker.", error);
+    }
   }
 
-  async function reportFirstPlayable(detail) {
-    if (state.firstPlayableReported || state.bootFailed || !state.bootComplete || !state.sdk) {
+  function reportFirstPlayable(detail) {
+    if (state.firstPlayableReported || !state.sdk) {
       return;
     }
 
     state.firstPlayableReported = true;
-    updateLoading("Loading complete", 1, detail);
 
     try {
-      if (!state.readyForEventsSent && typeof state.sdk.readyForEvents === "function") {
-        await Promise.resolve(state.sdk.readyForEvents());
-        state.readyForEventsSent = true;
-      }
-
-      if (!state.loadCompleteSent && typeof state.sdk.loadComplete === "function") {
-        await Promise.resolve(state.sdk.loadComplete());
-        state.loadCompleteSent = true;
-      }
-
-      setPill(ensureShell().statusPill, "SDK connected", COLORS.success);
+      state.sdk.updateLoadProgressZeroToOne(1);
+      state.sdk.init({ debug: true });
       refreshUser();
+      setPill(ensureShell().statusPill, "SDK ready", COLORS.success);
       hideOverlay();
     } catch (error) {
-      state.bootFailed = true;
       log("Failed to finalize startup", error);
       showFatal("Failed to finalize example-rpgmaker.", error);
     }
@@ -1089,43 +917,21 @@
     SceneManager.goto(Scene_PongQuest);
   };
 
-  window.addEventListener("beforeunload", () => {
-    state.detachSdkListeners();
-  });
-
   const _Scene_Boot_create = Scene_Boot.prototype.create;
   Scene_Boot.prototype.create = function () {
     _Scene_Boot_create.call(this);
     startBootFlow();
   };
 
-  // Keep Scene_Boot active until the SDK is ready so the title screen is the
-  // first interactive state shown to the player.
-  const _Scene_Boot_isReady = Scene_Boot.prototype.isReady;
-  Scene_Boot.prototype.isReady = function () {
-    const ready = _Scene_Boot_isReady.call(this);
-    if (!ready) {
-      return false;
-    }
-
-    startBootFlow();
-
-    if (state.bootFailed) {
-      return false;
-    }
-
-    return state.bootComplete;
-  };
-
   const _Scene_Title_start = Scene_Title.prototype.start;
   Scene_Title.prototype.start = function () {
     _Scene_Title_start.call(this);
-    void reportFirstPlayable("The title screen is visible and can accept input.");
+    reportFirstPlayable("The title screen is visible and can accept input.");
   };
 
   const _Scene_Map_start = Scene_Map.prototype.start;
   Scene_Map.prototype.start = function () {
     _Scene_Map_start.call(this);
-    void reportFirstPlayable("The first map scene is visible and can accept input.");
+    reportFirstPlayable("The first map scene is visible and can accept input.");
   };
 })();

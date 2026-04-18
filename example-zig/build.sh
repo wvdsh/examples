@@ -2,10 +2,10 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-OUT_DIR="$ROOT/build/web"
+OUT_DIR="$ROOT/zig-out"
 
 if ! command -v zig >/dev/null 2>&1; then
-  printf '%s\n' "zig is required. Install Zig, then rerun ./build-web.sh." >&2
+  printf '%s\n' "zig is required. Install Zig, then rerun ./build.sh." >&2
   exit 1
 fi
 

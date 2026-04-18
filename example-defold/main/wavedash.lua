@@ -5,7 +5,7 @@ local function run(code)
 end
 
 function M.init()
-    run("window.WavedashJS && window.WavedashJS.init()")
+    run("window.WavedashJS && window.WavedashJS.init({ debug: true })")
 end
 
 function M.update_load_progress(fraction)

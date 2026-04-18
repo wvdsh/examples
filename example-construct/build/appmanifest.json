@@ -1,0 +1,11 @@
+{
+	"name": "example-construct",
+	"short_name": "example-construct",
+	"description": "Minimal Construct 3 Pong demo for the Wavedash HTML5 export flow.",
+	"start_url": "index.html",
+	"display": "fullscreen",
+	"orientation": "landscape",
+	"background_color": "#031123",
+	"icons": [],
+	"screenshots": []
+}

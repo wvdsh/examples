@@ -3,7 +3,7 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT="$ROOT/src/Pong.csproj"
-OUT_DIR="$ROOT/build/web"
+OUT_DIR="$ROOT/build"
 
 if [ -d /usr/local/share/dotnet ]; then
   export PATH="/usr/local/share/dotnet:$PATH"

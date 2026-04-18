@@ -1,0 +1,29 @@
+(function injectFullscreenCss() {
+  if (typeof document === "undefined" || document.getElementById("wavedash-fullscreen-css")) return;
+  var style = document.createElement("style");
+  style.id = "wavedash-fullscreen-css";
+  style.textContent =
+    "html, body { margin: 0; padding: 0; overflow: hidden; background: #000; width: 100vw; height: 100vh; }" +
+    "canvas.emscripten, #canvas, #gm4html5_div_id canvas { width: 100vw !important; height: 100vh !important; display: block !important; margin: 0 !important; outline: none !important; }" +
+    "canvas:focus, canvas:focus-visible { outline: none !important; box-shadow: none !important; }";
+  (document.head || document.documentElement).appendChild(style);
+})();
+
+function wavedash_js_init() {
+  if (window.WavedashJS && typeof window.WavedashJS.init === "function") {
+    window.WavedashJS.init({ debug: true });
+  }
+  return 1.0;
+}
+
+function wavedash_js_update_progress(progress) {
+  if (window.WavedashJS && typeof window.WavedashJS.updateLoadProgressZeroToOne === "function") {
+    window.WavedashJS.updateLoadProgressZeroToOne(progress);
+  }
+  return 1.0;
+}
+[LLVM-OPERAGX]
+EMSDKDir="/Users/erik/emsdk/emsdk_env.sh"
+[OperaGX]
+ProjectGuid=""
+[ext_wavedash]

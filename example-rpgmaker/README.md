@@ -10,7 +10,7 @@ A minimal RPG Maker MZ demo on Wavedash — *Pong Quest*, a tiny turn-based RPG 
 ## Quick start
 
 1. Create or open a minimal RPG Maker MZ project (a default blank project is enough) and deploy it for Web from the editor into a temporary folder.
-2. Stage that deployment into `build/web/` with the demo plugin:
+2. Stage that deployment into `build/` with the demo plugin:
 
     ```
     RPGMAKER_WEB_BUILD=/path/to/deployment ./build.sh

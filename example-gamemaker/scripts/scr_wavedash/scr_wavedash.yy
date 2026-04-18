@@ -1,13 +1,13 @@
 {
-  "$GMScript": "",
-  "%Name": "scr_wavedash",
-  "resourceType": "GMScript",
-  "resourceVersion": "2.0",
-  "name": "scr_wavedash",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Scripts",
-    "path": "folders/Scripts.yy"
-  }
+  "$GMScript":"v1",
+  "%Name":"scr_wavedash",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_wavedash",
+  "parent":{
+    "name":"Pong",
+    "path":"Pong.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

@@ -2,11 +2,11 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-OUT_DIR="$ROOT/build/web"
+OUT_DIR="$ROOT/build"
 WASM_SRC="$ROOT/target/wasm32-unknown-unknown/release/game.wasm"
 
 if ! command -v cargo >/dev/null 2>&1; then
-  printf '%s\n' "cargo is required. Install Rust, then rerun ./build-web.sh." >&2
+  printf '%s\n' "cargo is required. Install Rust, then rerun ./build.sh." >&2
   exit 1
 fi
 

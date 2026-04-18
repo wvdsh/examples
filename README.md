@@ -15,7 +15,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-godot`: Godot 4 pong demo with local and online multiplayer modes — initializes the SDK from GDScript, browses and joins lobbies, and uses Wavedash P2P to sync paddle positions (channel 0, unreliable) and score events (channel 1, reliable), exported to HTML5.
 - `example-construct`: Construct 3 folder-project pong demo that initializes the SDK from Construct scripts, updates loading progress during startup, releases deferred events when the first playable state is ready, and then starts gameplay.
 - `example-js`: Pure JavaScript and Canvas 2D pong demo that initializes the SDK, updates loading progress, and then starts gameplay with no external game engine.
-- `example-monogame`: MonoGame-style C# and WebAssembly pong demo that uses MonoGame's Game1 lifecycle pattern and portable framework types, initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
+- `example-kni`: KNI BlazorGL (MonoGame-compatible) pong demo built with nkast's KNI engine, compiled to WebAssembly via Blazor, initializes the SDK and updates loading progress from C# via JS interop, then starts gameplay.
 - `example-love2d`: LOVE2D pong demo that packages a `.love` file for the standalone `love.js` player, initializes the SDK, updates loading progress, releases deferred events when the first playable frame is rendered, and then starts gameplay.
 - `example-phaser`: Phaser 3 pong demo that initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-pixi`: PixiJS pong demo that initializes the SDK, updates loading progress, and then starts gameplay.

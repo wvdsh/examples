@@ -38,8 +38,6 @@ local state = {
   ai_score = 0,
   serving = true,
   serve_dir = 1,
-  first_frame_released = false,
-  small_font = nil,
   score_font = nil,
 }
 
@@ -188,18 +186,6 @@ local function handle_scoring()
   end
 end
 
-local function release_first_playable_frame()
-  if state.first_frame_released then
-    return
-  end
-
-  -- The first rendered frame is the earliest truly playable moment on web.
-  state.first_frame_released = true
-  wavedash.update_load_progress(1)
-  wavedash.ready_for_events()
-  wavedash.load_complete()
-end
-
 local function draw_court()
   love.graphics.setColor(COLORS.line)
 
@@ -248,36 +234,16 @@ local function draw_scores()
   )
 end
 
-local function draw_hud()
-  love.graphics.setFont(state.small_font)
-  love.graphics.setColor(COLORS.accent)
-  love.graphics.print("example-love2d", 20, 16)
-
-  love.graphics.setColor(COLORS.text)
-  love.graphics.printf("LOVE2D + Wavedash Pong", 0, 16, COURT_W - 20, "right")
-  love.graphics.printf(
-    "First to " .. WIN_SCORE .. " resets the match.",
-    0,
-    COURT_H - 48,
-    COURT_W,
-    "center"
-  )
-  love.graphics.printf("W/S or arrows to move", 0, COURT_H - 26, COURT_W, "center")
-end
-
 function love.load()
   love.math.setRandomSeed(love.timer.getTime())
   love.graphics.setBackgroundColor(COLORS.background)
 
-  wavedash.init(true, true)
-  wavedash.update_load_progress(0.2)
-
-  state.small_font = love.graphics.newFont(18)
   state.score_font = love.graphics.newFont(56)
-  wavedash.update_load_progress(0.55)
 
   reset_round()
-  wavedash.update_load_progress(0.8)
+
+  wavedash.update_load_progress(1)
+  wavedash.init()
 end
 
 function love.update(dt)
@@ -298,8 +264,6 @@ function love.draw()
   draw_court()
   draw_paddles_and_ball()
   draw_scores()
-  draw_hud()
-  release_first_playable_frame()
 end
 
 function love.keypressed(key)

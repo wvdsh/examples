@@ -1,3 +1,38 @@
+label main_menu:
+    call screen main_menu
+
+screen main_menu():
+    tag menu
+
+    use pong_backdrop
+
+    frame:
+        xalign 0.5
+        yalign 0.5
+        xmaximum 940
+        xpadding 48
+        ypadding 38
+        background Solid("#08111f")
+
+        vbox:
+            spacing 20
+
+            text "Pong, a Simple Game That Changed Everything" size 44 color "#f8fafc"
+            text "A short Ren'Py story on how one prototype helped define an industry." size 20 color "#cbd5e1" xmaximum 780
+
+            textbutton "Start":
+                action Start()
+                text_size 26
+                text_color "#f8fafc"
+                text_hover_color "#67e8f9"
+                background Solid("#164e63")
+                hover_background Solid("#0e7490")
+                xpadding 24
+                ypadding 12
+
+    key "K_RETURN" action Start()
+    key "K_SPACE" action Start()
+
 define guide = Character("Guide", who_color="#7dd3fc")
 define alcorn = Character("Allan", who_color="#fde68a")
 define bartender = Character("Bartender", who_color="#c4b5fd")
@@ -65,65 +100,7 @@ screen pong_title_card(card_title, card_subtitle):
     key "K_RETURN" action Return()
     key "K_SPACE" action Return()
 
-screen wavedash_ready_gate():
-    modal True
-    default announced = False
-
-    use pong_backdrop
-
-    if not announced:
-        timer 0.05 action [SetScreenVariable("announced", True), Function(wavedash_report_first_playable)]
-
-    frame:
-        background Solid("#08111f")
-        xalign 0.5
-        yalign 0.5
-        xmaximum 940
-        xpadding 42
-        ypadding 34
-
-        vbox:
-            spacing 16
-
-            text "Pong, a Simple Game That Changed Everything" size 46 color "#f8fafc"
-            text "The Wavedash SDK is connected. This first Ren'Py screen is where deferred events are released and load completion is reported." size 24 color "#cbd5e1" xmaximum 800
-
-            if wavedash_user_name:
-                text "Signed in as [wavedash_user_name]." size 20 color "#67e8f9"
-            else:
-                text "The SDK is ready, and the story can begin." size 20 color "#67e8f9"
-
-            textbutton "Begin the story" action Return():
-                text_size 26
-
-            text "You can also press Enter or Space." size 18 color "#94a3b8"
-
-    key "K_RETURN" action Return()
-    key "K_SPACE" action Return()
-
-screen wavedash_status_overlay():
-    zorder 120
-
-    if wavedash_sdk_connected:
-        frame:
-            background Solid("#08111f")
-            xalign 0.985
-            ypos 14
-            xpadding 16
-            ypadding 11
-
-            vbox:
-                spacing 4
-                text "[wavedash_sdk_state_text]" size 18 color "#86efac"
-
-                if wavedash_user_name:
-                    text "User: [wavedash_user_name]" size 16 color "#cbd5e1"
-                else:
-                    text "User unavailable" size 16 color "#94a3b8"
-
 label start:
-    call screen wavedash_ready_gate
-
     scene bg studio
     with fade
 

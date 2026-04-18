@@ -2,10 +2,10 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-OUT_DIR="$ROOT/build/web"
+OUT_DIR="$ROOT/build"
 
 if ! command -v em++ >/dev/null 2>&1; then
-  printf '%s\n' "em++ not found. Install the Emscripten SDK and activate it (source ./emsdk_env.sh), then rerun ./build-web.sh." >&2
+  printf '%s\n' "em++ not found. Install the Emscripten SDK and activate it (source ./emsdk_env.sh), then rerun ./build.sh." >&2
   exit 1
 fi
 

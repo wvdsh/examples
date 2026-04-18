@@ -1,6 +1,6 @@
 {
  "projectFormatVersion": 1,
- "savedWithRelease": 45802,
+ "savedWithRelease": 47000,
  "name": "example-construct",
  "runtime": "c3",
  "useWorker": "auto",
@@ -48,17 +48,20 @@
  {
  "name": "main.js",
  "type": "application/javascript",
- "sid": 835201000000001
+ "sid": 835201000000001,
+ "script-info": { "purpose": "main" }
  },
  {
  "name": "pong.js",
  "type": "application/javascript",
- "sid": 835201000000002
+ "sid": 835201000000002,
+ "script-info": { "purpose": "none" }
  },
  {
  "name": "wavedash.js",
  "type": "application/javascript",
- "sid": 835201000000003
+ "sid": 835201000000003,
+ "script-info": { "purpose": "none" }
  }
  ],
  "subfolders": []

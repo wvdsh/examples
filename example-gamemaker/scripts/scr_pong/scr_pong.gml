@@ -151,6 +151,7 @@ function pong_award_point(_player_scored) {
         }
 
         pong_prepare_serve(1);
+        pong_start_serve();
         return;
     }
 
@@ -165,6 +166,7 @@ function pong_award_point(_player_scored) {
     }
 
     pong_prepare_serve(-1);
+    pong_start_serve();
 }
 
 // ---------------------------------------------------------------------------
@@ -174,61 +176,6 @@ function pong_award_point(_player_scored) {
 function pong_shorten(_text, _max_len) {
     if (string_length(_text) <= _max_len) return _text;
     return string_copy(_text, 1, _max_len - 3) + "...";
-}
-
-function pong_draw_boot() {
-    var _cx = FIELD_W / 2;
-    var _cy = FIELD_H / 2;
-
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_middle);
-
-    draw_set_colour(c_white);
-    draw_text(_cx, _cy - 50, boot_message);
-
-    draw_set_colour(c_ltgray);
-    draw_text(_cx, _cy - 25, boot_detail);
-
-    var _bar_w = 300;
-    var _bar_h = 14;
-    var _bar_x = _cx - _bar_w / 2;
-    var _bar_y = _cy + 10;
-
-    draw_set_colour(c_dkgray);
-    draw_rectangle(_bar_x, _bar_y, _bar_x + _bar_w, _bar_y + _bar_h, false);
-
-    draw_set_colour(c_lime);
-    draw_rectangle(_bar_x, _bar_y, _bar_x + _bar_w * boot_progress, _bar_y + _bar_h, false);
-
-    draw_set_colour(c_white);
-    draw_text(_cx, _bar_y + _bar_h + 18,
-        string(round(boot_progress * 100)) + "%");
-
-    draw_set_colour(c_gray);
-    draw_text(_cx, _cy + 70,
-        "GameMaker is preparing the first playable frame.");
-    draw_text(_cx, _cy + 92,
-        "Wavedash events stay deferred until ready.");
-}
-
-function pong_draw_error() {
-    var _cx = FIELD_W / 2;
-    var _cy = FIELD_H / 2;
-
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_middle);
-
-    draw_set_colour(c_red);
-    draw_text(_cx, _cy - 40, "BOOT ERROR");
-
-    draw_set_colour(c_white);
-    draw_text(_cx, _cy, boot_message);
-
-    draw_set_colour(c_ltgray);
-    draw_text(_cx, _cy + 25, boot_detail);
-
-    draw_set_colour(c_gray);
-    draw_text(_cx, _cy + 65, "Open the browser console for details.");
 }
 
 function pong_draw_game() {
@@ -263,31 +210,5 @@ function pong_draw_game() {
     draw_text(FIELD_W / 2 - 80, 56, "PLAYER");
     draw_text(FIELD_W / 2 + 80, 56, "CPU");
 
-    draw_set_valign(fa_bottom);
-    draw_set_colour(c_ltgray);
-
-    var _footer = "";
-
-    if (phase == "serve") {
-        _footer = "Press Space or Enter to serve";
-    } else if (phase == "game_over") {
-        _footer = winner + " wins!  Press Space or Enter to restart.";
-    } else {
-        _footer = "Keep the ball in play and outscore the CPU.";
-    }
-
-    draw_text(FIELD_W / 2, FIELD_H - 12, _footer);
 }
 
-function pong_draw_info_bar() {
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_top);
-    draw_set_colour(c_gray);
-
-    var _info =
-        "SDK: " + sdk_backend
-        + " | User: " + pong_shorten(sdk_user, 22)
-        + " | Phase: " + phase;
-
-    draw_text(FIELD_W / 2, 20, _info);
-}

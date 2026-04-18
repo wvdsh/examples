@@ -2,10 +2,10 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-OUT_DIR="$ROOT/build/web"
+OUT_DIR="$ROOT/build"
 
 if ! command -v go >/dev/null 2>&1; then
-  printf '%s\n' "go is required. Install Go, then rerun ./build-web.sh." >&2
+  printf '%s\n' "go is required. Install Go, then rerun ./build.sh." >&2
   exit 1
 fi
 

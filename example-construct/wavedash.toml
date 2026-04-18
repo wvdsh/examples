@@ -1,3 +1,3 @@
-game_id = "YOUR_GAME_ID_HERE"
-upload_dir = "./build/web"
+game_id = "j971ky59eq2mb86jyp63y96vk584x0ax"
+upload_dir = "./build"
 entrypoint = "index.html"
