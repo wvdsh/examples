@@ -1,0 +1,2007 @@
+{
+  "firstLayout": "Game Scene",
+  "gdVersion": {
+    "build": 266,
+    "major": 5,
+    "minor": 6,
+    "revision": 0
+  },
+  "properties": {
+    "adaptGameResolutionAtRuntime": true,
+    "antialiasingMode": "MSAA",
+    "antialisingEnabledOnMobile": false,
+    "folderProject": false,
+    "orientation": "landscape",
+    "packageName": "com.example.gamename",
+    "pixelsRounding": false,
+    "projectUuid": "c1f24897-58ec-4eed-b932-4ac442480d74",
+    "scaleMode": "linear",
+    "sizeOnStartupMode": "",
+    "templateSlug": "starting-physics",
+    "version": "1.0.0",
+    "name": "Pong Game - Copy",
+    "description": "",
+    "author": "",
+    "windowWidth": 1280,
+    "windowHeight": 720,
+    "latestCompilationDirectory": "",
+    "maxFPS": 60,
+    "minFPS": 20,
+    "verticalSync": false,
+    "platformSpecificAssets": {
+      "android-icon-144": "",
+      "android-icon-192": "",
+      "android-icon-36": "",
+      "android-icon-48": "",
+      "android-icon-72": "",
+      "android-icon-96": "",
+      "android-windowSplashScreenAnimatedIcon": "",
+      "desktop-icon-512": "",
+      "ios-icon-100": "",
+      "ios-icon-1024": "",
+      "ios-icon-114": "",
+      "ios-icon-120": "",
+      "ios-icon-144": "",
+      "ios-icon-152": "",
+      "ios-icon-167": "",
+      "ios-icon-180": "",
+      "ios-icon-20": "",
+      "ios-icon-29": "",
+      "ios-icon-40": "",
+      "ios-icon-50": "",
+      "ios-icon-57": "",
+      "ios-icon-58": "",
+      "ios-icon-60": "",
+      "ios-icon-72": "",
+      "ios-icon-76": "",
+      "ios-icon-80": "",
+      "ios-icon-87": ""
+    },
+    "loadingScreen": {
+      "backgroundColor": 0,
+      "backgroundFadeInDuration": 0.2,
+      "backgroundImageResourceName": "",
+      "gdevelopLogoStyle": "light",
+      "logoAndProgressFadeInDuration": 0.2,
+      "logoAndProgressLogoFadeInDelay": 0,
+      "minDuration": 1.5,
+      "progressBarColor": 16777215,
+      "progressBarHeight": 20,
+      "progressBarMaxWidth": 200,
+      "progressBarMinWidth": 40,
+      "progressBarWidthPercent": 30,
+      "showGDevelopSplash": true,
+      "showProgressBar": true
+    },
+    "watermark": {
+      "placement": "bottom-left",
+      "showWatermark": true
+    },
+    "authorIds": [],
+    "authorUsernames": [],
+    "categories": [],
+    "playableDevices": [
+      "mobile"
+    ],
+    "extensionProperties": [],
+    "platforms": [
+      {
+        "name": "GDevelop JS platform"
+      }
+    ],
+    "currentPlatform": "GDevelop JS platform"
+  },
+  "resources": {
+    "resources": [
+      {
+        "file": "assets/Background.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "assets\\Background.png",
+        "smoothed": true,
+        "userAdded": false
+      },
+      {
+        "file": "assets/StartingGround.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "assets\\StartingGround.png",
+        "smoothed": true,
+        "userAdded": false
+      },
+      {
+        "file": "assets/StartingBall.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "assets\\StartingBall.png",
+        "smoothed": true,
+        "userAdded": false
+      },
+      {
+        "file": "assets/StartingBlock.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "assets\\StartingBlock.png",
+        "smoothed": true,
+        "userAdded": false
+      },
+      {
+        "file": "assets/StartingBlock_Heavy.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "assets\\StartingBlock_Heavy.png",
+        "smoothed": true,
+        "userAdded": false
+      },
+      {
+        "file": "assets/Small Hole.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "Small Hole.png",
+        "smoothed": true,
+        "userAdded": false,
+        "origin": {
+          "identifier": "https://asset-resources.gdevelop.io/public-resources/Rolling Ball Pack/Hole/46c9a433eca40b3b5bc6de4f543f6b2251182e0d978d051c5fd27eba3042651c_Small Hole.png",
+          "name": "Small Hole.png"
+        }
+      }
+    ]
+  },
+  "objects": [],
+  "objectsFolderStructure": {
+    "folderName": "__ROOT"
+  },
+  "objectsGroups": [],
+  "variables": [],
+  "layouts": [
+    {
+      "b": 255,
+      "disableInputWhenNotFocused": true,
+      "mangledName": "Game_32Scene",
+      "name": "Game Scene",
+      "r": 255,
+      "standardSortMethod": true,
+      "stopSoundsOnStartup": true,
+      "title": "",
+      "v": 255,
+      "uiSettings": {
+        "grid": false,
+        "gridType": "rectangular",
+        "gridWidth": 32,
+        "gridHeight": 32,
+        "gridDepth": 32,
+        "gridOffsetX": 0,
+        "gridOffsetY": 0,
+        "gridOffsetZ": 0,
+        "gridColor": 10401023,
+        "gridAlpha": 0.8,
+        "snap": false,
+        "zoomFactor": 0.47893418845353064,
+        "windowMask": false,
+        "selectedLayer": "",
+        "gameEditorMode": "instances-editor"
+      },
+      "objectsGroups": [],
+      "variables": [
+        {
+          "name": "Player2Score",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Player1Score",
+          "type": "number",
+          "value": 0
+        }
+      ],
+      "instances": [
+        {
+          "angle": 0,
+          "customSize": true,
+          "depth": 1,
+          "height": 720,
+          "layer": "",
+          "locked": true,
+          "name": "Background",
+          "persistentUuid": "632b6cdb-5d17-463f-8eac-cc62c3b1ea49",
+          "width": 1280,
+          "x": 0,
+          "y": 0,
+          "zOrder": -1,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "depth": 1,
+          "height": 32,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Ground",
+          "persistentUuid": "8a332a02-5fd7-494b-b9e5-c2ebbd789e65",
+          "width": 1280,
+          "x": -32,
+          "y": 640,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 64,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Ball",
+          "persistentUuid": "a94cc934-d2f4-42c0-897c-6b9c79e731d6",
+          "width": 64,
+          "x": 68,
+          "y": 256,
+          "zOrder": 7,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 32,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Ground",
+          "persistentUuid": "fc386a58-9ae2-48f7-9dbc-fdead0322103",
+          "width": 1280,
+          "x": 0,
+          "y": 0,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 100,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Paddle_Left",
+          "persistentUuid": "07cb4ef3-4002-4abc-a393-45353992a969",
+          "width": 20,
+          "x": 50,
+          "y": 300,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 100,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Paddle_Right",
+          "persistentUuid": "b3524857-bff5-4591-b2df-99294b0f7bb7",
+          "width": 20,
+          "x": 1210,
+          "y": 300,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Goal_Left",
+          "opacity": 0,
+          "persistentUuid": "a212cbf0-7557-4373-a28b-6d56f0672efa",
+          "width": 10,
+          "x": 0,
+          "y": 0,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Goal_Right",
+          "opacity": 0,
+          "persistentUuid": "35f22f5a-b8b7-4fa9-9a8a-3ee13ef4d834",
+          "width": 10,
+          "x": 1270,
+          "y": 0,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Score_Player1",
+          "persistentUuid": "09e76ccf-adc5-47ba-8d01-f3bbeac62328",
+          "width": 0,
+          "x": 540,
+          "y": 60,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "keepRatio": true,
+          "layer": "",
+          "name": "Score_Player2",
+          "persistentUuid": "182b9d6e-5bd6-4551-805d-427c3e0ab0c7",
+          "width": 0,
+          "x": 740,
+          "y": 60,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        }
+      ],
+      "objects": [
+        {
+          "assetStoreId": "",
+          "height": 128,
+          "name": "Background",
+          "texture": "assets\\Background.png",
+          "type": "TiledSpriteObject::TiledSprite",
+          "width": 128,
+          "variables": [],
+          "effects": [],
+          "behaviors": []
+        },
+        {
+          "assetStoreId": "",
+          "height": 64,
+          "name": "Ground",
+          "texture": "assets\\StartingGround.png",
+          "type": "TiledSpriteObject::TiledSprite",
+          "width": 64,
+          "variables": [],
+          "effects": [],
+          "behaviors": []
+        },
+        {
+          "adaptCollisionMaskAutomatically": true,
+          "assetStoreId": "",
+          "name": "Ball",
+          "type": "Sprite",
+          "updateIfNotVisible": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "animations": [
+            {
+              "name": "",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 0.08,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": true,
+                      "image": "assets\\StartingBall.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": [
+                        [
+                          {
+                            "x": 0,
+                            "y": 0
+                          },
+                          {
+                            "x": 64,
+                            "y": 0
+                          },
+                          {
+                            "x": 64,
+                            "y": 64
+                          },
+                          {
+                            "x": 0,
+                            "y": 64
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "adaptCollisionMaskAutomatically": false,
+          "assetStoreId": "",
+          "name": "Paddle_Left",
+          "type": "Sprite",
+          "updateIfNotVisible": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "animations": [
+            {
+              "name": "",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 0.08,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "assets\\StartingBlock.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "adaptCollisionMaskAutomatically": false,
+          "assetStoreId": "",
+          "name": "Paddle_Right",
+          "type": "Sprite",
+          "updateIfNotVisible": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "animations": [
+            {
+              "name": "",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 0.08,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "assets\\StartingBlock_Heavy.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "adaptCollisionMaskAutomatically": true,
+          "assetStoreId": "1be912ade56dcb68ddc0d2c525ee448d43ec3c505cd38fe851041838e1419585",
+          "name": "Goal_Left",
+          "persistentUuid": "37c5fedc-c3ad-4a9b-92ba-2677d0794e28",
+          "type": "Sprite",
+          "updateIfNotVisible": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "animations": [
+            {
+              "name": "",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.025,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": true,
+                      "image": "Small Hole.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": [
+                        [
+                          {
+                            "x": 0,
+                            "y": 0
+                          },
+                          {
+                            "x": 96,
+                            "y": 0
+                          },
+                          {
+                            "x": 96,
+                            "y": 96
+                          },
+                          {
+                            "x": 0,
+                            "y": 96
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "adaptCollisionMaskAutomatically": true,
+          "assetStoreId": "1be912ade56dcb68ddc0d2c525ee448d43ec3c505cd38fe851041838e1419585",
+          "name": "Goal_Right",
+          "persistentUuid": "538f1944-f9fb-4b73-b360-fce71fc2c722",
+          "type": "Sprite",
+          "updateIfNotVisible": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "animations": [
+            {
+              "name": "",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": true,
+                  "timeBetweenFrames": 0.025,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": true,
+                      "image": "Small Hole.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": [
+                        [
+                          {
+                            "x": 0,
+                            "y": 0
+                          },
+                          {
+                            "x": 96,
+                            "y": 0
+                          },
+                          {
+                            "x": 96,
+                            "y": 96
+                          },
+                          {
+                            "x": 0,
+                            "y": 96
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "assetStoreId": "",
+          "bold": false,
+          "italic": false,
+          "name": "Score_Player1",
+          "smoothed": true,
+          "type": "TextObject::Text",
+          "underlined": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "string": "0",
+          "font": "",
+          "textAlignment": "center",
+          "characterSize": 80,
+          "color": {
+            "r": 60,
+            "g": 60,
+            "b": 60
+          },
+          "content": {
+            "bold": false,
+            "isOutlineEnabled": false,
+            "isShadowEnabled": false,
+            "italic": false,
+            "outlineColor": "255;255;255",
+            "outlineThickness": 2,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": true,
+            "underlined": false,
+            "text": "0",
+            "font": "",
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "characterSize": 80,
+            "lineHeight": 0,
+            "color": "60;60;60"
+          }
+        },
+        {
+          "assetStoreId": "",
+          "bold": false,
+          "italic": false,
+          "name": "Score_Player2",
+          "smoothed": true,
+          "type": "TextObject::Text",
+          "underlined": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "string": "0",
+          "font": "",
+          "textAlignment": "center",
+          "characterSize": 80,
+          "color": {
+            "r": 60,
+            "g": 60,
+            "b": 60
+          },
+          "content": {
+            "bold": false,
+            "isOutlineEnabled": false,
+            "isShadowEnabled": false,
+            "italic": false,
+            "outlineColor": "255;255;255",
+            "outlineThickness": 2,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2,
+            "shadowColor": "0;0;0",
+            "shadowDistance": 4,
+            "shadowOpacity": 127,
+            "smoothed": true,
+            "underlined": false,
+            "text": "0",
+            "font": "",
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "characterSize": 80,
+            "lineHeight": 0,
+            "color": "60;60;60"
+          }
+        }
+      ],
+      "objectsFolderStructure": {
+        "folderName": "__ROOT",
+        "children": [
+          {
+            "objectName": "Ball"
+          },
+          {
+            "objectName": "Paddle_Left"
+          },
+          {
+            "objectName": "Paddle_Right"
+          },
+          {
+            "objectName": "Ground"
+          },
+          {
+            "objectName": "Background"
+          },
+          {
+            "objectName": "Goal_Left"
+          },
+          {
+            "objectName": "Goal_Right"
+          },
+          {
+            "objectName": "Score_Player1"
+          },
+          {
+            "objectName": "Score_Player2"
+          }
+        ]
+      },
+      "events": [
+        {
+          "disabled": false,
+          "folded": false,
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": "// --- One-time setup: scene variables + Wavedash SDK ---\nconst scene = runtimeScene;\nconst game = scene.getGame();\nconst input = game.getInputManager();\nconst dt = scene.getTimeManager().getElapsedTime() / 1000;\n\nconst sv = scene.getVariables();\nconst v = (name) => sv.get(name);\n\nif (!v('initialized').getAsBoolean()) {\n    v('initialized').setBoolean(true);\n    v('ballVx').setNumber(400);\n    v('ballVy').setNumber(100);\n    v('score1').setNumber(0);\n    v('score2').setNumber(0);\n\n    (async () => {\n        try {\n            const WavedashJS = await window.WavedashJS;\n            WavedashJS.updateLoadProgressZeroToOne(1.0);\n            WavedashJS.init({ debug: true });\n        } catch (e) { console.warn('[wavedash] init failed:', e); }\n    })();\n}\n\n// --- Constants ---\nconst W = 1280, H = 720;\nconst PADDLE_SPEED = 500;\nconst AI_SPEED = 350;\nconst BALL_SPEED = 400;\nconst PLAY_TOP = 40;\nconst PLAY_BOTTOM = 640;\n\n// --- Object lookups ---\nconst ball = scene.getObjects('Ball')[0];\nconst pL = scene.getObjects('Paddle_Left')[0];\nconst pR = scene.getObjects('Paddle_Right')[0];\nconst s1 = scene.getObjects('Score_Player1')[0];\nconst s2 = scene.getObjects('Score_Player2')[0];\nif (!ball || !pL || !pR) return;\n\n// --- Left paddle: W/S ---\nconst pLH = pL.getHeight();\nconst minPaddleY = PLAY_TOP;\nconst maxPaddleY = PLAY_BOTTOM - pLH;\n\nlet leftDir = 0;\nif (input.isKeyPressed(87)) leftDir -= 1;  // W: up\nif (input.isKeyPressed(83)) leftDir += 1;  // S: down\nlet lpy = pL.getY() + leftDir * PADDLE_SPEED * dt;\nlpy = Math.max(minPaddleY, Math.min(maxPaddleY, lpy));\npL.setY(lpy);\n\n// --- Right paddle: simple tracking AI ---\nconst pRH = pR.getHeight();\nconst target = ball.getY() + ball.getHeight() / 2 - pRH / 2;\nconst dy = target - pR.getY();\nconst step = AI_SPEED * dt;\nconst move = Math.abs(dy) < step ? dy : Math.sign(dy) * step;\nlet rpy = Math.max(minPaddleY, Math.min(PLAY_BOTTOM - pRH, pR.getY() + move));\npR.setY(rpy);\n\n// --- Ball physics ---\nlet vx = v('ballVx').getAsNumber();\nlet vy = v('ballVy').getAsNumber();\nlet bx = ball.getX() + vx * dt;\nlet by = ball.getY() + vy * dt;\n\nconst ballW = ball.getWidth();\nconst ballH = ball.getHeight();\n\n// Top/bottom walls\nif (by < PLAY_TOP && vy < 0) { vy = -vy; by = PLAY_TOP; }\nif (by + ballH > PLAY_BOTTOM && vy > 0) { vy = -vy; by = PLAY_BOTTOM - ballH; }\n\n// AABB vs paddle (flip vx only, avoids edge-tunneling)\nfunction hit(p) {\n    return bx < p.getX() + p.getWidth() && bx + ballW > p.getX()\n        && by < p.getY() + p.getHeight() && by + ballH > p.getY();\n}\nif (hit(pL) && vx < 0) { vx = -vx; bx = pL.getX() + pL.getWidth(); }\nif (hit(pR) && vx > 0) { vx = -vx; bx = pR.getX() - ballW; }\n\n// Scoring\nfunction reset(dir) {\n    bx = W / 2 - ballW / 2;\n    by = H / 2 - ballH / 2;\n    vx = BALL_SPEED * dir;\n    vy = (Math.random() - 0.5) * 200;\n}\nif (bx + ballW < 0) { v('score2').setNumber(v('score2').getAsNumber() + 1); reset(-1); }\nelse if (bx > W)    { v('score1').setNumber(v('score1').getAsNumber() + 1); reset(1); }\n\nball.setX(bx); ball.setY(by);\nv('ballVx').setNumber(vx);\nv('ballVy').setNumber(vy);\n\n// Score text\nif (s1) s1.setString(String(v('score1').getAsNumber() | 0));\nif (s2) s2.setString(String(v('score2').getAsNumber() | 0));\n",
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": true
+        }
+      ],
+      "layers": [
+        {
+          "ambientLightColorB": 200,
+          "ambientLightColorG": 200,
+          "ambientLightColorR": 200,
+          "camera2DPlaneMaxDrawingDistance": 5000,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 3,
+          "cameraType": "",
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "",
+          "renderingType": "",
+          "visibility": true,
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0,
+              "width": 0
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "behaviorsSharedData": [
+        {
+          "name": "Animation",
+          "type": "AnimatableCapability::AnimatableBehavior"
+        },
+        {
+          "name": "Effect",
+          "type": "EffectCapability::EffectBehavior"
+        },
+        {
+          "name": "Flippable",
+          "type": "FlippableCapability::FlippableBehavior"
+        },
+        {
+          "name": "Opacity",
+          "type": "OpacityCapability::OpacityBehavior"
+        },
+        {
+          "name": "Physics2",
+          "type": "Physics2::Physics2Behavior",
+          "gravityX": 0,
+          "gravityY": 9.8,
+          "worldScale": 100,
+          "scaleX": 100,
+          "scaleY": 100
+        },
+        {
+          "name": "Resizable",
+          "type": "ResizableCapability::ResizableBehavior"
+        },
+        {
+          "name": "Scale",
+          "type": "ScalableCapability::ScalableBehavior"
+        }
+      ]
+    }
+  ],
+  "externalEvents": [],
+  "eventsFunctionsExtensions": [
+    {
+      "author": "",
+      "category": "Movement",
+      "dimension": "",
+      "extensionNamespace": "",
+      "fullName": "Draggable (for physics objects)",
+      "gdevelopVersion": "",
+      "helpPath": "",
+      "iconUrl": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iSWNvbnMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgMzIgMzIiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNMjcsMTFjMC0yLTIuMi0zLjYtNS42LTQuNEMyMC42LDMuMiwxOSwxLDE3LDFzLTMuNiwyLjItNC40LDUuNkM5LjIsNy40LDcsOSw3LDExYzAsMiwyLjIsMy42LDUuNiw0LjQNCgljMC4zLDEuMiwwLjYsMi4yLDEuMSwzLjFjMC4zLDAuNSwwLjksMC43LDEuNCwwLjRjMC41LTAuMywwLjctMC45LDAuNC0xLjRjLTAuMy0wLjUtMC41LTEuMS0wLjctMS44YzAuNywwLjEsMS41LDAuMSwyLjIsMC4xDQoJYzAuOCwwLDEuNSwwLDIuMi0wLjFjLTAuMywxLTAuNywxLjktMS4xLDIuNWMtMC4zLDAuNC0wLjIsMS4xLDAuMiwxLjRjMC4yLDAuMSwwLjQsMC4yLDAuNiwwLjJjMC4zLDAsMC42LTAuMSwwLjgtMC40DQoJYzAuNy0xLDEuMy0yLjQsMS43LTRDMjQuOCwxNC42LDI3LDEzLDI3LDExeiBNMTcsM2MwLjcsMCwxLjYsMS4yLDIuMiwzLjNjLTAuNy0wLjEtMS41LTAuMS0yLjItMC4xcy0xLjUsMC0yLjIsMC4xDQoJQzE1LjQsNC4yLDE2LjMsMywxNywzeiBNOSwxMWMwLTAuNywxLjItMS42LDMuMy0yLjJjLTAuMSwwLjctMC4xLDEuNS0wLjEsMi4yYzAsMC44LDAsMS41LDAuMSwyLjJDMTAuMiwxMi42LDksMTEuNyw5LDExeiBNMTcsMTMuOQ0KCWMtMSwwLTEuOS0wLjEtMi43LTAuMmMtMC4xLTAuOC0wLjItMS43LTAuMi0yLjdjMC0xLDAuMS0xLjksMC4yLTIuN0MxNS4xLDguMiwxNiw4LjEsMTcsOC4xczEuOSwwLjEsMi43LDAuMg0KCWMwLjEsMC44LDAuMiwxLjcsMC4yLDIuN2MwLDAuOS0wLjEsMS44LTAuMiwyLjdDMTguOSwxMy44LDE4LDEzLjksMTcsMTMuOXogTTIxLjcsMTMuMmMwLjEtMC43LDAuMS0xLjUsMC4xLTIuMg0KCWMwLTAuOCwwLTEuNS0wLjEtMi4yQzIzLjgsOS40LDI1LDEwLjMsMjUsMTFDMjUsMTEuNywyMy44LDEyLjYsMjEuNywxMy4yeiIvPg0KPHBhdGggZD0iTTI5LjksMTcuNUMyOS43LDE3LjIsMjkuNCwxNywyOSwxN2MtMi4yLDAtNC4zLDEtNS42LDIuOEwyMi41LDIxYy0xLjEsMS4zLTIuOCwyLTQuNSwyaC0zYy0wLjYsMC0xLTAuNC0xLTFzMC40LTEsMS0xaDEuOQ0KCWMxLjYsMCwzLjEtMS4zLDMuMS0yLjljMCwwLDAtMC4xLDAtMC4xYzAtMC41LTAuNS0xLTEtMWwtNi4xLDBjLTMuNiwwLTYuNSwxLjYtOC4xLDQuMmwtMi43LDQuMmMtMC4yLDAuMy0wLjIsMC43LDAsMWwzLDUNCgljMC4xLDAuMiwwLjQsMC40LDAuNiwwLjVjMC4xLDAsMC4xLDAsMC4yLDBjMC4yLDAsMC40LTAuMSwwLjYtMC4yYzMuOC0yLjUsOC4yLTMuOCwxMi43LTMuOGMzLjMsMCw2LjMtMS44LDcuOS00LjdsMi43LTQuOA0KCUMzMCwxOC4yLDMwLDE3LjgsMjkuOSwxNy41eiIvPg0KPC9zdmc+DQo=",
+      "name": "DraggablePhysics",
+      "previewIconUrl": "https://resources.gdevelop-app.com/assets/Icons/Glyphster Pack/Master/SVG/Virtual Reality/Virtual Reality_hand_vr_ar_360.svg",
+      "shortDescription": "Drag a physics object with the mouse (or touch).",
+      "version": "1.2.1",
+      "description": [
+        "Enables players to click and drag on physics objects to move them.  The object retains velocity when the click is released, allowing players to fling objects across the screen.",
+        "",
+        "Note:",
+        "- The default \"draggable\" behavior will not work on objects with the physics behavior. This extension should be used instead.",
+        "- This extension will only work on objects that have the physics behavior.",
+        "- Kinematic physics mode is incompatible with this extension. The object will be changed to dynamic mode.",
+        "",
+        "The Parking Jam example uses this extension ([open the project online](https://editor.gdevelop.io/?project=example://parking-jam))."
+      ],
+      "origin": {
+        "identifier": "DraggablePhysics",
+        "name": "gdevelop-extension-store"
+      },
+      "tags": [
+        "physics",
+        "drag",
+        "mouse",
+        "pointer",
+        "cursor",
+        "touch",
+        "physics",
+        "object",
+        "joint",
+        "fling"
+      ],
+      "authorIds": [
+        "gqDaZjCfevOOxBYkK6zlhtZnXCg1"
+      ],
+      "dependencies": [],
+      "globalVariables": [],
+      "sceneVariables": [],
+      "eventsFunctions": [],
+      "eventsFunctionsFolderStructure": {
+        "folderName": "__ROOT"
+      },
+      "eventsBasedBehaviors": [
+        {
+          "description": "Drag a physics object with the mouse (or touch).",
+          "fullName": "Draggable (for physics objects)",
+          "helpPath": "",
+          "iconUrl": "",
+          "name": "DraggablePhysics",
+          "objectType": "",
+          "previewIconUrl": "",
+          "eventsFunctions": [
+            {
+              "fullName": "",
+              "functionType": "Action",
+              "name": "doStepPreEvents",
+              "sentence": "",
+              "events": [
+                {
+                  "colorB": 228,
+                  "colorG": 176,
+                  "colorR": 74,
+                  "creationTime": 0,
+                  "name": "Change \"kinematic\" to \"dynamic\" to prevent crash",
+                  "source": "",
+                  "type": "BuiltinCommonInstructions::Group",
+                  "events": [
+                    {
+                      "type": "BuiltinCommonInstructions::Standard",
+                      "conditions": [
+                        {
+                          "type": {
+                            "value": "Physics2::IsKinematic"
+                          },
+                          "parameters": [
+                            "Object",
+                            "PhysicsBehavior"
+                          ]
+                        }
+                      ],
+                      "actions": [
+                        {
+                          "type": {
+                            "value": "Physics2::SetDynamic"
+                          },
+                          "parameters": [
+                            "Object",
+                            "PhysicsBehavior"
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "parameters": []
+                },
+                {
+                  "colorB": 228,
+                  "colorG": 176,
+                  "colorR": 74,
+                  "creationTime": 0,
+                  "name": "Mouse",
+                  "source": "",
+                  "type": "BuiltinCommonInstructions::Group",
+                  "events": [
+                    {
+                      "type": "BuiltinCommonInstructions::Comment",
+                      "color": {
+                        "b": 109,
+                        "g": 230,
+                        "r": 255,
+                        "textB": 0,
+                        "textG": 0,
+                        "textR": 0
+                      },
+                      "comment": "Create mouse joints and save the joint ID"
+                    },
+                    {
+                      "type": "BuiltinCommonInstructions::Standard",
+                      "conditions": [
+                        {
+                          "type": {
+                            "value": "DraggablePhysics::DraggablePhysics::PropertyEnableAutomaticDragging"
+                          },
+                          "parameters": [
+                            "Object",
+                            "Behavior"
+                          ]
+                        }
+                      ],
+                      "actions": [],
+                      "events": [
+                        {
+                          "type": "BuiltinCommonInstructions::Standard",
+                          "conditions": [
+                            {
+                              "type": {
+                                "value": "MouseButtonFromTextPressed"
+                              },
+                              "parameters": [
+                                "",
+                                "MouseButton"
+                              ]
+                            },
+                            {
+                              "type": {
+                                "value": "BuiltinCommonInstructions::Once"
+                              },
+                              "parameters": []
+                            }
+                          ],
+                          "actions": [],
+                          "events": [
+                            {
+                              "type": "BuiltinCommonInstructions::Standard",
+                              "conditions": [
+                                {
+                                  "type": {
+                                    "inverted": true,
+                                    "value": "DraggablePhysics::DraggablePhysics::IsBeingDragged"
+                                  },
+                                  "parameters": [
+                                    "Object",
+                                    "Behavior",
+                                    ""
+                                  ]
+                                },
+                                {
+                                  "type": {
+                                    "value": "SourisSurObjet"
+                                  },
+                                  "parameters": [
+                                    "Object",
+                                    "",
+                                    "",
+                                    ""
+                                  ]
+                                }
+                              ],
+                              "actions": [
+                                {
+                                  "type": {
+                                    "value": "Physics2::AddMouseJoint"
+                                  },
+                                  "parameters": [
+                                    "Object",
+                                    "PhysicsBehavior",
+                                    "MouseX(Object.Layer(),0)",
+                                    "MouseY(Object.Layer(),0)",
+                                    "MaxForce",
+                                    "Frequency",
+                                    "Damping",
+                                    "__DraggablePhysics.MouseJointID"
+                                  ]
+                                },
+                                {
+                                  "type": {
+                                    "value": "DraggablePhysics::DraggablePhysics::SetPropertyMouseJointID"
+                                  },
+                                  "parameters": [
+                                    "Object",
+                                    "Behavior",
+                                    "=",
+                                    "Variable(__DraggablePhysics.MouseJointID)"
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BuiltinCommonInstructions::Comment",
+                      "color": {
+                        "b": 109,
+                        "g": 230,
+                        "r": 255,
+                        "textB": 0,
+                        "textG": 0,
+                        "textR": 0
+                      },
+                      "comment": "Delete the mouse joint"
+                    },
+                    {
+                      "type": "BuiltinCommonInstructions::Standard",
+                      "conditions": [
+                        {
+                          "type": {
+                            "value": "DraggablePhysics::DraggablePhysics::PropertyEnableAutomaticDragging"
+                          },
+                          "parameters": [
+                            "Object",
+                            "Behavior"
+                          ]
+                        },
+                        {
+                          "type": {
+                            "value": "MouseButtonFromTextReleased"
+                          },
+                          "parameters": [
+                            "",
+                            "MouseButton"
+                          ]
+                        }
+                      ],
+                      "actions": [
+                        {
+                          "type": {
+                            "value": "DraggablePhysics::DraggablePhysics::ReleaseDrag"
+                          },
+                          "parameters": [
+                            "Object",
+                            "Behavior",
+                            ""
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BuiltinCommonInstructions::Comment",
+                      "color": {
+                        "b": 109,
+                        "g": 230,
+                        "r": 255,
+                        "textB": 0,
+                        "textG": 0,
+                        "textR": 0
+                      },
+                      "comment": "Update the position of the mouse joint to follow the mouse"
+                    },
+                    {
+                      "type": "BuiltinCommonInstructions::Standard",
+                      "conditions": [
+                        {
+                          "type": {
+                            "value": "DraggablePhysics::DraggablePhysics::IsBeingDragged"
+                          },
+                          "parameters": [
+                            "Object",
+                            "Behavior",
+                            ""
+                          ]
+                        }
+                      ],
+                      "actions": [
+                        {
+                          "type": {
+                            "value": "Physics2::MouseJointTarget"
+                          },
+                          "parameters": [
+                            "Object",
+                            "PhysicsBehavior",
+                            "MouseJointID",
+                            "MouseX(Object.Layer(),0)",
+                            "MouseY(Object.Layer(),0)"
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "parameters": []
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "Start dragging object.",
+              "fullName": "Start dragging object",
+              "functionType": "Action",
+              "name": "StartDragging",
+              "sentence": "Start dragging (physics) _PARAM0_ ",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [
+                    {
+                      "type": {
+                        "inverted": true,
+                        "value": "DraggablePhysics::DraggablePhysics::IsBeingDragged"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        ""
+                      ]
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "Physics2::AddMouseJoint"
+                      },
+                      "parameters": [
+                        "Object",
+                        "PhysicsBehavior",
+                        "MouseX(Object.Layer(),0)",
+                        "MouseY(Object.Layer(),0)",
+                        "MaxForce",
+                        "Frequency",
+                        "Damping",
+                        "__DraggablePhysics.MouseJointID"
+                      ]
+                    },
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyMouseJointID"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "=",
+                        "Variable(__DraggablePhysics.MouseJointID)"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "Release dragged object.",
+              "fullName": "Release dragged object",
+              "functionType": "Action",
+              "name": "ReleaseDrag",
+              "sentence": "Release _PARAM0_ from being dragged (physics)",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::IsBeingDragged"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        ""
+                      ]
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "Physics2::Remove joint"
+                      },
+                      "parameters": [
+                        "Object",
+                        "PhysicsBehavior",
+                        "MouseJointID"
+                      ]
+                    },
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyMouseJointID"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "=",
+                        "0"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "Check if object is being dragged.",
+              "fullName": "Is being dragged",
+              "functionType": "Condition",
+              "name": "IsBeingDragged",
+              "sentence": "_PARAM0_ is being dragged (physics)",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::PropertyMouseJointID"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "!=",
+                        "0"
+                      ]
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "SetReturnBoolean"
+                      },
+                      "parameters": [
+                        "True"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "fullName": "",
+              "functionType": "Action",
+              "name": "onDeActivate",
+              "sentence": "",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::ReleaseDrag"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        ""
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "the mouse button used to move the object.",
+              "fullName": "Mouse button",
+              "functionType": "ExpressionAndCondition",
+              "group": "Draggable (for physics objects) configuration",
+              "name": "MouseButton",
+              "sentence": "the dragging mouse button",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "SetReturnString"
+                      },
+                      "parameters": [
+                        "MouseButton"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "expressionType": {
+                "supplementaryInformation": "[\"Left\",\"Right\",\"Middle\"]",
+                "type": "stringWithSelector"
+              },
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "fullName": "",
+              "functionType": "ActionWithOperator",
+              "getterName": "MouseButton",
+              "group": "Draggable (for physics objects) configuration",
+              "name": "SetMouseButton",
+              "sentence": "",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyMouseButton"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "=",
+                        "Value"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "the maximum joint force (in Newtons) of the object.",
+              "fullName": "Maximum force",
+              "functionType": "ExpressionAndCondition",
+              "group": "Draggable configuration",
+              "name": "MaxForce",
+              "sentence": "the maximum force",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "SetReturnNumber"
+                      },
+                      "parameters": [
+                        "MaxForce"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "expressionType": {
+                "type": "expression"
+              },
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "fullName": "",
+              "functionType": "ActionWithOperator",
+              "getterName": "MaxForce",
+              "group": "Draggable configuration",
+              "name": "SetMaxForce",
+              "sentence": "",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyMaxForce"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "=",
+                        "Value"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "the joint frequency (per second) of the object.",
+              "fullName": "Frequency",
+              "functionType": "ExpressionAndCondition",
+              "group": "Draggable configuration",
+              "name": "Frequency",
+              "sentence": "the frequency",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "SetReturnNumber"
+                      },
+                      "parameters": [
+                        "Frequency"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "expressionType": {
+                "type": "expression"
+              },
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "fullName": "",
+              "functionType": "ActionWithOperator",
+              "getterName": "Frequency",
+              "group": "Draggable configuration",
+              "name": "SetFrequency",
+              "sentence": "",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyFrequency"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "=",
+                        "Value"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "the joint damping ratio (range: 0 to 1) of the object. ",
+              "fullName": "Damping ratio",
+              "functionType": "ExpressionAndCondition",
+              "group": "Draggable configuration",
+              "name": "Damping",
+              "sentence": "the damping ratio (range: 0 to 1)",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "SetReturnNumber"
+                      },
+                      "parameters": [
+                        "Damping"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "expressionType": {
+                "type": "expression"
+              },
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "fullName": "",
+              "functionType": "ActionWithOperator",
+              "getterName": "Damping",
+              "group": "Draggable configuration",
+              "name": "SetDamping",
+              "sentence": "",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyDamping"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "=",
+                        "Value"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "Check if automatic dragging is enabled.",
+              "fullName": "Automatic dragging",
+              "functionType": "Condition",
+              "group": "Draggable (for physics objects) configuration",
+              "name": "IsAutomaticDraggingEnabled",
+              "sentence": "Automatic dragging is enabled on _PARAM0_ ",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::PropertyEnableAutomaticDragging"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior"
+                      ]
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "SetReturnBoolean"
+                      },
+                      "parameters": [
+                        "True"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                }
+              ],
+              "objectGroups": []
+            },
+            {
+              "description": "Enable (or disable) automatic dragging with the mouse or touch.",
+              "fullName": "Enable (or disable) automatic dragging",
+              "functionType": "Action",
+              "group": "Draggable (for physics objects) configuration",
+              "name": "SetEnableAutomaticDragging",
+              "sentence": "Enable automatic dragging on _PARAM0_: _PARAM2_",
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [
+                    {
+                      "type": {
+                        "inverted": true,
+                        "value": "GetArgumentAsBoolean"
+                      },
+                      "parameters": [
+                        "\"Value\""
+                      ]
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyEnableAutomaticDragging"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "no"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "BuiltinCommonInstructions::Standard",
+                  "conditions": [
+                    {
+                      "type": {
+                        "value": "GetArgumentAsBoolean"
+                      },
+                      "parameters": [
+                        "\"Value\""
+                      ]
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "type": {
+                        "value": "DraggablePhysics::DraggablePhysics::SetPropertyEnableAutomaticDragging"
+                      },
+                      "parameters": [
+                        "Object",
+                        "Behavior",
+                        "yes"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "parameters": [
+                {
+                  "description": "Object",
+                  "name": "Object",
+                  "type": "object"
+                },
+                {
+                  "description": "Behavior",
+                  "name": "Behavior",
+                  "supplementaryInformation": "DraggablePhysics::DraggablePhysics",
+                  "type": "behavior"
+                },
+                {
+                  "defaultValue": "yes",
+                  "description": "EnableAutomaticDragging",
+                  "name": "Value",
+                  "optional": true,
+                  "type": "yesorno"
+                }
+              ],
+              "objectGroups": []
+            }
+          ],
+          "eventsFunctionsFolderStructure": {
+            "folderName": "__ROOT",
+            "children": [
+              {
+                "functionName": "doStepPreEvents"
+              },
+              {
+                "functionName": "StartDragging"
+              },
+              {
+                "functionName": "ReleaseDrag"
+              },
+              {
+                "functionName": "IsBeingDragged"
+              },
+              {
+                "functionName": "onDeActivate"
+              },
+              {
+                "folderName": "Draggable (for physics objects) configuration",
+                "children": [
+                  {
+                    "functionName": "MouseButton"
+                  },
+                  {
+                    "functionName": "SetMouseButton"
+                  },
+                  {
+                    "functionName": "IsAutomaticDraggingEnabled"
+                  },
+                  {
+                    "functionName": "SetEnableAutomaticDragging"
+                  }
+                ]
+              },
+              {
+                "folderName": "Draggable configuration",
+                "children": [
+                  {
+                    "functionName": "MaxForce"
+                  },
+                  {
+                    "functionName": "SetMaxForce"
+                  },
+                  {
+                    "functionName": "Frequency"
+                  },
+                  {
+                    "functionName": "SetFrequency"
+                  },
+                  {
+                    "functionName": "Damping"
+                  },
+                  {
+                    "functionName": "SetDamping"
+                  }
+                ]
+              }
+            ]
+          },
+          "propertyDescriptors": [
+            {
+              "value": "",
+              "type": "Behavior",
+              "label": "Physics behavior",
+              "extraInformation": [
+                "Physics2::Physics2Behavior"
+              ],
+              "choices": [],
+              "name": "PhysicsBehavior"
+            },
+            {
+              "value": "Left",
+              "type": "Choice",
+              "label": "Mouse button",
+              "choices": [
+                {
+                  "label": "Left",
+                  "value": "Left"
+                },
+                {
+                  "label": "Right",
+                  "value": "Right"
+                },
+                {
+                  "label": "Middle",
+                  "value": "Middle"
+                }
+              ],
+              "name": "MouseButton"
+            },
+            {
+              "value": "500",
+              "type": "Number",
+              "unit": "Newton",
+              "label": "Maximum force",
+              "name": "MaxForce"
+            },
+            {
+              "value": "10",
+              "type": "Number",
+              "label": "Frequency (Hz) ",
+              "name": "Frequency"
+            },
+            {
+              "value": "1",
+              "type": "Number",
+              "label": "Damping ratio (Range: 0 to 1)",
+              "name": "Damping"
+            },
+            {
+              "value": "",
+              "type": "Number",
+              "label": "",
+              "hidden": true,
+              "name": "MouseJointID"
+            },
+            {
+              "value": "true",
+              "type": "Boolean",
+              "label": "Enable automatic dragging",
+              "description": "If automatic dragging is disabled, use the \"Start drag\" and \"Release drag\" actions.",
+              "name": "EnableAutomaticDragging"
+            }
+          ],
+          "propertiesFolderStructure": {
+            "folderName": "__ROOT",
+            "children": [
+              {
+                "propertyName": "PhysicsBehavior"
+              },
+              {
+                "propertyName": "MouseButton"
+              },
+              {
+                "propertyName": "MaxForce"
+              },
+              {
+                "propertyName": "Frequency"
+              },
+              {
+                "propertyName": "Damping"
+              },
+              {
+                "propertyName": "MouseJointID"
+              },
+              {
+                "propertyName": "EnableAutomaticDragging"
+              }
+            ]
+          }
+        }
+      ],
+      "eventsBasedObjects": []
+    }
+  ],
+  "externalLayouts": []
+}
