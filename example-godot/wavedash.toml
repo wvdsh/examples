@@ -1,0 +1,5 @@
+game_id = "YOUR_GAME_ID_HERE"
+upload_dir = "./build"
+
+[godot]
+version = "4.0"

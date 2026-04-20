@@ -212,6 +212,12 @@ layout_mode = 2
 text = "Waiting..."
 horizontal_alignment = 1
 
+[node name="InviteLinkButton" type="Button" parent="HUD/LobbyView/VBox"]
+visible = false
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Copy Invite Link"
+
 [node name="StartButton" type="Button" parent="HUD/LobbyView/VBox"]
 visible = false
 custom_minimum_size = Vector2(0, 48)

@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var lobby_header: Label = $LobbyView/VBox/LobbyHeader
 @onready var lobby_status: Label = $LobbyView/VBox/StatusLabel
 @onready var start_button: Button = $LobbyView/VBox/StartButton
+@onready var invite_link_button: Button = $LobbyView/VBox/InviteLinkButton
 
 func show_main_menu() -> void:
 	main_menu.visible = true
@@ -62,3 +63,6 @@ func set_lobby_status(text: String) -> void:
 
 func show_start_button(show: bool) -> void:
 	start_button.visible = show
+
+func show_invite_link_button(show: bool) -> void:
+	invite_link_button.visible = show

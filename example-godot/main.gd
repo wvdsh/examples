@@ -62,8 +62,15 @@ func _ready() -> void:
 	hud.online_menu.get_node("HBox/LeftPanel/RefreshButton").pressed.connect(_on_refresh_lobbies)
 	hud.online_menu.get_node("HBox/LeftPanel/BackButton").pressed.connect(_on_back_to_menu)
 	hud.start_button.pressed.connect(_on_start_game)
+	hud.invite_link_button.pressed.connect(_on_copy_invite_link)
 
 	_enter_menu()
+
+	var launch_params := WavedashSDK.get_launch_params()
+	var launch_lobby_id: String = launch_params.get("lobby", "")
+	if launch_lobby_id != "":
+		_enter_online_menu()
+		WavedashSDK.join_lobby(launch_lobby_id)
 
 func _process(delta: float) -> void:
 	delta = minf(delta, 0.05)
@@ -135,6 +142,7 @@ func _enter_lobby(is_host_role: bool) -> void:
 	_update_score_labels()
 	hud.show_lobby_view()
 	hud.set_lobby_header("%s   vs   %s" % [left_name, right_name])
+	hud.show_invite_link_button(is_host)
 	if is_host:
 		hud.set_lobby_status("Share this lobby with a friend")
 		hud.show_start_button(false)
@@ -178,6 +186,15 @@ func _on_refresh_lobbies() -> void:
 
 func _on_create_lobby() -> void:
 	WavedashSDK.create_lobby(WavedashConstants.LOBBY_TYPE_PUBLIC, 2)
+
+func _on_copy_invite_link() -> void:
+	if current_lobby_id == "":
+		return
+	var response = await WavedashSDK.get_lobby_invite_link(true)
+	if response.get("success", false):
+		hud.set_lobby_status("Invite link copied to clipboard")
+	else:
+		hud.set_lobby_status("Could not get invite link: %s" % response.get("message", ""))
 
 func _on_start_game() -> void:
 	if not is_host or not peer_connected:

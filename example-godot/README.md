@@ -23,8 +23,8 @@ Ball physics is host-authoritative for goals but deterministic on paddle bounces
 
 1. Open the project in Godot and let it import.
 2. Pick **Project → Export**, select the **Web** preset, and export to `build/index.html`.
-3. Replace `game_id` in [`build/wavedash.toml`](./build/wavedash.toml) with your Wavedash game ID.
-4. From the `build/` directory, run:
+3. Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game ID.
+4. Run:
 
     ```
     wavedash dev
