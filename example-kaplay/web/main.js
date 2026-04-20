@@ -27,6 +27,9 @@ const LOBBY_VISIBILITY_PUBLIC = 0;
 const CHANNEL_PADDLE = 0;
 const CHANNEL_EVENTS = 1;
 const PADDLE_SEND_EPSILON = 0.01;
+// Exponential smoothing rate for the remote paddle's rendered position.
+// Higher = snappier but more jitter; lower = smoother but more visible lag.
+const REMOTE_PADDLE_SMOOTH_RATE = 20;
 
 /* ── Kaplay scene ─────────────────────────────────── */
 
@@ -259,6 +262,9 @@ let peerId = "";
 let peerConnected = false;
 
 let leftY = 0, rightY = 0;
+// Rendered paddle positions. Own side == leftY/rightY; remote side lerps toward
+// the networked value so dropped packets on the unreliable channel don't stutter.
+let leftDisplayY = 0, rightDisplayY = 0;
 let ballX = 0, ballY = 0, ballVx = 0, ballVy = 0;
 let leftScore = 0, rightScore = 0;
 let leftName = "Player", rightName = "Guest";
@@ -332,6 +338,7 @@ function enterOnlineGame(pos, vel) {
   ballX = pos.x; ballY = pos.y;
   ballVx = vel.x; ballVy = vel.y;
   leftY = 0; rightY = 0;
+  leftDisplayY = 0; rightDisplayY = 0;
   lastSentPaddleY = Infinity;
   showPanel(null);
   updateScoreboard();
@@ -568,6 +575,8 @@ function resetBall() {
 function updateLocal(dt) {
   leftY = movePaddle(leftY, dt, input.leftUp, input.leftDown);
   rightY = movePaddle(rightY, dt, input.rightUp, input.rightDown);
+  leftDisplayY = leftY;
+  rightDisplayY = rightY;
   updateBall(dt, true);
 }
 
@@ -580,6 +589,18 @@ function updateOnline(dt) {
   // Host is authoritative for goals; both sides run identical ball/bounce sim.
   updateBall(dt, isHost);
   broadcastPaddleIfChanged();
+
+  // Snap own side to the authoritative value; lerp the remote side toward its
+  // last-received target so unreliable-channel drops don't show up as jumps.
+  // Collision still uses leftY/rightY so host and guest agree on bounces.
+  const alpha = 1 - Math.exp(-REMOTE_PADDLE_SMOOTH_RATE * dt);
+  if (isHost) {
+    leftDisplayY = leftY;
+    rightDisplayY += (rightY - rightDisplayY) * alpha;
+  } else {
+    rightDisplayY = rightY;
+    leftDisplayY += (leftY - leftDisplayY) * alpha;
+  }
 }
 
 function updateBall(dt, authoritative) {
@@ -641,9 +662,9 @@ function bounce(leftSide) {
 }
 
 function syncObjects() {
-  const lp = worldToScreen(LEFT_X, leftY);
+  const lp = worldToScreen(LEFT_X, leftDisplayY);
   leftPaddle.pos.x = lp.x; leftPaddle.pos.y = lp.y;
-  const rp = worldToScreen(RIGHT_X, rightY);
+  const rp = worldToScreen(RIGHT_X, rightDisplayY);
   rightPaddle.pos.x = rp.x; rightPaddle.pos.y = rp.y;
   const bp = worldToScreen(ballX, ballY);
   ball.pos.x = bp.x; ball.pos.y = bp.y;
