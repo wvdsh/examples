@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>example-lua</title>
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+      #gameCanvas { width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+      #scoreboard {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 48px;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        user-select: none;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="scoreboard"><span id="leftScore">0</span><span id="rightScore">0</span></div>
+    <script type="module">
+      import { LuaFactory } from "https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/+esm";
+
+      const factory = new LuaFactory();
+      const lua = await factory.createEngine();
+
+      // Resolve the Wavedash SDK promise in JS so Lua doesn't need to touch
+      // `.then` (which is a reserved word in Lua).
+      const WavedashJS = await window.WavedashJS;
+
+      // Bind the JS handles Lua needs as Lua globals.
+      lua.global.set("window", window);
+      lua.global.set("document", document);
+      lua.global.set("Math", Math);
+      lua.global.set("WavedashJS", WavedashJS);
+
+      const main = await fetch("./main.lua").then((r) => r.text());
+      await lua.doString(main);
+    </script>
+  </body>
+</html>

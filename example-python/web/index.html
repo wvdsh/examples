@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>example-python</title>
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+      #gameCanvas { width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+    <script type="module">
+      import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.mjs";
+
+      // Resolve the Wavedash SDK promise in JS so Python can call it synchronously.
+      window.WavedashJS = await window.WavedashJS;
+
+      const pyodide = await loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/",
+      });
+
+      const code = await fetch("./main.py").then((r) => r.text());
+      await pyodide.runPythonAsync(code);
+    </script>
+  </body>
+</html>
