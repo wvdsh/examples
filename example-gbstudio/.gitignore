@@ -1,0 +1,7 @@
+cache/
+
+*.bak
+*.sav
+*.icloud
+
+user_settings.gbsres

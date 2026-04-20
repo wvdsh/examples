@@ -15,6 +15,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-godot`: Godot 4 pong demo with local and online multiplayer modes — initializes the SDK from GDScript, browses and joins lobbies, and uses Wavedash P2P to sync paddle positions (channel 0, unreliable) and score events (channel 1, reliable), exported to HTML5.
 - `example-cocos`: Cocos Creator 3 pong demo whose `Pong` component moves paddle and ball Nodes each frame, initializes the SDK from TypeScript, and then starts gameplay.
 - `example-construct`: Construct 3 folder-project pong demo that initializes the SDK from Construct scripts, updates loading progress during startup, releases deferred events when the first playable state is ready, and then starts gameplay.
+- `example-gbstudio`: GB Studio 4 Game Boy game exported to HTML5 via the built-in binjgb emulator, with the Wavedash SDK init injected into the exported shell.
 - `example-gdevelop`: GDevelop 5 pong demo authored in `game.json` with a single JavaScript event driving input, physics, scoring, and a ShapePainter renderer, initializes the SDK on the first frame, and then starts gameplay.
 - `example-haxe`: Haxe pong demo compiled to JavaScript via `haxe build.hxml`, renders with Canvas 2D, initializes the SDK through `js.Syntax.code`, and then starts gameplay.
 - `example-lua`: Lua pong demo that runs in the browser via [wasmoon](https://github.com/ceifa/wasmoon) — no build step, loaded straight from a CDN, renders with Canvas 2D, initializes the SDK, and then starts gameplay.
