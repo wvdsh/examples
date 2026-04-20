@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text startPromptText;
     [SerializeField] Button createLobbyButton;
     [SerializeField] Button backButton;
+    [SerializeField] Button inviteLinkButton;
     [SerializeField] Transform lobbyListContent;
 
     void Awake()
@@ -26,6 +27,14 @@ public class UIManager : MonoBehaviour
         playOnlineButton.onClick.AddListener(() => GameManager.Instance.StartOnlineGame());
         createLobbyButton.onClick.AddListener(() => GameManager.Instance.CreateLobby());
         backButton.onClick.AddListener(() => ShowMenu());
+        if (inviteLinkButton != null)
+            inviteLinkButton.onClick.AddListener(() => GameManager.Instance.CopyInviteLink());
+    }
+
+    public void SetInviteLinkVisible(bool show)
+    {
+        if (inviteLinkButton != null)
+            inviteLinkButton.gameObject.SetActive(show);
     }
 
     public void ShowMenu()

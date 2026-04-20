@@ -33,6 +33,14 @@ public class GameManager : MonoBehaviour
         rightPaddle.enabled = false;
         ball.ResetBall();
         uiManager.ShowMenu();
+        uiManager.SetInviteLinkVisible(false);
+
+        var launchParams = Wavedash.SDK.GetLaunchParams();
+        if (launchParams != null && launchParams.TryGetValue("lobby", out var launchLobbyId) && !string.IsNullOrEmpty(launchLobbyId))
+        {
+            uiManager.ShowOnlinePanel();
+            _ = Wavedash.SDK.JoinLobby(launchLobbyId);
+        }
     }
 
     void OnEnable()
@@ -190,8 +198,20 @@ public class GameManager : MonoBehaviour
         else
             uiManager.SetPlayerNames("Connecting...", myName);
 
+        uiManager.SetInviteLinkVisible(isHost);
+
         // Defer NGO start to next frame so Shutdown completes fully
         Invoke(nameof(StartNGO), 0f);
+    }
+
+    public async void CopyInviteLink()
+    {
+        if (string.IsNullOrEmpty(currentLobbyId)) return;
+        string link = await Wavedash.SDK.GetLobbyInviteLink(copyToClipboard: true);
+        if (string.IsNullOrEmpty(link))
+            Debug.LogWarning("[GameManager] Failed to get lobby invite link");
+        else
+            Debug.Log($"[GameManager] Copied invite link: {link}");
     }
 
     // ── Wavedash Events ─────────────────────────────────────────
@@ -381,6 +401,7 @@ public class GameManager : MonoBehaviour
         rightPaddle.enabled = false;
         ball.ResetBall();
         uiManager.ShowMenu();
+        uiManager.SetInviteLinkVisible(false);
 
         if (currentLobbyId != null)
         {
@@ -397,5 +418,6 @@ public class GameManager : MonoBehaviour
         rightPaddle.enabled = false;
         ball.ResetBall();
         uiManager.ShowMenu();
+        uiManager.SetInviteLinkVisible(false);
     }
 }
