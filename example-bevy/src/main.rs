@@ -27,6 +27,7 @@ const WALL_THICKNESS: f32 = 10.0;
 const PADDLE_W: f32 = 20.0;
 const PADDLE_H: f32 = 120.0;
 const PADDLE_SPEED: f32 = 500.0;
+const AI_SPEED: f32 = 350.0;
 const PADDLE_X: f32 = 400.0;
 const PADDLE_PADDING: f32 = 10.0;
 
@@ -205,34 +206,34 @@ fn setup(mut commands: Commands) {
 
 fn move_paddles(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Transform, &Player), With<Paddle>>,
+    mut paddles: Query<(&mut Transform, &Player), With<Paddle>>,
+    ball: Single<&Transform, (With<Ball>, Without<Paddle>)>,
     time: Res<Time>,
 ) {
-    for (mut transform, player) in &mut query {
-        let mut direction = 0.0;
+    let ball_y = ball.translation.y;
+    let max_y = TOP_WALL - WALL_THICKNESS / 2.0 - PADDLE_H / 2.0 - PADDLE_PADDING;
+    let min_y = BOTTOM_WALL + WALL_THICKNESS / 2.0 + PADDLE_H / 2.0 + PADDLE_PADDING;
 
-        match player {
+    for (mut transform, player) in &mut paddles {
+        let new_y = match player {
             Player::Left => {
+                let mut direction = 0.0;
                 if keyboard_input.pressed(KeyCode::KeyW) {
                     direction += 1.0;
                 }
                 if keyboard_input.pressed(KeyCode::KeyS) {
                     direction -= 1.0;
                 }
+                transform.translation.y + direction * PADDLE_SPEED * time.delta_secs()
             }
             Player::Right => {
-                if keyboard_input.pressed(KeyCode::ArrowUp) {
-                    direction += 1.0;
-                }
-                if keyboard_input.pressed(KeyCode::ArrowDown) {
-                    direction -= 1.0;
-                }
+                // Simple tracking AI. Move toward ball y, capped at AI_SPEED.
+                let dy = ball_y - transform.translation.y;
+                let step = AI_SPEED * time.delta_secs();
+                transform.translation.y + dy.clamp(-step, step)
             }
-        }
+        };
 
-        let new_y = transform.translation.y + direction * PADDLE_SPEED * time.delta_secs();
-        let max_y = TOP_WALL - WALL_THICKNESS / 2.0 - PADDLE_H / 2.0 - PADDLE_PADDING;
-        let min_y = BOTTOM_WALL + WALL_THICKNESS / 2.0 + PADDLE_H / 2.0 + PADDLE_PADDING;
         transform.translation.y = new_y.clamp(min_y, max_y);
     }
 }

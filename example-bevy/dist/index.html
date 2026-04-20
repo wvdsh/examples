@@ -5,8 +5,8 @@
   <base href="./" />
   
 <script type="module">
-import init, * as bindings from './pong-c1571809645c7f22.js';
-const wasm = await init({ module_or_path: './pong-c1571809645c7f22_bg.wasm' });
+import init, * as bindings from './pong-3a26af3671455932.js';
+const wasm = await init({ module_or_path: './pong-3a26af3671455932_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -24,8 +24,11 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
       overflow: hidden;
       background: #0a0a0a;
     }
+    canvas {
+      outline: none;
+    }
   </style>
-<link rel="modulepreload" href="./pong-c1571809645c7f22.js" crossorigin="anonymous" integrity="sha384-jkDRCRRzt1lw+dojaBJm7V/50Uyivcb/FMhfxZeaUk0qLskHBJcPfImW7kImbfBe"><link rel="modulepreload" href="./snippets/pong-d1bf434ee30f5671/inline0.js" crossorigin="anonymous" integrity="sha384-yoOZaANlkNjU0FTOxzQfOkzmSgYDBvurvbPZL+fAx/HvDEGlWV63fuTcpcp6WkSp"><link rel="preload" href="./pong-c1571809645c7f22_bg.wasm" crossorigin="anonymous" integrity="sha384-ByGiH4iw+quMTmfQ5YvUrf6ChdY6rmtVWxHNZek5MjsF1FUmcaiv/aQCrNxFUh6z" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="./pong-3a26af3671455932.js" crossorigin="anonymous" integrity="sha384-IucXlTAFJdbW98lrVC9DkquSST9+YvdBhiurDRqUQgmnaPUiPzICep+oc8ANcXUD"><link rel="modulepreload" href="./snippets/pong-d1bf434ee30f5671/inline0.js" crossorigin="anonymous" integrity="sha384-yoOZaANlkNjU0FTOxzQfOkzmSgYDBvurvbPZL+fAx/HvDEGlWV63fuTcpcp6WkSp"><link rel="preload" href="./pong-3a26af3671455932_bg.wasm" crossorigin="anonymous" integrity="sha384-KqlyBRqNzesqlFMpyQKdSdcfFfDkvnDVr+9wQEjKnysdtqz+VfQ4NpX88lQ/oyFs" as="fetch" type="application/wasm"></head>
 
 <body>
 </body>
