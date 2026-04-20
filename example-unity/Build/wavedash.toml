@@ -1,5 +1,0 @@
-game_id = "your_game_id_here"
-upload_dir = "index"
-
-[unity]
-version = "6000.0.73f1"
