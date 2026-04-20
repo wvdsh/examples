@@ -1,0 +1,7 @@
+temp/
+library/
+profiles/
+local/
+.cocos-creator-cache/
+node_modules/
+.DS_Store
