@@ -1,0 +1,6 @@
+-cp src
+-main Main
+-lib heaps
+-js bin/main.js
+-D js-es6
+-D no-traces

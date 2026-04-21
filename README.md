@@ -20,6 +20,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-gbstudio`: GB Studio 4 Game Boy game exported to HTML5 via the built-in binjgb emulator, with the Wavedash SDK init injected into the exported shell.
 - `example-gdevelop`: GDevelop 5 pong demo authored in `game.json` with a single JavaScript event driving input, physics, scoring, and a ShapePainter renderer, initializes the SDK on the first frame, and then starts gameplay.
 - `example-haxe`: Haxe pong demo compiled to JavaScript via `haxe build.hxml`, renders with Canvas 2D, initializes the SDK through `js.Syntax.code`, and then starts gameplay.
+- `example-heaps`: Heaps.io pong demo compiled to JavaScript via Haxe, renders through Heaps's scene graph with a translucent scoreboard, and initializes the SDK through `js.Syntax.code`.
 - `example-lua`: Lua pong demo that runs in the browser via [wasmoon](https://github.com/ceifa/wasmoon) — no build step, loaded straight from a CDN, renders with Canvas 2D, initializes the SDK, and then starts gameplay.
 - `example-python`: Python pong demo that runs in the browser via [Pyodide](https://pyodide.org/) (CPython in WebAssembly) — no build step, loaded straight from a CDN, renders with Canvas 2D, initializes the SDK from Python through the `js` module, and then starts gameplay.
 - `example-swift`: Swift pong demo compiled to WebAssembly via the official Swift SDK for WebAssembly, uses [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit) to drive Canvas 2D and call the SDK, and then starts gameplay.
@@ -27,6 +28,7 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-kaplay`: Kaplay pong demo with local and online multiplayer modes — loads Kaplay from a CDN (no build step), initializes the SDK from JavaScript, browses and joins lobbies, and uses Wavedash P2P to sync paddle positions (channel 0, unreliable) and score events (channel 1, reliable).
 - `example-kni`: KNI BlazorGL (MonoGame-compatible) pong demo built with nkast's KNI engine, compiled to WebAssembly via Blazor, initializes the SDK and updates loading progress from C# via JS interop, then starts gameplay.
 - `example-love2d`: LOVE2D pong demo that packages a `.love` file for the standalone `love.js` player, initializes the SDK, updates loading progress, releases deferred events when the first playable frame is rendered, and then starts gameplay.
+- `example-melonjs`: melonJS pong demo loaded via ESM from unpkg — no build step — uses a tracking-AI opponent, renders a scoreboard in each half, and initializes the SDK from a module entry.
 - `example-phaser`: Phaser 3 pong demo that initializes the SDK, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-pixi`: PixiJS pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
 - `example-playcanvas`: PlayCanvas 3D pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
