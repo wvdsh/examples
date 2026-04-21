@@ -10,6 +10,8 @@ Small, runnable examples showing how to integrate Wavedash across different engi
 - `example-cpp`: C++ and WebAssembly pong demo that initializes the SDK from C++, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-csharp`: C# and WebAssembly pong demo that initializes the SDK from C# via NativeAOT, updates loading progress, releases deferred events when ready, and then starts gameplay.
 - `example-defold`: Defold pong demo that initializes the SDK, updates loading progress, and then starts gameplay.
+- `example-excalibur`: Excalibur.js pong demo that loads the engine from a CDN via ESM — no build step — uses an AI opponent, and initializes the SDK from a module entry.
+- `example-littlejs`: LittleJS pong demo that loads the engine from a CDN, uses an AI opponent, and initializes the SDK inside `gameInit`.
 - `example-gamemaker`: GameMaker HTML5 pong demo that initializes the SDK through a JavaScript extension, updates loading progress during startup, releases deferred events when the first playable state is ready, and then starts gameplay.
 - `example-go`: Go and WebAssembly pong demo that owns the full browser stack via `syscall/js`, initializes the SDK, updates loading progress, and then starts gameplay.
 - `example-godot`: Godot 4 pong demo with local and online multiplayer modes — initializes the SDK from GDScript, browses and joins lobbies, and uses Wavedash P2P to sync paddle positions (channel 0, unreliable) and score events (channel 1, reliable), exported to HTML5.
