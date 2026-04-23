@@ -1,0 +1,77 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/erik/work/examples/example-kni/bin/Release/net8.0/wwwroot/_framework/blazor.webassembly.js",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/obj/Release/net8.0/scopedcss/bundle/Pong.styles.css",
+      "PackagePath": "staticwebassets/Pong.styles.css"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/favicon.ico",
+      "PackagePath": "staticwebassets/favicon.ico"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/js/decode.js",
+      "PackagePath": "staticwebassets/js/decode.js"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/js/decode.min.js",
+      "PackagePath": "staticwebassets/js/decode.min.js"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/js/micProcessor.js",
+      "PackagePath": "staticwebassets/js/micProcessor.js"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/js/streamProcessor.js",
+      "PackagePath": "staticwebassets/js/streamProcessor.js"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/kni.png",
+      "PackagePath": "staticwebassets/kni.png"
+    },
+    {
+      "Id": "/Users/erik/work/examples/example-kni/wwwroot/wavedash-bridge.js",
+      "PackagePath": "staticwebassets/wavedash-bridge.js"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.Pong.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build/Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.Pong.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.build.Pong.props",
+      "PackagePath": "build/Pong.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.buildMultiTargeting.Pong.props",
+      "PackagePath": "buildMultiTargeting\\Pong.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.buildTransitive.Pong.props",
+      "PackagePath": "buildTransitive\\Pong.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

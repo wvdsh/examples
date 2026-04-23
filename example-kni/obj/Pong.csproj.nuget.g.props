@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/Users/erik/.nuget/packages/</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/Users/erik/.nuget/packages/</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.12.4</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="/Users/erik/.nuget/packages/" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)nkast.wasm.jsinterop/8.0.11/buildTransitive/nkast.Wasm.JSInterop.props" Condition="Exists('$(NuGetPackageRoot)nkast.wasm.jsinterop/8.0.11/buildTransitive/nkast.Wasm.JSInterop.props')" />
+    <Import Project="$(NuGetPackageRoot)nkast.wasm.dom/8.0.11/buildTransitive/nkast.Wasm.Dom.props" Condition="Exists('$(NuGetPackageRoot)nkast.wasm.dom/8.0.11/buildTransitive/nkast.Wasm.Dom.props')" />
+    <Import Project="$(NuGetPackageRoot)nkast.wasm.canvas/8.0.11/buildTransitive/nkast.Wasm.Canvas.props" Condition="Exists('$(NuGetPackageRoot)nkast.wasm.canvas/8.0.11/buildTransitive/nkast.Wasm.Canvas.props')" />
+    <Import Project="$(NuGetPackageRoot)nkast.wasm.xr/8.0.11/buildTransitive/nkast.Wasm.XR.props" Condition="Exists('$(NuGetPackageRoot)nkast.wasm.xr/8.0.11/buildTransitive/nkast.Wasm.XR.props')" />
+    <Import Project="$(NuGetPackageRoot)nkast.wasm.xhr/8.0.11/buildTransitive/nkast.Wasm.XHR.props" Condition="Exists('$(NuGetPackageRoot)nkast.wasm.xhr/8.0.11/buildTransitive/nkast.Wasm.XHR.props')" />
+    <Import Project="$(NuGetPackageRoot)nkast.wasm.audio/8.0.11/buildTransitive/nkast.Wasm.Audio.props" Condition="Exists('$(NuGetPackageRoot)nkast.wasm.audio/8.0.11/buildTransitive/nkast.Wasm.Audio.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.net.sdk.webassembly.pack/9.0.14/build/Microsoft.NET.Sdk.WebAssembly.Pack.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.sdk.webassembly.pack/9.0.14/build/Microsoft.NET.Sdk.WebAssembly.Pack.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.net.illink.tasks/8.0.25/build/Microsoft.NET.ILLink.Tasks.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.illink.tasks/8.0.25/build/Microsoft.NET.ILLink.Tasks.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.components.webassembly/8.0.17/build/net8.0/Microsoft.AspNetCore.Components.WebAssembly.props" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.components.webassembly/8.0.17/build/net8.0/Microsoft.AspNetCore.Components.WebAssembly.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_NET_Sdk_WebAssembly_Pack Condition=" '$(PkgMicrosoft_NET_Sdk_WebAssembly_Pack)' == '' ">/Users/erik/.nuget/packages/microsoft.net.sdk.webassembly.pack/9.0.14</PkgMicrosoft_NET_Sdk_WebAssembly_Pack>
+    <PkgMicrosoft_NET_ILLink_Tasks Condition=" '$(PkgMicrosoft_NET_ILLink_Tasks)' == '' ">/Users/erik/.nuget/packages/microsoft.net.illink.tasks/8.0.25</PkgMicrosoft_NET_ILLink_Tasks>
+    <PkgMicrosoft_AspNetCore_Components_WebAssembly_DevServer Condition=" '$(PkgMicrosoft_AspNetCore_Components_WebAssembly_DevServer)' == '' ">/Users/erik/.nuget/packages/microsoft.aspnetcore.components.webassembly.devserver/8.0.17</PkgMicrosoft_AspNetCore_Components_WebAssembly_DevServer>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,14 @@
+name: example_flame
+description: Flame pong demo on Wavedash.
+version: 1.0.0
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flame: ^1.18.0
+
+flutter:
+  uses-material-design: true

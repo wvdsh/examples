@@ -1,0 +1,4 @@
+-O2
+-v
+-fwasm-exceptions
+-s EXPORT_ES6=1 -lexports.js

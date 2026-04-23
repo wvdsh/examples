@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <title>Pong</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+    </style>
+    <script>
+      // Flutter uses serviceWorker for caching; disable it here since
+      // Wavedash's service worker already handles asset caching.
+      window.flutterConfiguration = { serviceWorkerSettings: { serviceWorkerVersion: null } };
+    </script>
+    <script src="flutter_bootstrap.js" async></script>
+  </head>
+  <body>
+    <script type="module">
+      window.WavedashJS = await window.WavedashJS;
+    </script>
+  </body>
+</html>

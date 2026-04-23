@@ -1,0 +1,2 @@
+/Users/erik/work/examples/example-kni/bin/Release/net8.0/publish/emcc-props.json
+/Users/erik/work/examples/example-kni/bin/Release/net8.0/publish/web.config

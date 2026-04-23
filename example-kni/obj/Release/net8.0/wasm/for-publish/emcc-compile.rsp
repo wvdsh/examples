@@ -1,0 +1,14 @@
+-Oz
+-v
+-fwasm-exceptions
+-DDISABLE_PERFTRACING_LISTEN_PORTS=1
+-DENABLE_AOT=1
+-DDRIVER_GEN=1
+-DINVARIANT_TIMEZONE=1
+-DLINK_ICALLS=1
+-DGEN_PINVOKE=1
+-emit-llvm
+"-I/Users/erik/work/examples/example-kni/obj/Release/net8.0/wasm/for-publish"
+"-I/Users/erik/.dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.26/runtimes/browser-wasm/native/include/mono-2.0"
+"-I/Users/erik/.dotnet/packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.26/runtimes/browser-wasm/native/include/wasm"
+-g

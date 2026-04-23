@@ -1,0 +1,6 @@
+game_id = "YOUR_GAME_ID_HERE"
+upload_dir = "./build"
+
+[ruffle]
+version = "0.2.0-nightly.2026.2.24"
+executable = "game.swf"

@@ -1,0 +1,9 @@
+settings = {
+    orientation = {
+        default   = "landscapeRight",
+        supported = { "landscapeRight", "landscapeLeft" },
+    },
+    -- HTML5 has no build-specific settings here. The SDK is wired in via
+    -- Solar2D's JavaScript Module Loader — see wavedash.js at the project
+    -- root and the `require "wavedash"` call in main.lua.
+}
