@@ -44,21 +44,10 @@ if [ ! -f "$WEB_EXPORT_DIR/index.html" ]; then
   exit 1
 fi
 
-# Flatten Ren'Py's export directly into the deploy dir (no iframe wrapper;
-# the wavedash bridge is injected into Ren'Py's own index.html).
+# Flatten Ren'Py's export directly into the deploy dir. The SDK is driven from
+# Ren'Py itself via `emscripten.run_script` (see game/00_wavedash.rpy), so
+# there's no JS bridge to inject.
 cp -R "$WEB_EXPORT_DIR"/. "$OUT_DIR/"
-cp "$ROOT/web/wavedash-bridge.js" "$OUT_DIR/wavedash-bridge.js"
-
-# Inject our bridge script into Ren'Py's index.html before the closing </head>.
-python3 - "$OUT_DIR/index.html" <<'PY'
-import sys, pathlib
-p = pathlib.Path(sys.argv[1])
-html = p.read_text()
-tag = '<script src="wavedash-bridge.js"></script>'
-if tag not in html:
-    html = html.replace('</head>', tag + '\n</head>', 1)
-    p.write_text(html)
-PY
 
 # Clean up intermediates.
 rm -rf "$WEB_EXPORT_DIR" "$OUT_DIR/renpy-export.zip"
