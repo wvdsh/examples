@@ -1,0 +1,14 @@
+{
+  "name": "example-threejs-ugc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Three.js Pong + UGC (createUGCItem / updateUGCItem / deleteUGCItem) example for Wavedash.",
+  "scripts": {
+    "sync-vendor": "cp node_modules/three/build/three.module.js node_modules/three/build/three.core.js web/vendor/ && cp node_modules/three/examples/jsm/controls/OrbitControls.js web/vendor/addons/controls/ && cp node_modules/cannon-es/dist/cannon-es.js web/vendor/",
+    "postinstall": "mkdir -p web/vendor web/vendor/addons/controls && npm run sync-vendor"
+  },
+  "dependencies": {
+    "cannon-es": "^0.20.0",
+    "three": "^0.184.0"
+  }
+}
