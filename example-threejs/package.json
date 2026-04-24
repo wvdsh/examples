@@ -1,11 +1,16 @@
 {
   "name": "example-threejs",
+  "description": "Three.js Pong (online P2P) example for Wavedash.",
   "version": "1.0.0",
   "private": true,
-  "description": "Three.js Pong example for Wavedash.",
+  "type": "module",
   "scripts": {
-    "sync-three": "cp node_modules/three/build/three.module.js node_modules/three/build/three.core.js web/vendor/",
-    "postinstall": "mkdir -p web/vendor && npm run sync-three"
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "vite build --config vite/config.prod.mjs"
+  },
+  "devDependencies": {
+    "@wvdsh/sdk-js": "^1.2.2",
+    "vite": "^6.3.1"
   },
   "dependencies": {
     "three": "^0.184.0"

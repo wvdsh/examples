@@ -1,4 +1,2 @@
 game_id = "YOUR_GAME_ID_HERE"
-upload_dir = "./web"
-
-entrypoint = "index.html"
+upload_dir = "./dist"

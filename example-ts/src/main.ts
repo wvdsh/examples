@@ -1,8 +1,4 @@
-interface WavedashSDK {
-  init(options?: { debug?: boolean }): void | Promise<void>;
-  updateLoadProgressZeroToOne(progress: number): void;
-  loadComplete(): void;
-}
+import type { WavedashSDK } from "@wvdsh/sdk-js";
 
 declare global {
   interface Window {

@@ -1,47 +1,25 @@
-# Three.js
+# example-threejs
 
-A Three.js Pong game on Wavedash with local and online multiplayer.
+Three.js Pong (local + online P2P) in Vite, deployed to Wavedash.
 
-## What it demonstrates
+## Commands
 
-- SDK initialization from JavaScript (`WavedashJS.init({ debug: true })`).
-- Lobby browser: `createLobby`, `joinLobby`, `listAvailableLobbies`,
-  `leaveLobby`, and reading a host-provided title via `getLobbyData` /
-  `setLobbyData`.
-- Lobby lifecycle events: `LobbyJoined`, `LobbyUsersUpdated`,
-  `P2PConnectionEstablished`, `P2PPeerDisconnected`, `LobbyKicked` — wired up
-  with `WavedashJS.addEventListener(WavedashJS.Events.*, ...)`.
-- P2P messaging with `broadcastP2PMessage` + `readP2PMessageFromChannel`:
-    - Channel 0, unreliable: paddle position broadcasts on change.
-    - Channel 1, reliable: `StartGame` and `GoalScored` events.
-- The HUD (menus, lobby list, scoreboard) is built with plain DOM — `index.html`
-  is just a canvas and an import map for Three.js.
+| Command | Description |
+|---|---|
+| `npm install` | Install dependencies |
+| `npm run dev` | Start dev server on `localhost:8080` |
+| `npm run build` | Build to `./dist` |
+| `wavedash dev` | Run the built `./dist` in the Wavedash sandbox |
 
-Ball physics is host-authoritative for goals but deterministic on paddle
-bounces (x flipped, y preserved), so no per-bounce packet is needed — both
-sides compute the same bounce locally and only drift is corrected on the next
-goal.
+## Wavedash integration
 
-## Prerequisites
+The Wavedash host injects `window.Wavedash` as a `Promise`. `src/main.js` awaits it, starts the game, then calls `init()`:
 
-- [Wavedash CLI](https://github.com/wvdsh/cli/releases)
-- Node.js (for `npm install` — Three.js is served from `web/vendor/`)
-
-## Quick start
-
-Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game
-ID, then:
-
-```
-npm install   # copies three.module.js + three.core.js into web/vendor/
-wavedash dev
+```js
+const Wavedash = await window.Wavedash;
+// ... game setup ...
+Wavedash.updateLoadProgressZeroToOne(1);
+Wavedash.init({ debug: true });
 ```
 
-Open two browser sessions signed in as different Wavedash users. Create a
-lobby in one and join it from the other to test online play.
-
-## Controls
-
-- **Local:** `W` / `S` — left paddle, `↑` / `↓` — right paddle.
-- **Online:** `W` / `S` or `↑` / `↓` — your paddle. Host plays left, guest plays right.
-- `Esc` — leave the current lobby / return to the menu.
+`@wvdsh/sdk-js` is listed as a **dev** dependency so its types are available at build time without getting bundled into the runtime output (the host provides the SDK at runtime).

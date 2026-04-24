@@ -1,0 +1,18 @@
+{
+  "name": "example-excalibur",
+  "description": "Excalibur.js Pong example for Wavedash.",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "vite build --config vite/config.prod.mjs"
+  },
+  "devDependencies": {
+    "@wvdsh/sdk-js": "^1.2.2",
+    "vite": "^6.3.1"
+  },
+  "dependencies": {
+    "excalibur": "^0.30.3"
+  }
+}

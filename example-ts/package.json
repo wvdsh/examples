@@ -6,6 +6,7 @@
     "build": "esbuild src/main.ts --bundle --format=esm --target=es2022 --outfile=web/main.js"
   },
   "devDependencies": {
+    "@wvdsh/sdk-js": "^1.2.2",
     "esbuild": "^0.24.0",
     "typescript": "^5.8.3"
   }

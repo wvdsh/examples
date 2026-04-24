@@ -1,4 +1,4 @@
-game_id = "j97e8g1n53y8fhgnh1vrhv6jkx858hyw"
+game_id = "YOUR_GAME_ID_HERE"
 upload_dir = "./build"
 
 [custom]

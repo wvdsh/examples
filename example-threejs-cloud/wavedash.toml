@@ -1,4 +1,2 @@
-game_id = "k9703jp6qjqmzdpsb78500ynn980y706"
-upload_dir = "./web"
-
-entrypoint = "index.html"
+game_id = "YOUR_GAME_ID_HERE"
+upload_dir = "./dist"

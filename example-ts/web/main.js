@@ -1,6 +1,5 @@
 // src/main.ts
 var WavedashJS = await window.WavedashJS;
-WavedashJS.init({ debug: true });
 var canvas = document.getElementById("gameCanvas");
 var ctx = canvas.getContext("2d");
 function resize() {
@@ -157,6 +156,7 @@ function update(dt) {
   }
 }
 WavedashJS.updateLoadProgressZeroToOne(1);
+WavedashJS.init({ debug: true });
 var last = performance.now();
 function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1e3);

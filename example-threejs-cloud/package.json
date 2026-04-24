@@ -1,14 +1,19 @@
 {
   "name": "example-threejs-cloud",
+  "description": "Three.js physics sandbox with UGC cloud save example for Wavedash.",
   "version": "1.0.0",
   "private": true,
-  "description": "Three.js Pong + UGC (createUGCItem / updateUGCItem / deleteUGCItem) example for Wavedash.",
+  "type": "module",
   "scripts": {
-    "sync-vendor": "cp node_modules/three/build/three.module.js node_modules/three/build/three.core.js web/vendor/ && cp node_modules/three/examples/jsm/controls/OrbitControls.js web/vendor/addons/controls/ && cp node_modules/cannon-es/dist/cannon-es.js web/vendor/",
-    "postinstall": "mkdir -p web/vendor web/vendor/addons/controls && npm run sync-vendor"
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "vite build --config vite/config.prod.mjs"
+  },
+  "devDependencies": {
+    "@wvdsh/sdk-js": "^1.2.2",
+    "vite": "^6.3.1"
   },
   "dependencies": {
-    "cannon-es": "^0.20.0",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "cannon-es": "^0.20.0"
   }
 }
