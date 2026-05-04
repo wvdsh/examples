@@ -30,7 +30,7 @@ const BALL_SPEED = 400;
 
 const game = new Engine({
   canvasElementId: "game",
-  displayMode: DisplayMode.FitScreen,
+  displayMode: DisplayMode.FitScreenAndFill,
   width: W,
   height: H,
   backgroundColor: Color.fromHex("#0a0a0a"),
@@ -51,8 +51,6 @@ function makeRect(x, y, w, h) {
 
 const leftPaddle = makeRect(PADDLE_X_MARGIN, H / 2, PADDLE_W, PADDLE_H);
 const rightPaddle = makeRect(W - PADDLE_X_MARGIN, H / 2, PADDLE_W, PADDLE_H);
-const topWall = makeRect(W / 2, WALL_THICKNESS / 2, W, WALL_THICKNESS);
-const bottomWall = makeRect(W / 2, H - WALL_THICKNESS / 2, W, WALL_THICKNESS);
 const ball = new Actor({
   pos: vec(W / 2, H / 2),
   width: BALL_SIZE,
@@ -75,8 +73,6 @@ const maxPaddleY = H - WALL_THICKNESS - PADDLE_H / 2;
 const scene = new Scene();
 scene.add(leftPaddle);
 scene.add(rightPaddle);
-scene.add(topWall);
-scene.add(bottomWall);
 scene.add(ball);
 
 scene.onPreUpdate = (engine, delta) => {
