@@ -45,7 +45,7 @@ if [ ! -f "$WEB_EXPORT_DIR/index.html" ]; then
 fi
 
 # Flatten Ren'Py's export directly into the deploy dir. The SDK is driven from
-# Ren'Py itself via `emscripten.run_script` (see game/00_wavedash.rpy), so
+# Ren'Py itself via `renpy.emscripten.run_script` (see game/00_wavedash.rpy), so
 # there's no JS bridge to inject.
 cp -R "$WEB_EXPORT_DIR"/. "$OUT_DIR/"
 
