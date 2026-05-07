@@ -11,8 +11,7 @@ init -100 python:
         if not renpy.emscripten:
             return
 
-        import emscripten
-        emscripten.run_script("""
+        renpy.emscripten.run_script("""
             Promise.resolve(window.WavedashJS).then(function (sdk) {
                 sdk.updateLoadProgressZeroToOne(1);
                 sdk.init({ debug: true });
