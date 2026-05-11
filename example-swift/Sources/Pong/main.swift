@@ -2,9 +2,8 @@ import JavaScriptKit
 import JavaScriptEventLoop
 
 // --- Arena ---
-let ARENA_W: Double = 900
-let ARENA_H: Double = 600
-let WALL_THICKNESS: Double = 10
+nonisolated(unsafe) var ARENA_W: Double = 900
+nonisolated(unsafe) var ARENA_H: Double = 600
 
 // --- Paddle ---
 let PADDLE_W: Double = 20
@@ -12,7 +11,6 @@ let PADDLE_H: Double = 120
 let PADDLE_SPEED: Double = 500
 let AI_SPEED: Double = 350
 let PADDLE_X: Double = 50  // distance from left/right edge to paddle center
-let PADDLE_PADDING: Double = 10
 
 // --- Ball ---
 let BALL_SIZE: Double = 20
@@ -82,6 +80,14 @@ func setup() {
     _ = window.addEventListener!("keydown", keyDownHandler)
     _ = window.addEventListener!("keyup", keyUpHandler)
 
+    // --- Resize ---
+    let resizeClosure = JSClosure { _ -> JSValue in
+        resize(canvas: canvas, ctx: ctx)
+        return .undefined
+    }
+    _ = window.addEventListener!("resize", resizeClosure)
+    resize(canvas: canvas, ctx: ctx)
+
     // --- Main loop ---
     var frameClosure: JSClosure!
     frameClosure = JSClosure { args -> JSValue in
@@ -94,8 +100,7 @@ func setup() {
         state.lastTime = now
 
         movePaddles(dt: dt)
-        applyVelocity(dt: dt)
-        checkCollisions()
+        step(dt: dt)
         draw(ctx: ctx)
 
         _ = window.requestAnimationFrame!(frameClosure)
@@ -114,6 +119,31 @@ func setup() {
     _ = window.requestAnimationFrame!(frameClosure)
 }
 
+// --- Resize ---
+@MainActor
+func resize(canvas: JSObject, ctx: JSObject) {
+    let jsGlobal = JSObject.global
+    let dpr = jsGlobal.devicePixelRatio.number ?? 1.0
+    let w = jsGlobal.innerWidth.number ?? ARENA_W
+    let h = jsGlobal.innerHeight.number ?? ARENA_H
+
+    canvas.width = .number(w * dpr)
+    canvas.height = .number(h * dpr)
+    _ = ctx.setTransform!(dpr, 0, 0, dpr, 0, 0)
+
+    let oldW = ARENA_W
+    let oldH = ARENA_H
+    ARENA_W = w
+    ARENA_H = h
+
+    let halfPad = PADDLE_H / 2
+    state.leftY = max(halfPad, min(ARENA_H - halfPad, state.leftY * (h / oldH)))
+    state.rightY = max(halfPad, min(ARENA_H - halfPad, state.rightY * (h / oldH)))
+    let halfBall = BALL_SIZE / 2
+    state.ballX = max(halfBall, min(ARENA_W - halfBall, state.ballX * (w / oldW)))
+    state.ballY = max(halfBall, min(ARENA_H - halfBall, state.ballY * (h / oldH)))
+}
+
 // --- Drawing ---
 @MainActor
 func draw(ctx: JSObject) {
@@ -124,9 +154,6 @@ func draw(ctx: JSObject) {
     _ = ctx.fillRect!(ARENA_W / 2 - 1, 0, 2, ARENA_H)
 
     ctx.fillStyle = .string(FG_COLOR)
-    _ = ctx.fillRect!(0, 0, ARENA_W, WALL_THICKNESS)
-    _ = ctx.fillRect!(0, ARENA_H - WALL_THICKNESS, ARENA_W, WALL_THICKNESS)
-
     _ = ctx.fillRect!(
         PADDLE_X - PADDLE_W / 2,
         state.leftY - PADDLE_H / 2,
@@ -150,12 +177,12 @@ func draw(ctx: JSObject) {
     _ = ctx.fillText!(
         JSValue.string(String(state.leftScore)),
         ARENA_W / 2 - 100,
-        WALL_THICKNESS + 20
+        20
     )
     _ = ctx.fillText!(
         JSValue.string(String(state.rightScore)),
         ARENA_W / 2 + 100,
-        WALL_THICKNESS + 20
+        20
     )
 }
 
@@ -166,8 +193,8 @@ func movePaddles(dt: Double) {
     if keys.contains("KeyW") { leftDir -= 1 }
     if keys.contains("KeyS") { leftDir += 1 }
 
-    let minY = WALL_THICKNESS + PADDLE_H / 2 + PADDLE_PADDING
-    let maxY = ARENA_H - WALL_THICKNESS - PADDLE_H / 2 - PADDLE_PADDING
+    let minY = PADDLE_H / 2
+    let maxY = ARENA_H - PADDLE_H / 2
 
     state.leftY = max(minY, min(maxY, state.leftY + leftDir * PADDLE_SPEED * dt))
 
@@ -185,65 +212,81 @@ func movePaddles(dt: Double) {
 }
 
 @MainActor
-func applyVelocity(dt: Double) {
-    state.ballX += state.ballVX * dt
-    state.ballY += state.ballVY * dt
-}
+func step(dt: Double) {
+    let half = BALL_SIZE / 2
+    let prevX = state.ballX
+    let prevY = state.ballY
+    var newX = prevX + state.ballVX * dt
+    var newY = prevY + state.ballVY * dt
 
-@MainActor
-func checkCollisions() {
+    // Swept paddle collision along X
+    if state.ballVX < 0 {
+        let face = PADDLE_X + PADDLE_W / 2
+        let leftPrev = prevX - half
+        let leftNew = newX - half
+        if leftPrev >= face && leftNew <= face {
+            let t = (leftPrev - face) / (leftPrev - leftNew)
+            let yAtHit = prevY + (newY - prevY) * t
+            let halfPad = PADDLE_H / 2
+            if yAtHit >= state.leftY - halfPad - half
+                && yAtHit <= state.leftY + halfPad + half {
+                bouncePaddle(paddleY: state.leftY, hitY: yAtHit, dirX: 1)
+                let restDt = dt * (1 - t)
+                newX = face + half + state.ballVX * restDt
+                newY = yAtHit + state.ballVY * restDt
+            }
+        }
+    } else if state.ballVX > 0 {
+        let face = ARENA_W - PADDLE_X - PADDLE_W / 2
+        let rightPrev = prevX + half
+        let rightNew = newX + half
+        if rightPrev <= face && rightNew >= face {
+            let t = (face - rightPrev) / (rightNew - rightPrev)
+            let yAtHit = prevY + (newY - prevY) * t
+            let halfPad = PADDLE_H / 2
+            if yAtHit >= state.rightY - halfPad - half
+                && yAtHit <= state.rightY + halfPad + half {
+                bouncePaddle(paddleY: state.rightY, hitY: yAtHit, dirX: -1)
+                let restDt = dt * (1 - t)
+                newX = face - half + state.ballVX * restDt
+                newY = yAtHit + state.ballVY * restDt
+            }
+        }
+    }
+
+    // Top/bottom arena bounce
+    if newY - half < 0 && state.ballVY < 0 {
+        newY = half + (half - newY)
+        state.ballVY = -state.ballVY
+    } else if newY + half > ARENA_H && state.ballVY > 0 {
+        let overshoot = (newY + half) - ARENA_H
+        newY = ARENA_H - half - overshoot
+        state.ballVY = -state.ballVY
+    }
+
+    state.ballX = newX
+    state.ballY = newY
+
     if state.ballX < -BALL_SIZE {
         state.rightScore += 1
         state.resetBall(towardLeft: true)
-        return
-    }
-    if state.ballX > ARENA_W + BALL_SIZE {
+    } else if state.ballX > ARENA_W + BALL_SIZE {
         state.leftScore += 1
         state.resetBall(towardLeft: false)
-        return
     }
-
-    let ballTop = state.ballY - BALL_SIZE / 2
-    let ballBottom = state.ballY + BALL_SIZE / 2
-    if ballTop < WALL_THICKNESS && state.ballVY < 0 {
-        state.ballVY = -state.ballVY
-    }
-    if ballBottom > ARENA_H - WALL_THICKNESS && state.ballVY > 0 {
-        state.ballVY = -state.ballVY
-    }
-
-    checkPaddle(px: PADDLE_X, py: state.leftY, pw: PADDLE_W, ph: PADDLE_H)
-    checkPaddle(px: ARENA_W - PADDLE_X, py: state.rightY, pw: PADDLE_W, ph: PADDLE_H)
 }
 
 @MainActor
-func checkPaddle(px: Double, py: Double, pw: Double, ph: Double) {
-    let halfW = pw / 2
-    let halfH = ph / 2
-    let halfBall = BALL_SIZE / 2
-
-    let closestX = max(px - halfW, min(state.ballX, px + halfW))
-    let closestY = max(py - halfH, min(state.ballY, py + halfH))
-    let dx = state.ballX - closestX
-    let dy = state.ballY - closestY
-    let distSq = dx * dx + dy * dy
-    if distSq > halfBall * halfBall { return }
-
-    let offX = state.ballX - px
-    let offY = state.ballY - py
-    if abs(offX) > abs(offY) {
-        if offX < 0 {
-            if state.ballVX > 0 { state.ballVX = -state.ballVX }
-        } else {
-            if state.ballVX < 0 { state.ballVX = -state.ballVX }
-        }
-    } else {
-        if offY > 0 {
-            if state.ballVY < 0 { state.ballVY = -state.ballVY }
-        } else {
-            if state.ballVY > 0 { state.ballVY = -state.ballVY }
-        }
-    }
+func bouncePaddle(paddleY: Double, hitY: Double, dirX: Double) {
+    // sin(60°) ≈ 0.866 — max return angle from horizontal
+    let maxSin = 0.866
+    var offsetNorm = (hitY - paddleY) / (PADDLE_H / 2)
+    if offsetNorm > 1 { offsetNorm = 1 }
+    if offsetNorm < -1 { offsetNorm = -1 }
+    let vy = offsetNorm * maxSin * BALL_SPEED
+    let vxMag = (BALL_SPEED * BALL_SPEED - vy * vy).squareRoot()
+    state.ballVX = dirX * vxMag
+    state.ballVY = vy
 }
 
 JavaScriptEventLoop.installGlobalExecutor()
