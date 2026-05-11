@@ -30,8 +30,6 @@
     </script>
     <script type="module">
       import { init } from "./index.js";
-      // Resolve the Wavedash SDK promise in JS so Swift can treat WavedashJS as the raw SDK.
-      window.WavedashJS = await window.WavedashJS;
       await init();
     </script>
 </body>

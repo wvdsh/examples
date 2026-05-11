@@ -108,8 +108,7 @@ func setup() {
     }
 
     // --- Wavedash SDK ---
-    // index.html resolves the WavedashJS promise before init(), so we see the raw SDK here.
-    if let sdk = window.WavedashJS.object {
+    if let sdk = window.Wavedash.object {
         _ = sdk.updateLoadProgressZeroToOne!(1.0)
         let optsCtor = JSObject.global.Object.function!
         let opts = optsCtor.new()
