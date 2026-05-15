@@ -9,6 +9,32 @@
         <link rel="apple-touch-icon" href="icon/icon.png">
         <link rel="stylesheet" type="text/css" href="css/game.css">
         <title>Pong Quest</title>
+        <script>
+        // Report RPG Maker MZ engine-script load progress to the Wavedash SDK.
+        // main.js loads ~12 scripts via <script> tags; we count their load events.
+        (function () {
+          var TOTAL = 13;  // 12 main scripts + effekseer.wasm at the end
+          var done = 0;
+          var sdk = null;
+          var latest = -1;
+          Promise.resolve(window.WavedashJS).then(function (s) {
+            sdk = s;
+            if (latest >= 0) sdk.updateLoadProgressZeroToOne(latest);
+          });
+          function report() {
+            var p = Math.min(0.95, done / TOTAL);
+            if (sdk) sdk.updateLoadProgressZeroToOne(p);
+            else latest = p;
+          }
+          var origAppend = HTMLElement.prototype.appendChild;
+          HTMLElement.prototype.appendChild = function (node) {
+            if (node && node.tagName === "SCRIPT" && node._url) {
+              node.addEventListener("load", function () { done++; report(); });
+            }
+            return origAppend.call(this, node);
+          };
+        })();
+        </script>
     </head>
     <body style="background-color: black">
         <script type="text/javascript" src="js/main.js"></script>

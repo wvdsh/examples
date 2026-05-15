@@ -389,8 +389,8 @@ Main.prototype = $extend(hxd_App.prototype,{
 	}
 	,update: function(dt) {
 		var _gthis = this;
-		var minY = 70.;
-		var maxY = 830.;
+		var minY = 60.;
+		var maxY = 840.;
 		var leftDir = 0.0;
 		if(hxd_Key.isDown(87)) {
 			leftDir -= 1.0;
@@ -406,10 +406,10 @@ Main.prototype = $extend(hxd_App.prototype,{
 		this.rightY = v < minY ? minY : v > maxY ? maxY : v;
 		this.ballX += this.ballVx * dt;
 		this.ballY += this.ballVy * dt;
-		if(this.ballY < 20. && this.ballVy < 0) {
+		if(this.ballY < 10. && this.ballVy < 0) {
 			this.ballVy = -this.ballVy;
 		}
-		if(this.ballY > 880. && this.ballVy > 0) {
+		if(this.ballY > 890. && this.ballVy > 0) {
 			this.ballVy = -this.ballVy;
 		}
 		var hit = function(px,py) {
@@ -438,8 +438,6 @@ Main.prototype = $extend(hxd_App.prototype,{
 		}
 		this.gfx.clear();
 		this.gfx.beginFill(16777215);
-		this.gfx.drawRect(0,0,1600.0,10.0);
-		this.gfx.drawRect(0,890.,1600.0,10.0);
 		this.gfx.drawRect(110.,this.leftY - 60.,20.0,120.0);
 		this.gfx.drawRect(1470.,this.rightY - 60.,20.0,120.0);
 		this.gfx.drawRect(this.ballX - 10.,this.ballY - 10.,20.0,20.0);
@@ -101569,7 +101567,6 @@ if(ArrayBuffer.prototype.slice == null) {
 }
 Main.W = 1600.0;
 Main.H = 900.0;
-Main.WALL_T = 10.0;
 Main.PADDLE_W = 20.0;
 Main.PADDLE_H = 120.0;
 Main.PADDLE_SPEED = 500.0;

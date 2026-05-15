@@ -56,8 +56,8 @@ class PlayScene extends Stage {
     let leftDir = 0;
     if (input.keyStatus("up"))   leftDir -= 1;
     if (input.keyStatus("down")) leftDir += 1;
-    const minY = WALL_T + PADDLE_H / 2;
-    const maxY = H - WALL_T - PADDLE_H / 2;
+    const minY = PADDLE_H / 2;
+    const maxY = H - PADDLE_H / 2;
     g.leftY = clamp(g.leftY + leftDir * PADDLE_SPEED * dtSec, minY, maxY);
 
     // Right paddle: tracking AI
@@ -70,8 +70,8 @@ class PlayScene extends Stage {
     g.ballX += g.ballVx * dtSec;
     g.ballY += g.ballVy * dtSec;
 
-    if (g.ballY < WALL_T + BALL / 2 && g.ballVy < 0) g.ballVy = -g.ballVy;
-    if (g.ballY > H - WALL_T - BALL / 2 && g.ballVy > 0) g.ballVy = -g.ballVy;
+    if (g.ballY < BALL / 2 && g.ballVy < 0) g.ballVy = -g.ballVy;
+    if (g.ballY > H - BALL / 2 && g.ballVy > 0) g.ballVy = -g.ballVy;
 
     const hit = (px, py) =>
       Math.abs(g.ballX - px) < (PADDLE_W + BALL) / 2 &&
@@ -101,11 +101,7 @@ class PlayScene extends Stage {
     renderer.setColor("#0a0a0a");
     renderer.fillRect(0, 0, W, H);
 
-    // Walls
     renderer.setColor("#fff");
-    renderer.fillRect(0, 0, W, WALL_T);
-    renderer.fillRect(0, H - WALL_T, W, WALL_T);
-
     // Paddles
     renderer.fillRect(
       PADDLE_X_MARGIN - PADDLE_W / 2,

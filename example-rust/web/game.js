@@ -100,11 +100,36 @@ const imports = {
   },
 };
 
-// --- Instantiate WASM -----------------------------------------------------
+// --- Instantiate WASM (streams the .wasm download and reports byte progress) -
 
-const response = await fetch("./game.wasm");
-const bytes = await response.arrayBuffer();
-const result = await WebAssembly.instantiate(bytes, imports);
+async function fetchWasmWithProgress(url, onProgress) {
+  const response = await fetch(url);
+  const total = +response.headers.get("Content-Length") || 0;
+  if (!total || !response.body) {
+    return new Uint8Array(await response.arrayBuffer());
+  }
+  const reader = response.body.getReader();
+  const chunks = [];
+  let received = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    onProgress(received / total);
+  }
+  const bytes = new Uint8Array(received);
+  let pos = 0;
+  for (const c of chunks) { bytes.set(c, pos); pos += c.length; }
+  return bytes;
+}
+
+sdk.updateLoadProgressZeroToOne(0);
+// Reserve the last 5% for compile/instantiate.
+const wasmBytes = await fetchWasmWithProgress("./game.wasm",
+  (p) => sdk.updateLoadProgressZeroToOne(p * 0.95));
+sdk.updateLoadProgressZeroToOne(0.95);
+const result = await WebAssembly.instantiate(wasmBytes, imports);
 wasmInstance = result.instance;
 
 const exports = wasmInstance.exports;

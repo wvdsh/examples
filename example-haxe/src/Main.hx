@@ -109,8 +109,8 @@ class Main {
         if (keys.exists("KeyW") && keys.get("KeyW")) leftDir += 1.0;
         if (keys.exists("KeyS") && keys.get("KeyS")) leftDir -= 1.0;
 
-        var maxY = TOP_WALL - WALL_THICKNESS / 2.0 - PADDLE_H / 2.0 - PADDLE_PADDING;
-        var minY = BOTTOM_WALL + WALL_THICKNESS / 2.0 + PADDLE_H / 2.0 + PADDLE_PADDING;
+        var maxY = TOP_WALL - PADDLE_H / 2.0;
+        var minY = BOTTOM_WALL + PADDLE_H / 2.0;
 
         leftY = clamp(leftY + leftDir * PADDLE_SPEED * dt, minY, maxY);
 
@@ -226,12 +226,7 @@ class Main {
         ctx.fillText(Std.string(leftScore), toSx(-100.0), toSy(TOP_WALL - 80.0));
         ctx.fillText(Std.string(rightScore), toSx(100.0), toSy(TOP_WALL - 80.0));
 
-        // Walls
         ctx.fillStyle = FG_COLOR;
-        var wallW = RIGHT_WALL - LEFT_WALL + WALL_THICKNESS;
-        fillRect(0, TOP_WALL, wallW, WALL_THICKNESS);
-        fillRect(0, BOTTOM_WALL, wallW, WALL_THICKNESS);
-
         // Paddles
         fillRect(-PADDLE_X, leftY, PADDLE_W, PADDLE_H);
         fillRect(PADDLE_X, rightY, PADDLE_W, PADDLE_H);

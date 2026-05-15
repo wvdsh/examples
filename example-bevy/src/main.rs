@@ -100,8 +100,8 @@ fn setup(mut commands: Commands) {
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::AutoMin {
-                min_width: RIGHT_WALL - LEFT_WALL + WALL_THICKNESS,
-                min_height: TOP_WALL - BOTTOM_WALL + WALL_THICKNESS,
+                min_width: RIGHT_WALL - LEFT_WALL,
+                min_height: TOP_WALL - BOTTOM_WALL,
             },
             ..OrthographicProjection::default_2d()
         }),
@@ -143,28 +143,6 @@ fn setup(mut commands: Commands) {
         },
         Ball,
         Velocity(Vec2::new(1.0, 0.25).normalize() * BALL_SPEED),
-    ));
-
-    // Top wall
-    commands.spawn((
-        Sprite::from_color(FG_COLOR, Vec2::ONE),
-        Transform {
-            translation: Vec3::new(0.0, TOP_WALL, 0.0),
-            scale: Vec3::new(RIGHT_WALL - LEFT_WALL + WALL_THICKNESS, WALL_THICKNESS, 1.0),
-            ..default()
-        },
-        Collider,
-    ));
-
-    // Bottom wall
-    commands.spawn((
-        Sprite::from_color(FG_COLOR, Vec2::ONE),
-        Transform {
-            translation: Vec3::new(0.0, BOTTOM_WALL, 0.0),
-            scale: Vec3::new(RIGHT_WALL - LEFT_WALL + WALL_THICKNESS, WALL_THICKNESS, 1.0),
-            ..default()
-        },
-        Collider,
     ));
 
     // Center line (decorative)
@@ -211,8 +189,8 @@ fn move_paddles(
     time: Res<Time>,
 ) {
     let ball_y = ball.translation.y;
-    let max_y = TOP_WALL - WALL_THICKNESS / 2.0 - PADDLE_H / 2.0 - PADDLE_PADDING;
-    let min_y = BOTTOM_WALL + WALL_THICKNESS / 2.0 + PADDLE_H / 2.0 + PADDLE_PADDING;
+    let max_y = TOP_WALL - PADDLE_H / 2.0;
+    let min_y = BOTTOM_WALL + PADDLE_H / 2.0;
 
     for (mut transform, player) in &mut paddles {
         let new_y = match player {
@@ -269,7 +247,15 @@ fn check_collisions(
         return;
     }
 
-    // Bounce off walls and paddles
+    // Top / bottom bounce
+    if ball_pos.y + BALL_SIZE / 2.0 > TOP_WALL && ball_velocity.y > 0.0 {
+        ball_velocity.y = -ball_velocity.y;
+    }
+    if ball_pos.y - BALL_SIZE / 2.0 < BOTTOM_WALL && ball_velocity.y < 0.0 {
+        ball_velocity.y = -ball_velocity.y;
+    }
+
+    // Bounce off paddles
     let ball_bounding = BoundingCircle::new(ball_pos, BALL_SIZE / 2.0);
 
     for collider_transform in &collider_query {

@@ -180,6 +180,23 @@
 	<script id='engine-setup' type='text/javascript'>
 		// From here you can configure game startup parameters via the CUSTOM_PARAMETERS object,
 		// override ProgressView to create your own loader. See dmloader.js for more details.
+
+		// Mirror Defold's loader progress (0-100) into the Wavedash SDK loading bar.
+		// Buffer the latest fraction until WavedashJS resolves; ProgressView fires
+		// before the SDK promise settles for the first few resources.
+		let _wdSdk = null;
+		let _wdLatest = -1;
+		const origUpdate = ProgressView.updateProgress;
+		ProgressView.updateProgress = function (percentage) {
+			origUpdate.call(this, percentage);
+			const p = Math.max(0, Math.min(1, percentage / 100));
+			if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(p);
+			else _wdLatest = p;
+		};
+		Promise.resolve(window.WavedashJS).then((sdk) => {
+			_wdSdk = sdk;
+			if (_wdLatest >= 0) sdk.updateLoadProgressZeroToOne(_wdLatest);
+		});
 	</script>
 	<script id='engine-start' type='text/javascript'>
 		var runningFromFileWarning = document.getElementById("running-from-file-warning");

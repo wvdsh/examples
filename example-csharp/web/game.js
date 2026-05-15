@@ -82,7 +82,20 @@ globalThis.jsUpdateScore = function (player, ai) {
 
 import { dotnet } from "./_framework/dotnet.js";
 
-const { getAssemblyExports } = await dotnet.create();
+sdk.updateLoadProgressZeroToOne(0);
+
+// .NET wasm runtime calls onDownloadResourceProgress(loaded, total) as it
+// fetches each _framework asset (Pong.wasm, dotnet.native.wasm, runtime, etc.).
+// Reserve the last 5% for runtime startup after downloads finish.
+const { getAssemblyExports } = await dotnet
+  .withConfig({
+    onDownloadResourceProgress: (loaded, total) => {
+      if (total > 0) sdk.updateLoadProgressZeroToOne((loaded / total) * 0.95);
+    },
+  })
+  .create();
+
+sdk.updateLoadProgressZeroToOne(0.95);
 const exports = await getAssemblyExports("Pong.dll");
 
 const WdInit = exports.Interop.WdInit;

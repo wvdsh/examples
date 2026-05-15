@@ -35,6 +35,51 @@
         // Set this to enable Brotli (.br) decompression on static webServers
         // that don't support content compression and http://.
         var enableBrotliDecompression = false;
+        // Wavedash: forward Blazor boot resource downloads to the SDK loading bar.
+        let _wdSdk = null;
+        let _wdLastReported = 0;
+        const _wdTotals = {};
+        const _wdReceived = {};
+        Promise.resolve(window.WavedashJS).then((sdk) => {
+            _wdSdk = sdk;
+            if (_wdSdk && _wdLastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_wdLastReported);
+        });
+
+        async function _wdStreamedFetch(url, contentTypeOverride) {
+            const response = await fetch(url, { cache: 'no-cache' });
+            if (!response.ok || !response.body) return response;
+            const total = +response.headers.get('Content-Length') || 0;
+            if (total) {
+                _wdTotals[url] = total;
+                _wdReceived[url] = 0;
+            }
+            const reader = response.body.getReader();
+            const stream = new ReadableStream({
+                async pull(controller) {
+                    const { done, value } = await reader.read();
+                    if (done) { controller.close(); return; }
+                    if (total) {
+                        _wdReceived[url] += value.length;
+                        const totalAll = Object.values(_wdTotals).reduce((a, b) => a + b, 0);
+                        const recvAll = Object.values(_wdReceived).reduce((a, b) => a + b, 0);
+                        if (totalAll) {
+                            _wdLastReported = Math.min(0.95, recvAll / totalAll);
+                            if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(_wdLastReported);
+                        }
+                    }
+                    controller.enqueue(value);
+                },
+                cancel(reason) { return reader.cancel(reason); },
+            });
+            const headers = new Headers(response.headers);
+            if (contentTypeOverride) headers.set('content-type', contentTypeOverride);
+            return new Response(stream, {
+                status: response.status,
+                statusText: response.statusText,
+                headers,
+            });
+        }
+
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity)
             {
@@ -56,6 +101,10 @@
                                    });
                     })();
                 }
+                // Stream the resource ourselves so we can report download progress.
+                if (type === 'dotnetjs') return undefined; // let Blazor load .js normally
+                const contentType = (type === 'dotnetwasm') ? 'application/wasm' : undefined;
+                return _wdStreamedFetch(defaultUri, contentType);
             }
         });
     </script>

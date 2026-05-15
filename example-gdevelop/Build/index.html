@@ -111,6 +111,14 @@
 	<script>
 
     (function() {
+        // Wavedash: forward loadAllAssets onProgress (0-100 percent) to the SDK.
+        var _wdSdk = null;
+        var _lastReported = 0;
+        Promise.resolve(window.WavedashJS).then(function (sdk) {
+            _wdSdk = sdk;
+            if (_wdSdk && _lastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
+        });
+
         //Initialization
         var game = new gdjs.RuntimeGame(gdjs.projectData, {});
 
@@ -123,6 +131,10 @@
         //Load all assets and start the game
         game.loadAllAssets(function() {
             game.startGameLoop();
+        }, function (percent) {
+            // percent is an integer 0..100 from GDevelop's resource loader.
+            _lastReported = Math.min(0.95, (percent || 0) / 100);
+            if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
         });
     })();
 

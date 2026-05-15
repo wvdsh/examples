@@ -13,6 +13,40 @@
   let sdkPromise = null;
   let queue = Promise.resolve();
 
+  // Wrap window.fetch so the .love package download streams bytes through the
+  // SDK loading bar before the game starts (player.js loads game.love via fetch).
+  const realFetch = window.fetch.bind(window);
+  let _wdSdkSync = null;
+  Promise.resolve(window.WavedashJS).then((sdk) => { _wdSdkSync = sdk; });
+  window.fetch = async (input, init) => {
+    const response = await realFetch(input, init);
+    const url = typeof input === "string" ? input : (input && input.url) || "";
+    if (!url.endsWith(".love") || !response.body) return response;
+    const total = +response.headers.get("Content-Length") || 0;
+    if (!total) return response;
+    const reader = response.body.getReader();
+    let received = 0;
+    const stream = new ReadableStream({
+      async pull(controller) {
+        const { done, value } = await reader.read();
+        if (done) {
+          if (_wdSdkSync) _wdSdkSync.updateLoadProgressZeroToOne(0.95);
+          controller.close();
+          return;
+        }
+        received += value.length;
+        if (_wdSdkSync) _wdSdkSync.updateLoadProgressZeroToOne((received / total) * 0.95);
+        controller.enqueue(value);
+      },
+      cancel(reason) { return reader.cancel(reason); },
+    });
+    return new Response(stream, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  };
+
   function waitForSdk() {
     if (sdkPromise) return sdkPromise;
 

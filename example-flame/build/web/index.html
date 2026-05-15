@@ -18,6 +18,51 @@
       // Flutter uses serviceWorker for caching; disable it here since
       // Wavedash's service worker already handles asset caching.
       window.flutterConfiguration = { serviceWorkerSettings: { serviceWorkerVersion: null } };
+
+      // Stream Flutter's main bundles (main.dart.js, canvaskit.wasm, fonts/
+      // assets) through the SDK loading bar before flame initializes.
+      (function () {
+        let sdk = null;
+        let latest = -1;
+        Promise.resolve(window.WavedashJS).then((s) => {
+          sdk = s;
+          if (latest >= 0) sdk.updateLoadProgressZeroToOne(latest);
+        });
+        const TRACKED = [".js", ".wasm", ".ttf", ".otf", "AssetManifest", "FontManifest"];
+        const totals = {};
+        const recvd = {};
+        const realFetch = window.fetch.bind(window);
+        window.fetch = async (input, init) => {
+          const url = typeof input === "string" ? input : (input && input.url) || "";
+          const matched = TRACKED.find((k) => url.includes(k));
+          const response = await realFetch(input, init);
+          if (!matched || !response.body) return response;
+          const total = +response.headers.get("Content-Length") || 0;
+          if (!total) return response;
+          totals[url] = total;
+          recvd[url] = 0;
+          const reader = response.body.getReader();
+          const stream = new ReadableStream({
+            async pull(c) {
+              const { done, value } = await reader.read();
+              if (done) { c.close(); return; }
+              recvd[url] += value.length;
+              const t = Object.values(totals).reduce((a, b) => a + b, 0);
+              const r = Object.values(recvd).reduce((a, b) => a + b, 0);
+              const p = Math.min(0.95, r / t);
+              if (sdk) sdk.updateLoadProgressZeroToOne(p);
+              else latest = p;
+              c.enqueue(value);
+            },
+            cancel(reason) { return reader.cancel(reason); },
+          });
+          return new Response(stream, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+          });
+        };
+      })();
     </script>
     <script src="flutter_bootstrap.js" async></script>
   </head>

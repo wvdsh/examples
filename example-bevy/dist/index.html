@@ -5,8 +5,37 @@
   <base href="./" />
   
 <script type="module">
-import init, * as bindings from './pong-3a26af3671455932.js';
-const wasm = await init({ module_or_path: './pong-3a26af3671455932_bg.wasm' });
+import init, * as bindings from './pong-72d00c459c86fd57.js';
+
+const sdk = await window.WavedashJS;
+sdk.updateLoadProgressZeroToOne(0);
+
+// Stream the .wasm download so the SDK loading bar reflects real bytes
+// (wasm-bindgen's init() accepts a buffer in place of a URL).
+const response = await fetch('./pong-72d00c459c86fd57_bg.wasm');
+const total = +response.headers.get('Content-Length') || 0;
+let wasmBytes;
+if (!total || !response.body) {
+  wasmBytes = new Uint8Array(await response.arrayBuffer());
+} else {
+  const reader = response.body.getReader();
+  const chunks = [];
+  let received = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    sdk.updateLoadProgressZeroToOne((received / total) * 0.95);
+  }
+  wasmBytes = new Uint8Array(received);
+  let pos = 0;
+  for (const c of chunks) { wasmBytes.set(c, pos); pos += c.length; }
+}
+sdk.updateLoadProgressZeroToOne(0.95);
+
+const wasm = await init({ module_or_path: wasmBytes });
+sdk.updateLoadProgressZeroToOne(0.99);
 
 
 window.wasmBindings = bindings;
@@ -28,7 +57,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
       outline: none;
     }
   </style>
-<link rel="modulepreload" href="./pong-3a26af3671455932.js" crossorigin="anonymous" integrity="sha384-IucXlTAFJdbW98lrVC9DkquSST9+YvdBhiurDRqUQgmnaPUiPzICep+oc8ANcXUD"><link rel="modulepreload" href="./snippets/pong-d1bf434ee30f5671/inline0.js" crossorigin="anonymous" integrity="sha384-yoOZaANlkNjU0FTOxzQfOkzmSgYDBvurvbPZL+fAx/HvDEGlWV63fuTcpcp6WkSp"><link rel="preload" href="./pong-3a26af3671455932_bg.wasm" crossorigin="anonymous" integrity="sha384-KqlyBRqNzesqlFMpyQKdSdcfFfDkvnDVr+9wQEjKnysdtqz+VfQ4NpX88lQ/oyFs" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="./pong-72d00c459c86fd57.js" crossorigin="anonymous" integrity="sha384-M5qTLD2xKLrZt+AY2jYdlry9WbiQDLyAddFVS6kxKCO+C5AI1NNZnJqzmvCqMNqk"><link rel="modulepreload" href="./snippets/pong-d1bf434ee30f5671/inline0.js" crossorigin="anonymous" integrity="sha384-yoOZaANlkNjU0FTOxzQfOkzmSgYDBvurvbPZL+fAx/HvDEGlWV63fuTcpcp6WkSp"><link rel="preload" href="./pong-72d00c459c86fd57_bg.wasm" crossorigin="anonymous" integrity="sha384-HfdeWpaYh4vQmF3UdJ3l6TGXjkzUHjo5Tdr8sSvZQhwHHlIOJlVbAv1mcPiBF00x" as="fetch" type="application/wasm"></head>
 
 <body>
 </body>

@@ -1,2 +1,3 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j97e2yr96g6m0dpa566rqj3s81858b2g"
 upload_dir = "./zig-out"

@@ -9,11 +9,51 @@
     <meta name="author" content="erik" />
     <style type="text/css"> body { background-color:#202850; }</style>
     <script type="module">
+  // Stream binjgb.wasm + the GB rom through the SDK loading bar.
+  let _wdSdk = null;
+  Promise.resolve(window.WavedashJS).then((sdk) => { _wdSdk = sdk; });
+
+  const KNOWN = ["binjgb.wasm", ".gb"];
+  const totals = {};
+  const received = {};
+  const realFetch = window.fetch.bind(window);
+  window.fetch = async (input, init) => {
+    const url = typeof input === "string" ? input : (input && input.url) || "";
+    const matched = KNOWN.find((k) => url.endsWith(k));
+    const response = await realFetch(input, init);
+    if (!matched || !response.body) return response;
+    const total = +response.headers.get("Content-Length") || 0;
+    if (!total) return response;
+    totals[matched] = total;
+    received[matched] = 0;
+    const reader = response.body.getReader();
+    const stream = new ReadableStream({
+      async pull(controller) {
+        const { done, value } = await reader.read();
+        if (done) { controller.close(); return; }
+        received[matched] += value.length;
+        const totalAll = Object.values(totals).reduce((a, b) => a + b, 0);
+        const recvAll = Object.values(received).reduce((a, b) => a + b, 0);
+        if (_wdSdk && totalAll) _wdSdk.updateLoadProgressZeroToOne(Math.min(0.95, recvAll / totalAll));
+        controller.enqueue(value);
+      },
+      cancel(reason) { return reader.cancel(reason); },
+    });
+    return new Response(stream, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  };
+
   (async () => {
     try {
       const WavedashJS = await window.WavedashJS;
-      WavedashJS.updateLoadProgressZeroToOne(1.0);
-      WavedashJS.init({ debug: true });
+      // Settle the bar at 1.0 once binjgb has had time to fetch both files.
+      setTimeout(() => {
+        WavedashJS.updateLoadProgressZeroToOne(1.0);
+        WavedashJS.init({ debug: true });
+      }, 400);
     } catch (e) { console.warn("[wavedash] init failed:", e); }
   })();
 </script>

@@ -1,3 +1,4 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j97b3hchje824ahksy951ycgk98580ac"
 upload_dir = "./build/web-mobile"
 entrypoint = "index.html"

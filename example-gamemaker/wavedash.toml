@@ -1,3 +1,4 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j97e411e6330pfkcbqnj3kw3ss859k2b"
 upload_dir = "./build"
 entrypoint = "index.html"

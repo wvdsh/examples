@@ -181,7 +181,23 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
     <script>
           Module.setStatus('Downloading application...', 0, 0);
     			Module.locateFile = function (path) { return Module.hasOwnProperty(path) ? Module[path] : path; }
+
+          // Forward XHR download progress for the .bin asset pack to the Wavedash SDK.
+          let _wdSdk = null;
+          let _wdLatest = -1;
+          Promise.resolve(window.WavedashJS).then((s) => {
+            _wdSdk = s;
+            if (_wdLatest >= 0) _wdSdk.updateLoadProgressZeroToOne(_wdLatest);
+          });
+
 			    var xml = new XMLHttpRequest();
+          xml.onprogress = function (e) {
+            if (e.lengthComputable && e.total > 0) {
+              var p = Math.min(0.95, (e.loaded / e.total) * 0.95);
+              if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(p);
+              else _wdLatest = p;
+            }
+          };
 			    xml.onreadystatechange = function () {
 				    switch (this.readyState) {
 					    case XMLHttpRequest.DONE:     // val=4

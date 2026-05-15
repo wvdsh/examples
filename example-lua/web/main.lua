@@ -88,8 +88,8 @@ local function clamp(v, lo, hi)
     return v
 end
 
-local PAD_MAX_Y = TOP_WALL - WALL_THICKNESS / 2 - PADDLE_H / 2 - PADDLE_PADDING
-local PAD_MIN_Y = BOTTOM_WALL + WALL_THICKNESS / 2 + PADDLE_H / 2 + PADDLE_PADDING
+local PAD_MAX_Y = TOP_WALL - PADDLE_H / 2
+local PAD_MIN_Y = BOTTOM_WALL + PADDLE_H / 2
 
 local function move_paddle(y, up, down, dt)
     local dir = (up and 1 or 0) - (down and 1 or 0)
@@ -166,11 +166,6 @@ local function draw()
     ctx:fillRect(toX(-1), toY(TOP_WALL), 2 * s, FIELD_H * s)
 
     ctx.fillStyle = "#ffffff"
-    -- Top & bottom walls
-    ctx:fillRect(toX(LEFT_WALL - WALL_THICKNESS / 2), toY(TOP_WALL + WALL_THICKNESS / 2),
-                 (FIELD_W + WALL_THICKNESS) * s, WALL_THICKNESS * s)
-    ctx:fillRect(toX(LEFT_WALL - WALL_THICKNESS / 2), toY(BOTTOM_WALL + WALL_THICKNESS / 2),
-                 (FIELD_W + WALL_THICKNESS) * s, WALL_THICKNESS * s)
     -- Paddles
     ctx:fillRect(toX(-PADDLE_X - PADDLE_W / 2), toY(left_y + PADDLE_H / 2),
                  PADDLE_W * s, PADDLE_H * s)

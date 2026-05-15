@@ -1,0 +1,32 @@
+{
+  "mainAssemblyName": "Pong.dll",
+  "resources": {
+    "hash": "sha256-OOG0KF6wnconeGWDeXWGMKB9mOd93HSS5L+W9La/pJw=",
+    "jsModuleNative": {
+      "dotnet.native.js": "sha256-Q4PbTG6cJJP93oxchXuqhbdPvbM2o4gVDt+EBzhTBWA="
+    },
+    "jsModuleRuntime": {
+      "dotnet.runtime.js": "sha256-wW0L1H42TfMatybe1vKm/k57XP7qqXWX5r7AbCRx5JQ="
+    },
+    "wasmNative": {
+      "dotnet.native.wasm": "sha256-396nK33KenCYWhl0ElNfrDgM8Bb4upsYBYSsEoBZV7s="
+    },
+    "wasmSymbols": {
+      "dotnet.native.js.symbols": "sha256-sQSN+7Wx5sHH9Hy3YROpL45uPaZB2XcdmeBf0ZF1oXU="
+    },
+    "coreAssembly": {
+      "System.Private.CoreLib.wasm": "sha256-IrkrdwnD54KTYevI6wsCHrPFhH8FyzNeKFVGIiwL+PM=",
+      "System.Runtime.InteropServices.JavaScript.wasm": "sha256-hm7o3nehlmAf44FsxwIB0d67jlOLwKeCRAIdCXdpVyg="
+    },
+    "assembly": {
+      "Pong.wasm": "sha256-l6RXJApcvlaLoT85arA1y2HKQQi+MvnjS3TbrtQrZ24="
+    },
+    "coreVfs": {
+      "runtimeconfig.bin": {
+        "supportFiles/0_runtimeconfig.bin": "sha256-j8dmK7YPHHTbkS+ZwJixur+jBDk8AnCzB1le9oZbtDQ="
+      }
+    }
+  },
+  "debugLevel": 0,
+  "globalizationMode": "invariant"
+}

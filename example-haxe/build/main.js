@@ -181,9 +181,6 @@ class Main {
 		Main.ctx.fillText(Std.string(Main.leftScore),window.innerWidth / 2.0 + -100.0 * Main.scale(),window.innerHeight / 2.0 - 220. * Main.scale());
 		Main.ctx.fillText(Std.string(Main.rightScore),window.innerWidth / 2.0 + 100.0 * Main.scale(),window.innerHeight / 2.0 - 220. * Main.scale());
 		Main.ctx.fillStyle = "#ffffff";
-		let wallW = 910.;
-		Main.fillRect(0,300.0,wallW,10.0);
-		Main.fillRect(0,-300.0,wallW,10.0);
 		Main.fillRect(-400.,Main.leftY,20.0,120.0);
 		Main.fillRect(400.0,Main.rightY,20.0,120.0);
 		Main.fillRect(Main.ballX,Main.ballY,20.0,20.0);

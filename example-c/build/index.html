@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>example-c</title>
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+      #renderCanvas { width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+      #scoreboard {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 48px;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        user-select: none;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="renderCanvas"></canvas>
+    <div id="scoreboard"><span id="playerScore">0</span><span id="aiScore">0</span></div>
+    <script type="module">
+      const sdk = window.WavedashJS = await window.WavedashJS;
+
+      // Stream the .wasm download so the SDK loading bar reflects real bytes.
+      // Emscripten lets us short-circuit its wasm load via Module.instantiateWasm.
+      window.Module = {
+        instantiateWasm: async (imports, successCallback) => {
+          sdk.updateLoadProgressZeroToOne(0);
+          const response = await fetch("./game.wasm");
+          const total = +response.headers.get("Content-Length") || 0;
+          const reader = response.body && total ? response.body.getReader() : null;
+          let bytes;
+          if (!reader) {
+            bytes = new Uint8Array(await response.arrayBuffer());
+          } else {
+            const chunks = [];
+            let received = 0;
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              chunks.push(value);
+              received += value.length;
+              sdk.updateLoadProgressZeroToOne((received / total) * 0.95);
+            }
+            bytes = new Uint8Array(received);
+            let pos = 0;
+            for (const c of chunks) { bytes.set(c, pos); pos += c.length; }
+          }
+          sdk.updateLoadProgressZeroToOne(0.95);
+          const { instance } = await WebAssembly.instantiate(bytes, imports);
+          successCallback(instance);
+          return {};
+        },
+      };
+
+      const s = document.createElement("script");
+      s.src = "./game.js";
+      document.body.appendChild(s);
+    </script>
+  </body>
+</html>

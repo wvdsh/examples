@@ -67,8 +67,8 @@ function resetBall(dirX) {
 resetBall(1);
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const minPaddleY = WALL_THICKNESS + PADDLE_H / 2;
-const maxPaddleY = H - WALL_THICKNESS - PADDLE_H / 2;
+const minPaddleY = PADDLE_H / 2;
+const maxPaddleY = H - PADDLE_H / 2;
 
 const scene = new Scene();
 scene.add(leftPaddle);
@@ -96,12 +96,9 @@ scene.onPreUpdate = (engine, delta) => {
 
   // --- Ball physics ---
   // Top/bottom wall bounce
-  if (ball.pos.y < WALL_THICKNESS + BALL_SIZE / 2 && ball.vel.y < 0) {
+  if (ball.pos.y < BALL_SIZE / 2 && ball.vel.y < 0) {
     ball.vel = new Vector(ball.vel.x, -ball.vel.y);
-  } else if (
-    ball.pos.y > H - WALL_THICKNESS - BALL_SIZE / 2 &&
-    ball.vel.y > 0
-  ) {
+  } else if (ball.pos.y > H - BALL_SIZE / 2 && ball.vel.y > 0) {
     ball.vel = new Vector(ball.vel.x, -ball.vel.y);
   }
 

@@ -23,10 +23,34 @@
   <body>
     <script src="./wasm_exec.js"></script>
     <script type="module">
-      window.WavedashJS = await window.WavedashJS;
+      const sdk = window.WavedashJS = await window.WavedashJS;
+      sdk.updateLoadProgressZeroToOne(0);
+
+      const response = await fetch("./game.wasm");
+      const total = +response.headers.get("Content-Length") || 0;
+      let bytes;
+      if (!total || !response.body) {
+        bytes = new Uint8Array(await response.arrayBuffer());
+      } else {
+        const reader = response.body.getReader();
+        const chunks = [];
+        let received = 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          received += value.length;
+          sdk.updateLoadProgressZeroToOne((received / total) * 0.95);
+        }
+        bytes = new Uint8Array(received);
+        let pos = 0;
+        for (const c of chunks) { bytes.set(c, pos); pos += c.length; }
+      }
+      sdk.updateLoadProgressZeroToOne(0.95);
+
       const go = new Go();
-      const result = await WebAssembly.instantiateStreaming(fetch("./game.wasm"), go.importObject);
-      go.run(result.instance);
+      const { instance } = await WebAssembly.instantiate(bytes, go.importObject);
+      go.run(instance);
     </script>
   </body>
 </html>

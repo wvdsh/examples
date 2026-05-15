@@ -104,8 +104,8 @@ def clamp(v, lo, hi):
     return lo if v < lo else hi if v > hi else v
 
 
-PAD_MAX_Y = TOP_WALL - WALL_THICKNESS / 2 - PADDLE_H / 2 - PADDLE_PADDING
-PAD_MIN_Y = BOTTOM_WALL + WALL_THICKNESS / 2 + PADDLE_H / 2 + PADDLE_PADDING
+PAD_MAX_Y = TOP_WALL - PADDLE_H / 2
+PAD_MIN_Y = BOTTOM_WALL + PADDLE_H / 2
 
 
 def move_paddle(y, up, down, dt):
@@ -191,19 +191,6 @@ def draw():
     ctx.fillText(str(state["right_score"]), to_x(100.0), to_y(TOP_WALL - 80.0))
 
     ctx.fillStyle = "#ffffff"
-    # Walls
-    ctx.fillRect(
-        to_x(LEFT_WALL - WALL_THICKNESS / 2),
-        to_y(TOP_WALL + WALL_THICKNESS / 2),
-        (FIELD_W + WALL_THICKNESS) * s,
-        WALL_THICKNESS * s,
-    )
-    ctx.fillRect(
-        to_x(LEFT_WALL - WALL_THICKNESS / 2),
-        to_y(BOTTOM_WALL + WALL_THICKNESS / 2),
-        (FIELD_W + WALL_THICKNESS) * s,
-        WALL_THICKNESS * s,
-    )
     # Paddles
     ctx.fillRect(
         to_x(-PADDLE_X - PADDLE_W / 2),

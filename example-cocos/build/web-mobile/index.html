@@ -36,6 +36,57 @@
 
   <link rel="stylesheet" type="text/css" href="style.css"/>
 
+  <script>
+    // Wavedash: stream cocos-js/* and assets/* downloads to the SDK loading bar.
+    (function () {
+      let _wdSdk = null;
+      Promise.resolve(window.WavedashJS).then((sdk) => {
+        _wdSdk = sdk;
+        if (_wdSdk && _lastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
+      });
+
+      const totals = {};
+      const received = {};
+      let _lastReported = 0;
+
+      function shouldTrack(url) {
+        return /\/(cocos-js|assets|src)\//.test(url) || /\.(wasm|js|json|bin)(\?|$)/.test(url);
+      }
+
+      const realFetch = window.fetch.bind(window);
+      window.fetch = async function (input, init) {
+        const url = typeof input === "string" ? input : (input && input.url) || "";
+        const response = await realFetch(input, init);
+        if (!shouldTrack(url) || !response.body) return response;
+        const total = +response.headers.get("Content-Length") || 0;
+        if (!total) return response;
+        totals[url] = total;
+        received[url] = 0;
+        const reader = response.body.getReader();
+        const stream = new ReadableStream({
+          async pull(controller) {
+            const { done, value } = await reader.read();
+            if (done) { controller.close(); return; }
+            received[url] += value.length;
+            const totalAll = Object.values(totals).reduce((a, b) => a + b, 0);
+            const recvAll = Object.values(received).reduce((a, b) => a + b, 0);
+            if (totalAll) {
+              _lastReported = Math.min(0.95, recvAll / totalAll);
+              if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
+            }
+            controller.enqueue(value);
+          },
+          cancel(reason) { return reader.cancel(reason); },
+        });
+        return new Response(stream, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+        });
+      };
+    })();
+  </script>
+
 </head>
 <body>
   <div id="GameDiv" cc_exact_fit_screen="true">

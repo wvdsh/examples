@@ -43,7 +43,7 @@ function clamp(v, lo, hi) {
   return Math.max(lo, Math.min(hi, v));
 }
 
-const maxPaddleY = FIELD_H / 2 - WALL_THICKNESS - PADDLE_H / 2;
+const maxPaddleY = FIELD_H / 2 - PADDLE_H / 2;
 const minPaddleY = -maxPaddleY;
 
 function gameUpdate() {
@@ -65,8 +65,8 @@ function gameUpdate() {
   ballX += ballVX * dt;
   ballY += ballVY * dt;
 
-  // Top / bottom walls
-  const topY = FIELD_H / 2 - WALL_THICKNESS;
+  // Top / bottom bounce
+  const topY = FIELD_H / 2;
   const botY = -topY;
   if (ballY + BALL_SIZE / 2 > topY && ballVY > 0) ballVY = -ballVY;
   if (ballY - BALL_SIZE / 2 < botY && ballVY < 0) ballVY = -ballVY;
@@ -89,9 +89,6 @@ function gameUpdate() {
 function gameUpdatePost() {}
 
 function gameRender() {
-  // Walls
-  drawRect(vec2(0, FIELD_H / 2 - WALL_THICKNESS / 2), vec2(FIELD_W, WALL_THICKNESS), WHITE);
-  drawRect(vec2(0, -FIELD_H / 2 + WALL_THICKNESS / 2), vec2(FIELD_W, WALL_THICKNESS), WHITE);
   // Center line
   drawRect(vec2(0, 0), vec2(0.1, FIELD_H - 2 * WALL_THICKNESS), new Color(1, 1, 1, 0.15));
   // Paddles

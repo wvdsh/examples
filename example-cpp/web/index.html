@@ -36,7 +36,38 @@
       window.__ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       // Resolve the WavedashJS promise injected by wavedash dev
-      window.WavedashJS = await window.WavedashJS;
+      const sdk = window.WavedashJS = await window.WavedashJS;
+
+      // Stream the .wasm download so the SDK loading bar reflects real bytes.
+      window.Module = {
+        instantiateWasm: async (imports, successCallback) => {
+          sdk.updateLoadProgressZeroToOne(0);
+          const response = await fetch("./game.wasm");
+          const total = +response.headers.get("Content-Length") || 0;
+          const reader = response.body && total ? response.body.getReader() : null;
+          let bytes;
+          if (!reader) {
+            bytes = new Uint8Array(await response.arrayBuffer());
+          } else {
+            const chunks = [];
+            let received = 0;
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              chunks.push(value);
+              received += value.length;
+              sdk.updateLoadProgressZeroToOne((received / total) * 0.95);
+            }
+            bytes = new Uint8Array(received);
+            let pos = 0;
+            for (const c of chunks) { bytes.set(c, pos); pos += c.length; }
+          }
+          sdk.updateLoadProgressZeroToOne(0.95);
+          const { instance } = await WebAssembly.instantiate(bytes, imports);
+          successCallback(instance);
+          return {};
+        },
+      };
 
       // Dynamically load the emcc-generated module
       const s = document.createElement("script");

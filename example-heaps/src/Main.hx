@@ -5,7 +5,6 @@ class Main extends hxd.App {
     // --- Arena ---
     static inline var W:Float = 1600.0;
     static inline var H:Float = 900.0;
-    static inline var WALL_T:Float = 10.0;
 
     // --- Paddle ---
     static inline var PADDLE_W:Float = 20.0;
@@ -79,8 +78,8 @@ class Main extends hxd.App {
         return v < lo ? lo : (v > hi ? hi : v);
 
     override function update(dt:Float) {
-        var minY = WALL_T + PADDLE_H / 2;
-        var maxY = H - WALL_T - PADDLE_H / 2;
+        var minY = PADDLE_H / 2;
+        var maxY = H - PADDLE_H / 2;
 
         // Left paddle: W/S
         var leftDir = 0.0;
@@ -97,9 +96,9 @@ class Main extends hxd.App {
         ballX += ballVx * dt;
         ballY += ballVy * dt;
 
-        // Top / bottom walls
-        if (ballY < WALL_T + BALL / 2 && ballVy < 0) ballVy = -ballVy;
-        if (ballY > H - WALL_T - BALL / 2 && ballVy > 0) ballVy = -ballVy;
+        // Top / bottom bounce
+        if (ballY < BALL / 2 && ballVy < 0) ballVy = -ballVy;
+        if (ballY > H - BALL / 2 && ballVy > 0) ballVy = -ballVy;
 
         // Paddles: always flip vx on hit (avoids edge-tunneling when paddle moves into ball)
         function hit(px:Float, py:Float):Bool {
@@ -129,9 +128,6 @@ class Main extends hxd.App {
         // Render — clear every frame and redraw.
         gfx.clear();
         gfx.beginFill(0xFFFFFF);
-        // Walls
-        gfx.drawRect(0, 0, W, WALL_T);
-        gfx.drawRect(0, H - WALL_T, W, WALL_T);
         // Paddles
         gfx.drawRect(PADDLE_X_MARGIN - PADDLE_W / 2, leftY - PADDLE_H / 2, PADDLE_W, PADDLE_H);
         gfx.drawRect((W - PADDLE_X_MARGIN) - PADDLE_W / 2, rightY - PADDLE_H / 2, PADDLE_W, PADDLE_H);
