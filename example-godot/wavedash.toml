@@ -1,4 +1,5 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j97fh4t9vrpybbgg55qqpt1smd858q8y"
 upload_dir = "./build"
 
 [godot]

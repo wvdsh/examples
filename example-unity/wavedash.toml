@@ -1,4 +1,5 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j977tjzpat1z0b76j5yn8zdjy58597x6"
 upload_dir = "./Build/index"
 
 [unity]

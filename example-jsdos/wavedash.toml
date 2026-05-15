@@ -1,4 +1,5 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j976qbxjw7xazpnmcek0jj3yfs86snjz"
 upload_dir = "./build"
 
 [jsdos]

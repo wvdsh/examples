@@ -1,2 +1,3 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j974s5yq408b3rb1zpebztrgbn86racv"
 upload_dir = "./build"

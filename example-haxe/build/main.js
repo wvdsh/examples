@@ -72,8 +72,8 @@ class Main {
 		if(Object.prototype.hasOwnProperty.call(Main.keys.h,"KeyS") && Main.keys.h["KeyS"]) {
 			leftDir -= 1.0;
 		}
-		let maxY = 225.;
-		let minY = -225.;
+		let maxY = 240.;
+		let minY = -240.;
 		let v = Main.leftY + leftDir * 500.0 * dt;
 		Main.leftY = v < minY ? minY : v > maxY ? maxY : v;
 		let dy = Main.ballY - Main.rightY;

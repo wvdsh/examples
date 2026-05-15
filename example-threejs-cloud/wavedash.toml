@@ -1,2 +1,3 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j974nh0br33pzjcajz7p5gvmss859ctz"
 upload_dir = "./dist"

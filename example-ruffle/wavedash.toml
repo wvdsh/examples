@@ -1,4 +1,5 @@
 game_id = "YOUR_GAME_ID_HERE"
+# game_id = "j9770zmwvrqc966pr32ga5tbzs86rkpj"
 upload_dir = "./build"
 
 [ruffle]
