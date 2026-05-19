@@ -21,47 +21,26 @@ wavedash dev
 
 ## How the Wavedash SDK is called from Lua
 
-love.js (2dengine's 11.5 build) exposes no Lua↔JS FFI — `love.system.openURL` isn't wired, and `love.js.eval` referenced in the 2dengine docs isn't in the distributed wasm. The one channel that works reliably is **stdout**: LÖVE's `print()` is piped through Emscripten's `Module.print` → `console.log`.
-
-This example uses that channel. Lua emits prefixed lines from `wavedash.lua`:
+2dengine's `love.js` ships a JS-interop trick rather than a true FFI: Lua can synchronously evaluate JavaScript by calling `os.execute("javascript:<code>")`. Internally that hops `love.system.openURL` → `window.open` (intercepted in `player.js`) → `eval`, and the result lands on `window._output` for `io.read()` to pick up via the `window.prompt` override. `normalize1.lua` glues those pieces together so `os.execute` returns the evaluated string. The SDK calls only need fire-and-forget, so we stay in Lua:
 
 ```lua
 -- wavedash.lua
-local PREFIX = "[WAVEDASH_BRIDGE]"
+local M = {}
 
 function M.init()
-  print(PREFIX .. "init")
+  os.execute([[javascript:
+    window.WavedashJS && window.WavedashJS.init({ debug: true })
+  ]])
 end
 
 function M.update_load_progress(fraction)
   local clamped = math.max(0, math.min(1, fraction or 0))
-  print(string.format("%sprogress:%.6f", PREFIX, clamped))
+  os.execute(string.format([[javascript:
+    window.WavedashJS && window.WavedashJS.updateLoadProgressZeroToOne(%f)
+  ]], clamped))
 end
-```
 
-And `web/wavedash-bridge.js` wraps `console.log` *before* love.js loads so its later `Module.print = console.log.bind(console)` capture grabs the wrapped version. Lines starting with `[WAVEDASH_BRIDGE]` are parsed and dispatched to the SDK; everything else passes through untouched:
-
-```js
-// web/wavedash-bridge.js
-const handlers = {
-  init() {
-    dispatch((sdk) => sdk.init({ debug: true }));
-  },
-  progress(raw) {
-    const value = Math.max(0, Math.min(1, Number(raw) || 0));
-    dispatch((sdk) => sdk.updateLoadProgressZeroToOne(value));
-  },
-};
-
-const realLog = console.log.bind(console);
-console.log = function (...args) {
-  if (args.length === 1 && typeof args[0] === "string" && args[0].startsWith(PREFIX)) {
-    const [name, ...rest] = args[0].slice(PREFIX.length).split(":");
-    handlers[name]?.(rest.join(":"));
-    return;
-  }
-  realLog(...args);
-};
+return M
 ```
 
 The game calls the SDK at the end of `love.load` (see `main.lua`):
@@ -71,27 +50,27 @@ wavedash.update_load_progress(1)
 wavedash.init()
 ```
 
+No JS shim is needed — `WavedashJS` is injected by the Wavedash CLI before the game starts, and `os.execute` reaches it directly.
+
 ### Adding another SDK method
 
-Pick any `WavedashJS` method — say `setMetadata(key, value)`. Add a Lua wrapper:
+Pick any `WavedashJS` method — say `setMetadata(key, value)`. Add a Lua wrapper that embeds the arguments straight into the JS literal:
 
 ```lua
 function M.set_metadata(key, value)
-  print(string.format("%ssetMetadata:%s:%s", PREFIX, key, value))
+  os.execute(string.format([[javascript:
+    window.WavedashJS && window.WavedashJS.setMetadata(%q, %q)
+  ]], key, value))
 end
 ```
 
-And a handler in the JS bridge:
-
-```js
-setMetadata(rest) {
-  const [key, value] = rest.split(":");
-  dispatch((sdk) => sdk.setMetadata(key, value));
-},
-```
-
-The bridge splits on `:` so multi-arg commands just chain them. Call it from Lua:
+For methods that return data back to Lua, append a `return` to the JS and read it via `io.read()` — `normalize1.lua` already wires that up:
 
 ```lua
-wavedash.set_metadata("level", "3")
+function M.get_username()
+  os.execute([[javascript:'return ' + (window.WavedashJS ? window.WavedashJS.getUsername() : '')]])
+  return io.read() or ""
+end
 ```
+
+For async (Promise-returning) SDK methods you need a small JS-side dispatcher that resolves into `window._output` — that's where this approach hits its ceiling.

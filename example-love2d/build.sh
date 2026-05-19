@@ -39,7 +39,6 @@ mkdir -p "$OUT_DIR/11.5" "$OUT_DIR/lua"
 
 cp "$ROOT/web/index.html" "$OUT_DIR/index.html"
 cp "$ROOT/web/.htaccess" "$OUT_DIR/.htaccess"
-cp "$ROOT/web/wavedash-bridge.js" "$OUT_DIR/wavedash-bridge.js"
 cp "$LOVEJS_DIST/player.js" "$OUT_DIR/player.js"
 cp "$LOVEJS_DIST/style.css" "$OUT_DIR/style.css"
 cp "$LOVEJS_DIST/11.5/love.js" "$OUT_DIR/11.5/love.js"
