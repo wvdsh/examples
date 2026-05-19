@@ -15,13 +15,4 @@ switch (phase) {
         pong_update_cpu(_dt);
         pong_update_ball(_dt);
         break;
-
-    case "game_over":
-        pong_update_player(_dt);
-        pong_update_cpu(_dt);
-
-        if (keyboard_check_pressed(vk_space) || keyboard_check_pressed(vk_enter)) {
-            pong_restart_match();
-        }
-        break;
 }

@@ -5,14 +5,13 @@
 #macro PADDLE_H       80
 #macro PADDLE_MARGIN  30
 #macro BALL_RADIUS    8
-#macro WIN_SCORE      7
 
 #macro PLAYER_SPEED       480
-#macro CPU_SPEED          340
-#macro START_BALL_SPEED_X 520
-#macro START_BALL_SPEED_Y 180
-#macro MAX_BALL_SPEED_X   780
-#macro MAX_BALL_SPEED_Y   420
+#macro CPU_SPEED          260
+#macro START_BALL_SPEED_X 320
+#macro START_BALL_SPEED_Y 120
+#macro MAX_BALL_SPEED_X   500
+#macro MAX_BALL_SPEED_Y   300
 
 function pong_prepare_serve(_direction) {
     phase       = "serve";
@@ -35,13 +34,6 @@ function pong_start_serve() {
     if (abs(ball_vy) < 40) {
         ball_vy = (ball_vy < 0) ? -50 : 50;
     }
-}
-
-function pong_restart_match() {
-    player_score = 0;
-    cpu_score    = 0;
-    winner       = "";
-    pong_prepare_serve(choose(-1, 1));
 }
 
 function pong_update_player(_dt) {
@@ -141,30 +133,12 @@ function pong_bounce_paddle(_is_player) {
 function pong_award_point(_player_scored) {
     if (_player_scored) {
         player_score += 1;
-
-        if (player_score >= WIN_SCORE) {
-            phase   = "game_over";
-            winner  = "Player";
-            ball_vx = 0;
-            ball_vy = 0;
-            return;
-        }
-
         pong_prepare_serve(1);
         pong_start_serve();
         return;
     }
 
     cpu_score += 1;
-
-    if (cpu_score >= WIN_SCORE) {
-        phase   = "game_over";
-        winner  = "CPU";
-        ball_vx = 0;
-        ball_vy = 0;
-        return;
-    }
-
     pong_prepare_serve(-1);
     pong_start_serve();
 }

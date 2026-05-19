@@ -1,14 +1,3 @@
-(function injectFullscreenCss() {
-  if (typeof document === "undefined" || document.getElementById("wavedash-fullscreen-css")) return;
-  var style = document.createElement("style");
-  style.id = "wavedash-fullscreen-css";
-  style.textContent =
-    "html, body { margin: 0; padding: 0; overflow: hidden; background: #000; width: 100vw; height: 100vh; }" +
-    "canvas.emscripten, #canvas, #gm4html5_div_id canvas { width: 100vw !important; height: 100vh !important; display: block !important; margin: 0 !important; outline: none !important; }" +
-    "canvas:focus, canvas:focus-visible { outline: none !important; box-shadow: none !important; }";
-  (document.head || document.documentElement).appendChild(style);
-})();
-
 function wavedash_js_init() {
   if (window.WavedashJS && typeof window.WavedashJS.init === "function") {
     window.WavedashJS.init({ debug: true });
@@ -22,6 +11,26 @@ function wavedash_js_update_progress(progress) {
   }
   return 1.0;
 }
+
+(function () {
+  window.ensureAspectRatio = function () {
+    if (!window.startingAspect) return;
+    const c = document.getElementById("canvas");
+    if (!c) return;
+    c.classList.add("active");
+    c.style.width = window.innerWidth + "px";
+    c.style.height = (window.innerWidth / window.startingAspect) + "px";
+  };
+  const hideDebugUI = () => {
+    const out = document.getElementById("output-container");
+    if (out) out.hidden = true;
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideDebugUI);
+  } else {
+    hideDebugUI();
+  }
+})();
 [LLVM-OPERAGX]
 EMSDKDir="/Users/erik/emsdk/emsdk_env.sh"
 [OperaGX]

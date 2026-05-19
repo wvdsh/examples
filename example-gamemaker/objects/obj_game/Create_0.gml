@@ -1,6 +1,5 @@
 player_score = 0;
 cpu_score    = 0;
-winner       = "";
 
 player_y     = FIELD_H / 2;
 cpu_y        = FIELD_H / 2;

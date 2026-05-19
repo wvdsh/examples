@@ -1,0 +1,249 @@
+ctjsVersion: 5.3.1
+notes: /* Pong on Wavedash via ct.js. */
+language: typescript
+libs:
+  place:
+    gridX: 1024
+    gridY: 1024
+  pointer: {}
+  keyboard: {}
+  keyboard.polyfill: {}
+  pointer.polyfill: {}
+actions: []
+scripts: []
+contentTypes: []
+globalVars: []
+startroom: a0000000-0000-0000-0000-000000000001
+backups: 3
+assets:
+  - type: room
+    uid: a0000000-0000-0000-0000-000000000001
+    name: rm_main
+    width: 960
+    height: 540
+    backgroundColor: '#060612'
+    backgrounds: []
+    copies: []
+    tiles: []
+    gridX: 64
+    gridY: 64
+    diagonalGrid: false
+    disableGrid: false
+    simulate: true
+    restrictCamera: false
+    restrictMinX: 0
+    restrictMinY: 0
+    restrictMaxX: 960
+    restrictMaxY: 540
+    follow: -1
+    isUi: false
+    lastmod: 1747657200000
+    behaviors: []
+    extends: {}
+    extendTypes: ''
+    events:
+      - eventKey: OnRoomStart
+        lib: core
+        arguments: {}
+        code: >-
+          const r = this as any;
+
+          r.fieldW = 960;
+
+          r.fieldH = 540;
+
+          r.paddleW = 12;
+
+          r.paddleH = 80;
+
+          r.paddleMargin = 30;
+
+          r.ballR = 8;
+
+
+          r.playerY = r.fieldH / 2;
+
+          r.cpuY = r.fieldH / 2;
+
+          r.ballX = r.fieldW / 2;
+
+          r.ballY = r.fieldH / 2;
+
+          r.ballVx = 320;
+
+          r.ballVy = 80;
+
+          r.playerScore = 0;
+
+          r.cpuScore = 0;
+
+
+          r.gfx = new PIXI.Graphics();
+
+          this.addChild(r.gfx);
+
+
+          r.label = new PIXI.Text('0  |  0', { fontFamily: 'monospace',
+          fontSize: 36, fill: 0xffffff });
+
+          r.label.anchor.set(0.5, 0);
+
+          r.label.x = r.fieldW / 2;
+
+          r.label.y = 24;
+
+          this.addChild(r.label);
+
+
+          r.serveBall = (dir: number) => {
+            r.ballX = r.fieldW / 2;
+            r.ballY = r.fieldH / 2;
+            r.ballVx = 320 * dir;
+            r.ballVy = (Math.random() - 0.5) * 200;
+          };
+
+
+          if (typeof (window as any).Wavedash !== 'undefined') {
+            (window as any).Wavedash.updateLoadProgressZeroToOne(1);
+            (window as any).Wavedash.init({ debug: true });
+          }
+      - eventKey: OnStep
+        lib: core
+        arguments: {}
+        code: >-
+          const r = this as any;
+
+          const dt = u.time;
+
+
+          const up = (inputs as any).registry['keyboard.KeyW'] || (inputs as
+          any).registry['keyboard.ArrowUp'];
+
+          const down = (inputs as any).registry['keyboard.KeyS'] || (inputs as
+          any).registry['keyboard.ArrowDown'];
+
+          r.playerY += ((down ? 1 : 0) - (up ? 1 : 0)) * 480 * dt;
+
+          r.playerY = Math.max(r.paddleH / 2, Math.min(r.fieldH - r.paddleH / 2,
+          r.playerY));
+
+
+          const cpuTarget = r.ballVx > 0 ? r.ballY : r.fieldH / 2;
+
+          const cpuDelta = cpuTarget - r.cpuY;
+
+          const cpuStep = Math.sign(cpuDelta) * Math.min(Math.abs(cpuDelta), 260
+          * dt);
+
+          r.cpuY += cpuStep;
+
+          r.cpuY = Math.max(r.paddleH / 2, Math.min(r.fieldH - r.paddleH / 2,
+          r.cpuY));
+
+
+          r.ballX += r.ballVx * dt;
+
+          r.ballY += r.ballVy * dt;
+
+          if (r.ballY - r.ballR < 0) { r.ballY = r.ballR; r.ballVy =
+          Math.abs(r.ballVy); }
+
+          if (r.ballY + r.ballR > r.fieldH) { r.ballY = r.fieldH - r.ballR;
+          r.ballVy = -Math.abs(r.ballVy); }
+
+
+          const playerRight = r.paddleMargin + r.paddleW;
+
+          const cpuLeft = r.fieldW - r.paddleMargin - r.paddleW;
+
+          if (r.ballVx < 0 && r.ballX - r.ballR <= playerRight &&
+          Math.abs(r.ballY - r.playerY) <= r.paddleH / 2) {
+            r.ballX = playerRight + r.ballR;
+            r.ballVx = Math.abs(r.ballVx) * 1.05;
+          }
+
+          if (r.ballVx > 0 && r.ballX + r.ballR >= cpuLeft && Math.abs(r.ballY -
+          r.cpuY) <= r.paddleH / 2) {
+            r.ballX = cpuLeft - r.ballR;
+            r.ballVx = -Math.abs(r.ballVx) * 1.05;
+          }
+
+
+          if (r.ballX < 0) { r.cpuScore += 1; r.serveBall(1); }
+
+          else if (r.ballX > r.fieldW) { r.playerScore += 1; r.serveBall(-1); }
+
+
+          r.gfx.clear();
+
+          for (let y = 0; y < r.fieldH; y += 20) {
+            r.gfx.beginFill(0x333344);
+            r.gfx.drawRect(r.fieldW / 2 - 1, y, 2, 10);
+            r.gfx.endFill();
+          }
+
+          r.gfx.beginFill(0xffffff);
+
+          r.gfx.drawRect(r.paddleMargin, r.playerY - r.paddleH / 2, r.paddleW,
+          r.paddleH);
+
+          r.gfx.drawRect(cpuLeft, r.cpuY - r.paddleH / 2, r.paddleW, r.paddleH);
+
+          r.gfx.drawCircle(r.ballX, r.ballY, r.ballR);
+
+          r.gfx.endFill();
+
+
+          r.label.text = r.playerScore + '  |  ' + r.cpuScore;
+settings:
+  authoring:
+    author: Wavedash
+    site: 'https://wavedash.com'
+    title: Pong
+    version:
+      - 1
+      - 0
+      - 0
+    versionPostfix: ''
+    appId: gg.wavedash.example.ctjs.pong
+  rendering:
+    usePixiLegacy: true
+    transparent: false
+    maxFPS: 60
+    pixelatedrender: false
+    highDensity: true
+    desktopMode: maximized
+    hideCursor: false
+    mobileScreenOrientation: unspecified
+    viewMode: scaleFit
+  export:
+    showErrors: true
+    errorsLink: ''
+    autocloseDesktop: true
+    windows: true
+    linux: true
+    mac: true
+    functionWrap: false
+    codeModifier: none
+    bundleAssetTree: false
+    bundleAssetTypes:
+      texture: true
+      template: true
+      room: true
+      behavior: false
+      typeface: false
+      sound: false
+      style: false
+      tandem: false
+      script: false
+      enum: false
+  branding:
+    accent: '#fa1e4e'
+    invertPreloaderScheme: true
+    icon: -1
+    splashScreen: -1
+    forceSmoothIcons: false
+    forceSmoothSplashScreen: false
+    hideLoadingLogo: false
+    alternativeLogo: false
+    customLoadingText: ''
