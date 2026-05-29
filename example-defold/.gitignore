@@ -1,6 +1,7 @@
 /build/
 /bundle/
 /dist/*/build_input_data.json
+/dist/*/*_symbols/
 /.editor_settings
 /.internal/
 manifest.private.der

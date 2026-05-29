@@ -190,14 +190,5 @@
 			runningFromFileWarning.parentNode.removeChild(runningFromFileWarning);
 		}
 	</script>
-  <script id="wavedash-setup" type="text/javascript">
-		console.log("wavedash-setup");
-		Progress.addListener(function(percentage) {
-			console.log("Progress " + percentage);
-			if (window.Wavedash) {
-				window.Wavedash.updateLoadProgressZeroToOne(percentage / 100);
-			}
-		});
-	</script>
  </body>
 </html>
