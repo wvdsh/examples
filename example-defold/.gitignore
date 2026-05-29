@@ -1,3 +1,6 @@
-bob.jar
+/build/
 /bundle/
+/dist/*/build_input_data.json
+/.editor_settings
+/.internal/
 manifest.private.der

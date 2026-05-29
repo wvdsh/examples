@@ -1,3 +1,6 @@
 game_id = "YOUR_GAME_ID_HERE"
 # game_id = "j97f9hqvv4gh27qh22fqdrbjc1858ayn"
-upload_dir = "./build"
+upload_dir = "./dist"
+
+[defold]
+version = "1.12.3"

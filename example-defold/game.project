@@ -1,5 +1,6 @@
 [project]
 title = example-defold
+dependencies = https://github.com/wvdsh/sdk-defold/archive/main.zip
 
 [display]
 width = 960

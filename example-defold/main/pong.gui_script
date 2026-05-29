@@ -1,5 +1,3 @@
-local wavedash = require("main.wavedash")
-
 local WIN_SCORE = 7
 local FIELD_WIDTH = 16
 local FIELD_HEIGHT = 9
@@ -18,6 +16,25 @@ local AI_X = FIELD_WIDTH * 0.5 - 0.9
 
 local HASH_MOVE_UP = hash("move_up")
 local HASH_MOVE_DOWN = hash("move_down")
+
+local function update_load_progress(fraction)
+    if wavedash and wavedash.update_load_progress_zero_to_one then
+        wavedash.update_load_progress_zero_to_one(fraction)
+    end
+end
+
+local function init_wavedash()
+    if not wavedash then
+        return
+    end
+
+    wavedash.init({}, function(_, event, payload)
+        print("Wavedash event:", event)
+        if payload then
+            pprint(payload)
+        end
+    end)
+end
 
 local function clamp(value, low, high)
     return math.min(math.max(value, low), high)
@@ -388,8 +405,8 @@ function init(self)
     restart_match(self)
     sync_nodes(self)
 
-    wavedash.update_load_progress(1)
-    wavedash.init()
+    update_load_progress(1)
+    init_wavedash()
 end
 
 function update(self, dt)
