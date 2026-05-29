@@ -3,4 +3,4 @@ game_id = "YOUR_GAME_ID_HERE"
 upload_dir = "./dist"
 
 [defold]
-version = "1.12.3"
+version = "1.12.4"
