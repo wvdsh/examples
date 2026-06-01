@@ -25,14 +25,15 @@ java -jar "$BOB_JAR" \
   --bundle-output bundle \
   resolve build bundle
 
-# Defold writes to bundle/example-defold/ (or similar subfolder) — flatten to build/
-rm -rf build
-mkdir -p build
+# Defold writes to bundle/example-defold/ (or similar subfolder) — flatten to dist/.
+# (Defold reserves top-level build/ for its own build cache, so upload from dist/.)
+rm -rf dist
+mkdir -p dist
 BUNDLE_SUBDIR="$(find bundle -maxdepth 1 -mindepth 1 -type d | head -1)"
 if [ -n "$BUNDLE_SUBDIR" ]; then
-  cp -R "$BUNDLE_SUBDIR/"* build/
+  cp -R "$BUNDLE_SUBDIR/"* dist/
 else
-  cp -R bundle/* build/
+  cp -R bundle/* dist/
 fi
 
-echo "HTML5 build written to build/"
+echo "HTML5 build written to dist/"
