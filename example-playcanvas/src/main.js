@@ -75,6 +75,9 @@ const ball   = makeBox("ball",   BALL_SIZE, BALL_SIZE, BALL_SIZE, ballMat);
 player.setPosition(PLAYER_X, 0, 0);
 ai.setPosition(AI_X, 0, 0);
 
+// No async assets — staged ramp: scene + entities ready (0.5), game ready in preload callback (1)
+Wavedash.updateLoadProgressZeroToOne(0.5);
+
 
 /* ── Score ───────────────────────────────────────────────────── */
 
@@ -126,8 +129,9 @@ resetBall(1);
 
 /* ── Update loop ─────────────────────────────────────────────── */
 
-Wavedash.updateLoadProgressZeroToOne(1);
-Wavedash.init({ debug: true });
+app.on('preload:progress', (fraction) => {
+  Wavedash.updateLoadProgressZeroToOne(0.5 + fraction * 0.5);
+});
 
 app.on("update", (rawDt) => {
   const dt = Math.min(rawDt, 0.05);
@@ -207,4 +211,8 @@ app.on("update", (rawDt) => {
   ball.setPosition(ballX, ballY, 0);
 });
 
-app.start();
+app.preload(() => {
+  Wavedash.updateLoadProgressZeroToOne(1);
+  Wavedash.init({ debug: true });
+  app.start();
+});

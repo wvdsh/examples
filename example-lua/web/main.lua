@@ -20,6 +20,9 @@ local PADDLE_PADDING = 10.0
 local BALL_SIZE = 20.0
 local BALL_SPEED = 400.0
 
+-- wasmoon runtime is loaded and this script has been fetched.
+WavedashJS:updateLoadProgressZeroToOne(0.5)
+
 -- Canvas & context
 local canvas = document:getElementById("gameCanvas")
 local ctx = canvas:getContext("2d")
@@ -186,7 +189,7 @@ local function loop(now)
     window:requestAnimationFrame(loop)
 end
 
--- Wavedash SDK init (the promise was already resolved in JS before this script ran).
+-- Game state and input handlers are ready — signal fully loaded.
 WavedashJS:updateLoadProgressZeroToOne(1.0)
 WavedashJS:init({ debug = true })
 window:requestAnimationFrame(loop)

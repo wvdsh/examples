@@ -155,6 +155,8 @@ function update(dt) {
     serving = true;
   }
 }
+WavedashJS.updateLoadProgressZeroToOne(0);
+WavedashJS.updateLoadProgressZeroToOne(0.5);
 WavedashJS.updateLoadProgressZeroToOne(1);
 WavedashJS.init({ debug: true });
 var last = performance.now();

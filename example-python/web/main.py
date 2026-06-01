@@ -6,6 +6,9 @@ Rendered directly to a Canvas 2D context via the ``js`` module Pyodide exposes.
 from js import WavedashJS, document, window
 from pyodide.ffi import create_proxy, to_js
 
+# Pyodide and the standard library have finished loading (~10 MB of WASM).
+WavedashJS.updateLoadProgressZeroToOne(0.5)
+
 # --- Arena (logical units, matching example-bevy) ---
 LEFT_WALL, RIGHT_WALL = -450.0, 450.0
 TOP_WALL, BOTTOM_WALL = 300.0, -300.0
@@ -226,6 +229,7 @@ def loop(now):
 loop_proxy = create_proxy(loop)
 
 # --- Wavedash SDK ---
+# Game state and input handlers are ready — signal fully loaded.
 WavedashJS.updateLoadProgressZeroToOne(1.0)
 WavedashJS.init(to_js({"debug": True}))
 

@@ -1,0 +1,21 @@
+{
+  :bundle {
+    :html5 {
+      :architectures #{
+        "js-web"
+      }
+      :build_report false
+      :contentless false
+      :liveupdate false
+      :texture_compression "enabled"
+      :variant "debug"
+      :with_symbols true
+    }
+    :last-bundle-command :project.bundle-html5
+    :output-directory "/Users/erik/work/examples/example-defold/dist"
+  }
+  :code {
+    :breakpoints [
+    ]
+  }
+}

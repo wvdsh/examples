@@ -1,0 +1,65 @@
+[ {
+  "path" : "/<AnonymousRoot>",
+  "hexDigest" : null,
+  "children" : [ "/main/main.collectionc", "/builtins/render/default.renderc", "/input/game.input_bindingc", "/builtins/input/default.gamepadsc", "/builtins/render/default.display_profilesc" ]
+}, {
+  "path" : "/main/main.collectionc",
+  "hexDigest" : "695d1c28a182183525eb25652b92b8e3352ee60a",
+  "children" : [ "/_generated_60b964cd6580a4b6.goc" ]
+}, {
+  "path" : "/_generated_60b964cd6580a4b6.goc",
+  "hexDigest" : "38b9a7b1a62a2972df4c375102949fb482a13d47",
+  "children" : [ "/main/pong.guic" ]
+}, {
+  "path" : "/main/pong.guic",
+  "hexDigest" : "95293a07d31b3cd5fcdac10c6a21f15f84c01bf4",
+  "children" : [ "/main/pong.gui_scriptc", "/main/score.fontc", "/builtins/materials/gui.materialc" ]
+}, {
+  "path" : "/main/pong.gui_scriptc",
+  "hexDigest" : "a00c50bcc8491feadc71c38442d3095bac8e0bc2",
+  "children" : [ ]
+}, {
+  "path" : "/main/score.fontc",
+  "hexDigest" : "32b7eafefb472932146248734e6b1c8a46377570",
+  "children" : [ "/builtins/fonts/font.materialc", "/_generated_vera_mo_bd_d9fc330c0d8c1681.glyph_bankc" ]
+}, {
+  "path" : "/builtins/fonts/font.materialc",
+  "hexDigest" : "0c4f6c83816a92c7470199147a962f1651d9720d",
+  "children" : [ "/shader_4711226249295902305.spc" ]
+}, {
+  "path" : "/shader_4711226249295902305.spc",
+  "hexDigest" : "30a90c2d455692acd9fb14afbb2d190ce0078d27",
+  "children" : [ ]
+}, {
+  "path" : "/_generated_vera_mo_bd_d9fc330c0d8c1681.glyph_bankc",
+  "hexDigest" : "e3aecffb9b675062ab37d553e10564a318427ee5",
+  "children" : [ ]
+}, {
+  "path" : "/builtins/materials/gui.materialc",
+  "hexDigest" : "ea4cbed1ddcc693822de188e07c6acc30e862c99",
+  "children" : [ "/shader_2713870051161532414.spc" ]
+}, {
+  "path" : "/shader_2713870051161532414.spc",
+  "hexDigest" : "5ca30b7fbc34732d2761a36a6f95523190e79bdc",
+  "children" : [ ]
+}, {
+  "path" : "/builtins/render/default.renderc",
+  "hexDigest" : "62fcf66fed9988305fe48996f4d7693b2fac6e49",
+  "children" : [ "/builtins/render/default.render_scriptc" ]
+}, {
+  "path" : "/builtins/render/default.render_scriptc",
+  "hexDigest" : "98eaec52e31a9e060b05da3918aed653864bb5d3",
+  "children" : [ ]
+}, {
+  "path" : "/input/game.input_bindingc",
+  "hexDigest" : "1be7eb0b1fbf8bf007e32430b7ceb90af08bf14f",
+  "children" : [ ]
+}, {
+  "path" : "/builtins/input/default.gamepadsc",
+  "hexDigest" : "0ce57d647ce8e3f153cdc37100c7a855b60d15b2",
+  "children" : [ ]
+}, {
+  "path" : "/builtins/render/default.display_profilesc",
+  "hexDigest" : "4187e11a10b0dd0d7f1b34d3ae3c0e9632dc69fd",
+  "children" : [ ]
+} ]

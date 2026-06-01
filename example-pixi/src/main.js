@@ -37,6 +37,9 @@ const app = new PIXI.Application();
 await app.init({ background: BG, resizeTo: container, antialias: true });
 container.appendChild(app.canvas);
 
+// No async assets — staged ramp: app initialised (0.5), game ready (1)
+Wavedash.updateLoadProgressZeroToOne(0.5);
+
 /* ── scene objects ─────────────────────────────────────────── */
 
 const board = new PIXI.Graphics();

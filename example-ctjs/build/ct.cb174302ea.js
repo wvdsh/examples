@@ -5640,6 +5640,10 @@ r.serveBall = (dir) => {
 };
 
 if (typeof (window ).Wavedash !== 'undefined') {
+  // ct.js has already decoded textures and sounds by the time
+  // OnRoomStart fires — report the distinct phases here.
+  (window ).Wavedash.updateLoadProgressZeroToOne(0.4); // room loaded
+  (window ).Wavedash.updateLoadProgressZeroToOne(0.8); // content ready
   (window ).Wavedash.updateLoadProgressZeroToOne(1);
   (window ).Wavedash.init({ debug: true });
 }

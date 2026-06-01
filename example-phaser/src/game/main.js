@@ -17,9 +17,19 @@ const config = {
     ]
 };
 
-const StartGame = (parent) => {
+const StartGame = (parent, Wavedash) => {
 
-    return new Game({ ...config, parent });
+    return new Game({
+        ...config,
+        parent,
+        callbacks: {
+            // postBoot fires once Phaser is fully up — signal game ready here
+            postBoot: () => {
+                Wavedash.updateLoadProgressZeroToOne(1);
+                Wavedash.init({ debug: true });
+            },
+        },
+    });
 
 }
 

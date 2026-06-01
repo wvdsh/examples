@@ -17,9 +17,10 @@ The Wavedash host injects `window.Wavedash` as a `Promise`. `src/main.js` awaits
 
 ```js
 const Wavedash = await window.Wavedash;
-StartGame('game-container');
-Wavedash.updateLoadProgressZeroToOne(1);
-Wavedash.init({ debug: true });
+Wavedash.updateLoadProgressZeroToOne(0.5); // Phaser booting
+StartGame('game-container', Wavedash);
+// init() is called from postBoot in game/main.js once Phaser is fully up:
+//   callbacks: { postBoot: () => { Wavedash.updateLoadProgressZeroToOne(1); Wavedash.init(...); } }
 ```
 
 `@wvdsh/sdk-js` is listed as a **dev** dependency so its types are available at build time without getting bundled into the runtime output (the host provides the SDK at runtime).

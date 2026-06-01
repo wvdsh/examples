@@ -328,8 +328,7 @@ Main.main = function() {
 Main.__super__ = hxd_App;
 Main.prototype = $extend(hxd_App.prototype,{
 	init: function() {
-		WavedashJS.updateLoadProgressZeroToOne(1.0);
-		WavedashJS.init({ debug: true });
+		WavedashJS.updateLoadProgressZeroToOne(0.3);
 		this.engine.backgroundColor = -16119286;
 		this.s2d.set_scaleMode(h2d_ScaleMode.LetterBox(1600,900));
 		this.gfx = new h2d_Graphics(this.s2d);
@@ -366,6 +365,8 @@ Main.prototype = $extend(hxd_App.prototype,{
 		this.leftY = 450.;
 		this.rightY = 450.;
 		this.resetBall(1.0);
+		WavedashJS.updateLoadProgressZeroToOne(1.0);
+		WavedashJS.init({ debug: true });
 	}
 	,resetBall: function(dir) {
 		this.ballX = 800.;

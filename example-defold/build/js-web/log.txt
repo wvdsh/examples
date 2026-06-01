@@ -1,0 +1,103 @@
+java -jar /etc/extender/apps/manifestmergetool.jar --platform web --main /tmp/job3817274400533128259/upload/engine_template.html --lib /tmp/job3817274400533128259/upload/wavedash/manifests/web/engine_template.html --out /tmp/job3817274400533128259/build/engine_template.html
+/opt/platformsdk/emsdk-4.0.6/upstream/emscripten/em++ -c -O3 -g -DDLIB_LOG_DOMAIN="WAVEDASH" -DDDF_EXPOSE_DESCRIPTORS -DDM_PLATFORM_HTML5 -DDM_DEBUG -fno-exceptions -fno-rtti -fPIC -Wno-nontrivial-memcall -s DISABLE_EXCEPTION_CATCHING=1 -Ibuild/wavedash/ -Iupload/ -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//include -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//sdk/include -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//ext/include upload/wavedash/src/wavedash.cpp -o build/wavedash.cpp_0.o
+/opt/platformsdk/emsdk-4.0.6/upstream/emscripten/em++ -c -O3 -g -DDLIB_LOG_DOMAIN="WAVEDASH" -DDDF_EXPOSE_DESCRIPTORS -DDM_PLATFORM_HTML5 -DDM_DEBUG -fno-exceptions -fno-rtti -fPIC -Wno-nontrivial-memcall -s DISABLE_EXCEPTION_CATCHING=1 -Ibuild/wavedash/ -Iupload/ -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//include -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//sdk/include -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//ext/include upload/wavedash/src/wavedash_api.cpp -o build/wavedash_api.cpp_1.o
+upload/wavedash/src/wavedash_api.cpp:413:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  413 |     return AwaitAsyncEvent(L, "requestFullscreen");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:431:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  431 |     return AwaitAsyncEvent(L, "toggleFullscreen");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:483:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  483 |     return AwaitAsyncEvent(L, "getUserJwt");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:512:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  512 |     return AwaitAsyncEvent(L, "listFriends");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:544:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  544 |     return AwaitAsyncEvent(L, "getLeaderboard");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:565:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  565 |     return AwaitAsyncEvent(L, "getOrCreateLeaderboard");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:596:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  596 |     return AwaitAsyncEvent(L, "getMyLeaderboardEntries");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:618:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  618 |     return AwaitAsyncEvent(L, "listLeaderboardEntriesAroundUser");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:640:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  640 |     return AwaitAsyncEvent(L, "listLeaderboardEntries");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:662:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  662 |     return AwaitAsyncEvent(L, "uploadLeaderboardScore");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:685:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  685 |     return AwaitAsyncEvent(L, "createUGCItem");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:708:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  708 |     return AwaitAsyncEvent(L, "updateUGCItem");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:728:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  728 |     return AwaitAsyncEvent(L, "downloadUGCItem");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:748:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  748 |     return AwaitAsyncEvent(L, "deleteUGCItem");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:773:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  773 |     return AwaitAsyncEvent(L, "listUGCItems");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:791:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  791 |     return AwaitAsyncEvent(L, "deleteRemoteFile");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:810:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  810 |     return AwaitAsyncEvent(L, "downloadRemoteFile");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:829:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  829 |     return AwaitAsyncEvent(L, "uploadRemoteFile");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:848:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  848 |     return AwaitAsyncEvent(L, "listRemoteDirectory");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:867:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  867 |     return AwaitAsyncEvent(L, "downloadRemoteDirectory");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:890:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  890 |     return AwaitAsyncEvent(L, "writeLocalFile");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:909:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  909 |     return AwaitAsyncEvent(L, "readLocalFile");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:978:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  978 |     return AwaitAsyncEvent(L, "requestStats");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1111:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1111 |     return AwaitAsyncEvent(L, "createLobby");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1130:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1130 |     return AwaitAsyncEvent(L, "joinLobby");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1149:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1149 |     return AwaitAsyncEvent(L, "listAvailableLobbies");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1252:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1252 |     return AwaitAsyncEvent(L, "leaveLobby");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1285:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1285 |     return AwaitAsyncEvent(L, "inviteUserToLobby");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1304:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1304 |     return AwaitAsyncEvent(L, "getLobbyInviteLink");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1323:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1323 |     return AwaitAsyncEvent(L, "updateUserPresence");
+      |                               ^
+upload/wavedash/src/wavedash_api.cpp:1341:31: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+ 1341 |     return AwaitAsyncEvent(L, "ensureGameplayJwt");
+      |                               ^
+31 warnings generated.
+/opt/platformsdk/emsdk-4.0.6/upstream/emscripten/emar rcs /tmp/job3817274400533128259/build/libwavedash_2.a build/wavedash.cpp_0.o build/wavedash_api.cpp_1.o
+/opt/platformsdk/emsdk-4.0.6/upstream/emscripten/em++ -c -O3 -g -DDLIB_LOG_DOMAIN="UNKNOWN" -DDDF_EXPOSE_DESCRIPTORS -DDM_PLATFORM_HTML5 -DDM_DEBUG -fno-exceptions -fno-rtti -fPIC -Wno-nontrivial-memcall -s DISABLE_EXCEPTION_CATCHING=1 -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//include -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//sdk/include -I/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//ext/include build/main.cpp -o build/main_tmp3.o
+/opt/platformsdk/emsdk-4.0.6/upstream/emscripten/em++ build/main_tmp3.o -o build/dmengine.js --emit-symbol-map -O3 -s INITIAL_MEMORY=33554432 -s DISABLE_EXCEPTION_CATCHING=1 -s ALLOW_UNIMPLEMENTED_SYSCALLS=0 -s IMPORTED_MEMORY=1 -s EXPORTED_FUNCTIONS=_JSWriteDump,_main,_dmExportedSymbols,_malloc,_free -s EXPORTED_RUNTIME_METHODS=["ccall","callMain","UTF8ToString","HEAPU8","stringToNewUTF8"] -s ERROR_ON_UNDEFINED_SYMBOLS=1 -s MAX_WEBGL_VERSION=2 -s STACK_SIZE=5242880 -s MIN_FIREFOX_VERSION=40 -s MIN_SAFARI_VERSION=101000 -s MIN_CHROME_VERSION=45 -s WASM=0 -s LEGACY_VM_SUPPORT=1 -L/tmp/job3817274400533128259/build -L/tmp/job3817274400533128259/upload/wavedash/lib/web -L/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//lib/js-web -L/var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//ext/lib/js-web -Wl,--start-group -lidbfs.js -lwavedash_2 -lengine -lengine_service -lmbedtls -lzip -lprofile -lprofilerext -lprofiler_js -lrecord_null -lgameobject -lddf -lfont -lresource -lgamesys -lgamesys_model -lgamesys_rig -lscript_box2d_defold -lgraphics -lgraphics_transcoder_basisu -lbasis_transcoder -lphysics -lBulletDynamics -lBulletCollision -lplatform -lLinearMath -lbox2d_defold -lrender -lrender_font_default -lscript -llua -lextension -lhid -linput -lparticle -lrig -ldlib -limage -ldmglfw -lgui -lcrashext -lliveupdate -lsound_nosimd -ldecoder_wav -ldecoder_ogg -Wl,--end-group --js-library /tmp/job3817274400533128259/upload/wavedash/lib/web/lib_wavedash.js --js-library /var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//lib/js-web/js/library_sys.js --js-library /var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//lib/js-web/js/library_script.js --js-library /var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//lib/js-web/js/library_sound.js --js-library /var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//lib/js-web/js/library_render.js --js-library /var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//lib/js-web/js/library_profile.js --js-library /var/extender/sdk/402218d5544666871f07ecdfa21032a7fb59413f/defoldsdk//ext/lib/js-web/js/library_glfw.js
+cache:INFO: generating system asset: symbol_lists/e7c1e8a1c4ae3f049640be647309df06b6d63344.json... (this will be cached in "/var/extender/emcache_4.0.6/symbol_lists/e7c1e8a1c4ae3f049640be647309df06b6d63344.json" for subsequent builds)
+cache:INFO:  - ok
+wrote symbol map file to build/dmengine.js.symbols

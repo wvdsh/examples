@@ -1,0 +1,12 @@
+{
+  "bob_arguments" : {
+    "sha1" : "0ad9c86fa0a9f7ac19bc468b1a67ee06bb2578b5",
+    "version" : "1.12.3",
+    "timestamp" : "2026-04-09 14:26:02"
+  },
+  "defold_sdk" : "0ad9c86fa0a9f7ac19bc468b1a67ee06bb2578b5",
+  "dependencies" : [ {
+    "link" : "https://github.com/wvdsh/sdk-defold/archive/main.zip",
+    "md5" : "03F4CA37B54982A561874367C3B91825"
+  } ]
+}

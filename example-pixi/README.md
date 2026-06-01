@@ -19,7 +19,9 @@ The Wavedash host injects `window.Wavedash` as a `Promise`. `src/main.js` awaits
 const Wavedash = await window.Wavedash;
 const app = new PIXI.Application();
 await app.init({ background: 0x111111, resizeTo: container, antialias: true });
-Wavedash.updateLoadProgressZeroToOne(1);
+Wavedash.updateLoadProgressZeroToOne(0.5); // app initialised
+// ... scene objects, game state, input ...
+Wavedash.updateLoadProgressZeroToOne(1);   // game ready
 Wavedash.init({ debug: true });
 ```
 

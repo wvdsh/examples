@@ -2,9 +2,11 @@
 (function ($global) { "use strict";
 class Main {
 	static main() {
+		WavedashJS.updateLoadProgressZeroToOne(0.2);
 		window.addEventListener("load",Main.onLoad);
 	}
 	static onLoad(_) {
+		WavedashJS.updateLoadProgressZeroToOne(0.7);
 		Main.canvas = window.document.getElementById("gameCanvas");
 		Main.ctx = Main.canvas.getContext("2d");
 		Main.resize();

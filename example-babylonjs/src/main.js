@@ -22,6 +22,9 @@ ai.position.x = FIELD_W / 2 - 0.8;
 const ball = BABYLON.MeshBuilder.CreateBox("ball", { size: BALL_SIZE }, scene);
 let ballVel = new BABYLON.Vector3(BALL_SPEED, BALL_SPEED * 0.5, 0);
 
+// No async assets — staged ramp: scene + meshes created (0.5), game ready (1)
+Wavedash.updateLoadProgressZeroToOne(0.5);
+
 const playerScoreEl = document.getElementById("playerScore");
 const aiScoreEl = document.getElementById("aiScore");
 let playerScore = 0, aiScore = 0;

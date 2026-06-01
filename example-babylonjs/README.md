@@ -17,8 +17,10 @@ The Wavedash host injects `window.Wavedash` as a `Promise`. `src/main.js` awaits
 
 ```js
 const Wavedash = await window.Wavedash;
-// ... game setup ...
-Wavedash.updateLoadProgressZeroToOne(1);
+// ... engine + scene created ...
+Wavedash.updateLoadProgressZeroToOne(0.5); // scene + meshes ready
+// ... input handlers, helper functions ...
+Wavedash.updateLoadProgressZeroToOne(1);   // game fully ready
 Wavedash.init({ debug: true });
 ```
 

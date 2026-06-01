@@ -194,6 +194,10 @@ function update(dt: number): void {
 
 /* ── Main loop ────────────────────────────────────── */
 
+// Report load progress at synchronous milestones (no async assets in this demo).
+WavedashJS.updateLoadProgressZeroToOne(0);   // starting up
+WavedashJS.updateLoadProgressZeroToOne(0.5); // canvas and game state ready
+// (place any async asset loading here)
 WavedashJS.updateLoadProgressZeroToOne(1);
 WavedashJS.init({ debug: true });
 
