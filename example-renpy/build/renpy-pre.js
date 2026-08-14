@@ -134,6 +134,13 @@ Module.preRun = Module.preRun || [ ];
         s = s.replace('\n', '<br />', 'g');
 
         statusText += s;
+
+        let lines = statusText.split("<br />");
+        if (lines.length > 200) {
+            lines = lines.slice(lines.length - 200);
+            statusText = lines.join("<br />");
+        }
+
         statusTextDiv.innerHTML = statusText;
 
         showStatus();
@@ -796,6 +803,7 @@ Module.preRun = Module.preRun || [ ];
 
     let fetchId = 1;
     let fetchResult = { };
+    let fetchProgress = { };
 
     /**
      * Fetch a file from the server.
@@ -813,6 +821,10 @@ Module.preRun = Module.preRun || [ ];
 
         let id = fetchId++;
         fetchResult[id] = "PENDING Fetch in progress.";
+        fetchProgress[id] = {
+            uploadLoaded: 0, uploadTotal: 0,
+            downloadLoaded: 0, downloadTotal: 0
+        };
 
         // Ensure headers exists and is not a copy.
         if (headers) {
@@ -823,42 +835,57 @@ Module.preRun = Module.preRun || [ ];
 
         headers = { ...headers };
 
-        async function fetchFileWork() {
-            try {
-
-                let content = ''
-
-                if (inFile) {
-                    headers["Content-Type"] = inContentType || 'application/octet-stream';
-                }
-
-                let options = { method: method, headers: headers};
-
-                if (inFile) {
-                    options.body = FS.readFile(inFile, { encoding: 'binary' });
-                }
-
-                let response = await fetch(url, options);
-
-                if (response.ok) {
-                    if (outFile) {
-                        let ab = await response.arrayBuffer();
-                        FS.writeFile(outFile, new Uint8Array(ab));
-                    }
-
-                    fetchResult[id] = "OK " + response.status + " " + response.statusText;
-                } else{
-                    fetchResult[id] = "ERROR " + response.status + " " + response.statusText;
-                }
-
-            } catch (err) {
-                fetchResult[id] = "ERROR " + err;
-                console.error(err);
-            }
-
+        if (inFile) {
+            headers["Content-Type"] = inContentType || 'application/octet-stream';
         }
 
-        fetchFileWork();
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url, true);
+        xhr.responseType = "arraybuffer";
+
+        for (let key in headers) {
+            xhr.setRequestHeader(key, headers[key]);
+        }
+
+        xhr.onload = function(e) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                if (outFile && xhr.response) {
+                    FS.writeFile(outFile, new Uint8Array(xhr.response));
+                }
+                fetchResult[id] = "OK " + xhr.status + " " + xhr.statusText;
+            } else {
+                fetchResult[id] = "ERROR " + xhr.status + " " + xhr.statusText;
+            }
+        };
+
+        xhr.onerror = function(e) {
+            fetchResult[id] = "ERROR " + xhr.status + " " + xhr.statusText;
+        };
+
+        xhr.onprogress = function(e) {
+            if (e.lengthComputable) {
+                fetchProgress[id].downloadLoaded = e.loaded;
+                fetchProgress[id].downloadTotal = e.total;
+            }
+        };
+
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                fetchProgress[id].uploadLoaded = e.loaded;
+                fetchProgress[id].uploadTotal = e.total;
+            }
+        };
+
+        try {
+            if (inFile) {
+                xhr.send(FS.readFile(inFile, { encoding: 'binary' }));
+            } else {
+                xhr.send();
+            }
+        } catch (err) {
+            fetchResult[id] = "ERROR " + err;
+            console.error(err);
+        }
 
         return id;
     }
@@ -868,13 +895,46 @@ Module.preRun = Module.preRun || [ ];
 
         if (! result.startsWith("PENDING")) {
             delete fetchResult[id];
+            delete fetchProgress[id];
         }
 
         return result || "ERROR Fetch ID not found.";
     }
 
+    function fetchFileProgress() {
+        let keys = Object.keys(fetchProgress);
+        if (keys.length === 0) {
+            return 1.0;
+        }
+
+        let totalProgress = 0.0;
+
+        for (let id of keys) {
+            let p = fetchProgress[id];
+
+            let uploadProgress = 0.0;
+            if (p.uploadTotal > 0) {
+                uploadProgress = p.uploadLoaded / p.uploadTotal;
+            }
+
+            let downloadProgress = 0.0;
+            if (p.downloadTotal > 0) {
+                downloadProgress = p.downloadLoaded / p.downloadTotal;
+            }
+
+            if (p.uploadTotal > 0 && uploadProgress < 1.0) {
+                totalProgress += uploadProgress;
+            } else {
+                totalProgress += downloadProgress;
+            }
+        }
+
+        return totalProgress / keys.length;
+    }
+
     window.fetchFile = fetchFile;
     window.fetchFileResult = fetchFileResult;
+    window.fetchFileProgress = fetchFileProgress;
 
     /**
      * Fullscreen support.
@@ -953,21 +1013,14 @@ Module.preRun = Module.preRun || [ ];
      **************************************************************************/
 
     let overlayDiv = document.getElementById("overlayDiv");
-
-    for (let eventName of ["mousedown", "mouseup", "mousemove" ]) {
+    for (let eventName of ["pointerdown", "pointerup", "pointermove"]) {
         overlayDiv.addEventListener(eventName, function (e) {
-            canvas.dispatchEvent(new MouseEvent(e.type, e));
-
-            if (e.type == "mouseup") {
+            canvas.dispatchEvent(new PointerEvent(e.type, e));
+            if (e.type == "pointerup") {
                 overlayDiv.remove();
             }
-
         });
-
-    };
-
-
-
+    }
 
 
 

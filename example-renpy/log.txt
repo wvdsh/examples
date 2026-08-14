@@ -1,30 +1,27 @@
-2026-04-17 21:37:09 UTC
+2026-08-14 18:00:16 UTC
 macOS-26.4.1-arm64-arm-64bit
-Ren'Py 8.3.7.25031702
+Ren'Py 8.6.0.26081308+nightly
 
-Early init took 0.02s
-Loading error handling took 0.01s
-Loading script took 0.04s
-Loading save slot metadata took 0.00s
-Loading persistent took 0.00s
-Running init code took 0.01s
-Loading analysis data took 0.00s
-Analyze and compile ATL took 0.00s
-Reloading save slot metadata took 0.00s
-Index archives took 0.00s
+Early init took 26 ms
+Loading error handling took 23 ms
+Loading script took 206 ms
+Loading save slot metadata took 2 ms
+Loading persistent took 0 ms
+Running init code took 17 ms
+Loading analysis data took 7 ms
+Analyze and compile ATL took 1 ms
+Reloading save slot metadata took 1 ms
 Backing up script files to '/Users/erik/Library/RenPy/backups/example-renpy':
-Dump and make backups took 0.02s
-Cleaning cache took 0.00s
-Making clean stores took 0.00s
-Initial gc took 0.01s
+Dump and make backups took 20 ms
+Cleaning cache took 0 ms
+Making clean stores took 0 ms
+Initial gc took 19 ms
 DPI scale factor: 1.000000
-Creating interface object took 0.00s
-Cleaning stores took 0.00s
-Init translation took 0.00s
-Build styles took 0.00s
-Load screen analysis took 0.00s
-Analyze screens took 0.00s
-Save screen analysis took 0.01s
-Prepare screens took 0.02s
-Save pyanalysis. took 0.00s
-Save bytecode. took 0.01s
+Creating interface object took 0 ms
+Init translation took 0 ms
+Cleaning stores took 0 ms
+Load screen analysis took 0 ms
+Analyze screens took 8 ms
+Save screen analysis took 5 ms
+Save pyanalysis took 2 ms
+Save bytecode took 14 ms

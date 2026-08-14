@@ -2,6 +2,6 @@ game_id = "YOUR_GAME_ID_HERE"
 # game_id = "j97e8g1n53y8fhgnh1vrhv6jkx858hyw"
 upload_dir = "./build"
 
-[custom]
-version = "0.1.0"
-entrypoint = "game.js"
+[renpy]
+version = "8.6.0"
+executable = "game.zip"
