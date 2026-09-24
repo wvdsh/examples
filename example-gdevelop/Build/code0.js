@@ -30,13 +30,11 @@ if (!v('initialized').getAsBoolean()) {
     v('score1').setNumber(0);
     v('score2').setNumber(0);
 
-    (async () => {
-        try {
-            const WavedashJS = await window.WavedashJS;
-            WavedashJS.updateLoadProgressZeroToOne(1.0);
-            WavedashJS.init({ debug: true });
-        } catch (e) { console.warn('[wavedash] init failed:', e); }
-    })();
+    try {
+        const Wavedash = window.Wavedash;
+        Wavedash.updateLoadProgressZeroToOne(1.0);
+        Wavedash.init({ debug: true });
+    } catch (e) { console.warn('[wavedash] init failed:', e); }
 }
 
 // --- Constants ---

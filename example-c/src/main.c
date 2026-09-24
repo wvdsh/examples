@@ -47,8 +47,8 @@ EM_JS(void, set_score, (int player, int ai), {
 
 // --- Wavedash bindings via EM_JS --------------------------------------------
 
-EM_JS(void, wavedash_init, (), { WavedashJS.init({ debug: true }); });
-EM_JS(void, wavedash_progress, (double p), { WavedashJS.updateLoadProgressZeroToOne(p); });
+EM_JS(void, wavedash_init, (), { Wavedash.init({ debug: true }); });
+EM_JS(void, wavedash_progress, (double p), { Wavedash.updateLoadProgressZeroToOne(p); });
 
 // --- Input via EM_JS --------------------------------------------------------
 

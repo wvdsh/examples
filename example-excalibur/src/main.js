@@ -10,7 +10,7 @@ import {
   Scene,
 } from "excalibur";
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 Wavedash.updateLoadProgressZeroToOne(0.3);
 
 // --- Arena (screen-space) ---

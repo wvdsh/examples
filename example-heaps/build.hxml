@@ -2,5 +2,5 @@
 -main Main
 -lib heaps
 -js bin/main.js
--D js-es6
+-D js-es=6
 -D no-traces

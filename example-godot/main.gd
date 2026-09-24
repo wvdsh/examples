@@ -45,8 +45,6 @@ var _last_sent_paddle_y: float = -1.0
 @onready var hud: HudMenu = $HUD
 
 func _ready() -> void:
-	WavedashSDK.init({"debug": true})
-
 	WavedashSDK.got_lobbies.connect(_on_got_lobbies)
 	WavedashSDK.lobby_created.connect(_on_lobby_created)
 	WavedashSDK.lobby_joined.connect(_on_lobby_joined)
@@ -55,6 +53,7 @@ func _ready() -> void:
 	WavedashSDK.lobby_kicked.connect(_on_lobby_kicked)
 	WavedashSDK.p2p_connection_established.connect(_on_p2p_connected)
 	WavedashSDK.p2p_peer_disconnected.connect(_on_peer_disconnected)
+	WavedashSDK.init({"debug": true})
 
 	hud.main_menu.get_node("VBox/PlayLocalButton").pressed.connect(_on_play_local)
 	hud.main_menu.get_node("VBox/PlayOnlineButton").pressed.connect(_on_play_online)
@@ -185,7 +184,7 @@ func _on_refresh_lobbies() -> void:
 	WavedashSDK.list_available_lobbies()
 
 func _on_create_lobby() -> void:
-	WavedashSDK.create_lobby(WavedashConstants.LOBBY_TYPE_PUBLIC, 2)
+	WavedashSDK.create_lobby(WavedashConstants.LOBBY_VISIBILITY_PUBLIC, 2)
 
 func _on_copy_invite_link() -> void:
 	if current_lobby_id == "":
@@ -254,10 +253,16 @@ func _on_lobby_joined(payload) -> void:
 func _on_lobby_users_updated(payload) -> void:
 	if state != State.IN_LOBBY and state != State.ONLINE_GAME:
 		return
-	var self_id := WavedashSDK.get_user_id()
-	var users: Array = payload.get("users", [])
-	var new_peer := _find_peer_in_users(users, self_id)
-	if new_peer == "" and peer_id != "":
+	# One event per user: { userId, username, changeType, ... } (no users array).
+	var uid: String = payload.get("userId", "")
+	if uid == "" or uid == WavedashSDK.get_user_id():
+		return
+	if payload.get("changeType", "") == WavedashConstants.LOBBY_USER_JOINED:
+		if uid != peer_id:
+			peer_id = uid
+			_on_peer_present()
+		return
+	if uid == peer_id:
 		peer_id = ""
 		peer_connected = false
 		if state == State.ONLINE_GAME:
@@ -267,10 +272,6 @@ func _on_lobby_users_updated(payload) -> void:
 			hud.set_lobby_header("%s   vs   %s" % [left_name, right_name])
 			hud.set_lobby_status("Share this lobby with a friend")
 			hud.show_start_button(false)
-		return
-	if new_peer != "" and new_peer != peer_id:
-		peer_id = new_peer
-		_on_peer_present()
 
 func _on_peer_present() -> void:
 	if state != State.IN_LOBBY:
@@ -334,7 +335,7 @@ func _find_peer_in_users(users: Array, self_id: String) -> String:
 	for u in users:
 		if not (u is Dictionary):
 			continue
-		var uid: String = u.get("id", "")
+		var uid: String = u.get("userId", "")
 		if uid != "" and uid != self_id:
 			return uid
 	return ""

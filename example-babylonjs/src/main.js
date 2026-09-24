@@ -1,6 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);

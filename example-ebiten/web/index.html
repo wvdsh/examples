@@ -23,7 +23,7 @@
   <body>
     <script src="./wasm_exec.js"></script>
     <script type="module">
-      const sdk = window.WavedashJS = await window.WavedashJS;
+      const sdk = window.Wavedash;
       sdk.updateLoadProgressZeroToOne(0);
 
       const response = await fetch("./game.wasm");

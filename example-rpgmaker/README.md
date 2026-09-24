@@ -25,4 +25,4 @@ The pre-built deployment lives in `build/` so the game runs immediately — no R
 
 ## Wavedash SDK integration
 
-See `js/plugins/Wavedash.js` — a tiny plugin that hooks into `Scene_Boot.start` to call `WavedashJS.updateLoadProgressZeroToOne(1)` and `WavedashJS.init({ debug: true })`. Enable it in **Tools → Plugin Manager** so it's included in every deployment.
+See `js/plugins/Wavedash.js` — a tiny plugin that hooks into `Scene_Boot.start` to call `Wavedash.updateLoadProgressZeroToOne(1)` and `Wavedash.init({ debug: true })`. Enable it in **Tools → Plugin Manager** so it's included in every deployment.

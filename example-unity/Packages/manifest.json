@@ -12,7 +12,7 @@
     "com.unity.timeline": "1.8.12",
     "com.unity.ugui": "2.0.0",
     "com.unity.visualscripting": "1.9.11",
-    "com.wavedash.sdk": "https://github.com/wvdsh/sdk-unity.git",
+    "com.wavedash.sdk": "https://github.com/wvdsh/sdk-unity.git#73a927464a0c5dff7aadef0b6d033b8a5dd61bbc",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",

@@ -3,7 +3,7 @@ import {
   describeUser,
   initSdk,
   reportProgress,
-  waitForWavedash,
+  getWavedash,
 } from "./wavedash.js";
 
 const LOG = (...args) => console.log("[example-construct]", ...args);
@@ -35,12 +35,12 @@ function updateInfoText(instance, user) {
     `User: ${shortenLabel(user)}`;
 }
 
-LOG("main.js module loaded, window.WavedashJS =", String(globalThis.WavedashJS));
+LOG("main.js module loaded, window.Wavedash =", String(globalThis.Wavedash));
 
 runOnStartup(async (runtime) => {
   LOG("runOnStartup fired");
   runtime.addEventListener("beforeprojectstart", async () => {
-    LOG("beforeprojectstart fired, window.WavedashJS =", String(globalThis.WavedashJS));
+    LOG("beforeprojectstart fired, window.Wavedash =", String(globalThis.Wavedash));
 
     const titleText = getRequiredText(runtime, "TitleText");
     const infoText = getRequiredText(runtime, "InfoText");
@@ -53,7 +53,7 @@ runOnStartup(async (runtime) => {
 
     let sdk;
     try {
-      sdk = await waitForWavedash();
+      sdk = getWavedash();
       LOG("SDK found");
     } catch (error) {
       LOG("SDK wait failed:", error.message);

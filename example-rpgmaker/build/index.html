@@ -17,10 +17,7 @@
           var done = 0;
           var sdk = null;
           var latest = -1;
-          Promise.resolve(window.WavedashJS).then(function (s) {
-            sdk = s;
-            if (latest >= 0) sdk.updateLoadProgressZeroToOne(latest);
-          });
+          sdk = window.Wavedash;
           function report() {
             var p = Math.min(0.95, done / TOTAL);
             if (sdk) sdk.updateLoadProgressZeroToOne(p);

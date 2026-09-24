@@ -1,4 +1,4 @@
-const WavedashJS = await window.WavedashJS;
+const Wavedash = window.Wavedash;
 
 
 /* ── Canvas & context ─────────────────────────────── */
@@ -188,11 +188,11 @@ function update(dt) {
 /* ── Main loop ────────────────────────────────────── */
 
 // Report load progress at synchronous milestones (no async assets in this demo).
-WavedashJS.updateLoadProgressZeroToOne(0);   // starting up
-WavedashJS.updateLoadProgressZeroToOne(0.5); // canvas and game state ready
+Wavedash.updateLoadProgressZeroToOne(0);   // starting up
+Wavedash.updateLoadProgressZeroToOne(0.5); // canvas and game state ready
 // (place any async asset loading here)
-WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.init({ debug: true });
+Wavedash.updateLoadProgressZeroToOne(1);
+Wavedash.init({ debug: true });
 
 let last = performance.now();
 (function loop(now) {

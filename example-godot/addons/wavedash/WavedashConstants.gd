@@ -1,8 +1,3 @@
-# Lobby Types
-const LOBBY_TYPE_PUBLIC = 0
-const LOBBY_TYPE_FRIENDS_ONLY = 1
-const LOBBY_TYPE_PRIVATE = 2
-
 # Broadcast Event Types
 const JS_EVENT_LOBBY_MESSAGE = "LobbyMessage"
 const JS_EVENT_LOBBY_JOINED = "LobbyJoined"
@@ -13,10 +8,18 @@ const JS_EVENT_LOBBY_DATA_UPDATED = "LobbyDataUpdated"
 const JS_EVENT_P2P_CONNECTION_ESTABLISHED = "P2PConnectionEstablished"
 const JS_EVENT_P2P_CONNECTION_FAILED = "P2PConnectionFailed"
 const JS_EVENT_P2P_PEER_DISCONNECTED = "P2PPeerDisconnected"
+const JS_EVENT_P2P_PEER_RECONNECTING = "P2PPeerReconnecting"
+const JS_EVENT_P2P_PEER_RECONNECTED = "P2PPeerReconnected"
+const JS_EVENT_P2P_PACKET_DROPPED = "P2PPacketDropped"
 const JS_EVENT_STATS_STORED = "StatsStored"
 const JS_EVENT_BACKEND_CONNECTED = "BackendConnected"
 const JS_EVENT_BACKEND_RECONNECTING = "BackendReconnecting"
 const JS_EVENT_BACKEND_DISCONNECTED = "BackendDisconnected"
+const JS_EVENT_FULLSCREEN_CHANGED = "FullscreenChanged"
+## Retained for compatibility. This event is no longer emitted.
+## @deprecated: This event will be removed in a future major release.
+const JS_EVENT_MUTE_CHANGED = "MuteChanged"
+const JS_EVENT_ENTITLEMENTS_GRANTED = "EntitlementsGranted"
 
 
 # Platform Types
@@ -44,13 +47,12 @@ const UGC_TYPE_OTHER = 4
 
 # UGC Visibility
 const UGC_VISIBILITY_PUBLIC = 0
-const UGC_VISIBILITY_FRIENDS_ONLY = 1
 const UGC_VISIBILITY_PRIVATE = 2
 
 # Avatar Sizes
-const AVATAR_SIZE_SMALL = 0   # 64x64 - Lists, chat bubbles
-const AVATAR_SIZE_MEDIUM = 1  # 128x128 - Profile cards
-const AVATAR_SIZE_LARGE = 2   # 256x256 - Large displays
+const AVATAR_SIZE_SMALL = 64   # 64x64 - Lists, chat bubbles
+const AVATAR_SIZE_MEDIUM = 128  # 128x128 - Profile cards
+const AVATAR_SIZE_LARGE = 256   # 256x256 - Large displays
 
 # Lobby Visibility
 const LOBBY_VISIBILITY_PUBLIC = 0
@@ -67,6 +69,18 @@ const LOBBY_USER_BANNED = "BANNED"
 const LOBBY_KICKED_REASON_KICKED = "KICKED"
 const LOBBY_KICKED_REASON_ERROR = "ERROR"
 
+# P2P Packet Dropped directions
+const P2P_PACKET_DIRECTION_SEND = "SEND"
+const P2P_PACKET_DIRECTION_RECEIVE = "RECEIVE"
+
+# P2P Packet Dropped reasons
+const P2P_PACKET_DROP_REASON_QUEUE_FULL = "QUEUE_FULL"
+const P2P_PACKET_DROP_REASON_PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE"
+const P2P_PACKET_DROP_REASON_INVALID_PAYLOAD_SIZE = "INVALID_PAYLOAD_SIZE"
+const P2P_PACKET_DROP_REASON_INVALID_CHANNEL = "INVALID_CHANNEL"
+const P2P_PACKET_DROP_REASON_MALFORMED = "MALFORMED"
+const P2P_PACKET_DROP_REASON_PEER_NOT_READY = "PEER_NOT_READY"
+
 
 # API Call Result Codes (HTTP Status Codes)
 const RESULT_OK = 200
@@ -79,3 +93,6 @@ const RESULT_BAD_REQUEST = 400
 const RESULT_UNPROCESSABLE_ENTITY = 422
 const RESULT_TOO_MANY_REQUESTS = 429
 const RESULT_SERVICE_UNAVAILABLE = 503
+
+# Largest magnitude a GD int can have and still round-trip through a JS Number without losing precision.
+const JS_MAX_INTEGER := 1 << 53

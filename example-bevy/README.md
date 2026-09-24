@@ -2,7 +2,7 @@
 
 A minimal Bevy Pong game on Wavedash, compiled to WebAssembly via Trunk.
 
-[See it live](https://wavedash.com/playtest/bevy-example/6b8bfb41-d6f7-43fb-9f23-cf6e4bfe8e94)
+[See it live](https://wavedash.com/playtest/bevy-example/b1b9c1bc-601d-40ab-9f25-3567eb6ddbab)
 
 ## Prerequisites
 

@@ -134,7 +134,7 @@ public class UIManager : MonoBehaviour
         btn.colors = colors;
 
         string id = lobbyId;
-        btn.onClick.AddListener(() => Wavedash.SDK.JoinLobby(id));
+        btn.onClick.AddListener(() => GameManager.JoinLobbySafe(id));
 
         var textGO = new GameObject("Text");
         textGO.transform.SetParent(go.transform, false);

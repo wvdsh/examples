@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as CANNON from "cannon-es";
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 Wavedash.updateLoadProgressZeroToOne(0.3);
 
 // Mirrors UGC_TYPE / UGC_VISIBILITY in wavedash convex/constants.
@@ -365,7 +365,7 @@ async function save() {
     // uploadRemoteFile resolves only when R2 has accepted the PUT.
     const uploadResponse = await Wavedash.uploadRemoteFile(SAVE_PATH);
     if (!uploadResponse || !uploadResponse.success) {
-      throw new Error(uploadResponse?.error || "uploadRemoteFile failed");
+      throw new Error(uploadResponse?.message || "uploadRemoteFile failed");
     }
 
     setStatus(saveStatusEl, `Saved ${formatBytes(bytes.length)} to userfs://${SAVE_PATH}`);
@@ -384,7 +384,7 @@ async function load() {
   try {
     const downloadResponse = await Wavedash.downloadRemoteFile(SAVE_PATH);
     if (!downloadResponse || !downloadResponse.success) {
-      throw new Error(downloadResponse?.error || "downloadRemoteFile failed");
+      throw new Error(downloadResponse?.message || "downloadRemoteFile failed");
     }
     const bytes = await Wavedash.readLocalFile(SAVE_PATH);
     if (!bytes) throw new Error("readLocalFile returned null");
@@ -405,7 +405,7 @@ async function deleteSave() {
   try {
     const deleteResponse = await Wavedash.deleteRemoteFile(SAVE_PATH);
     if (!deleteResponse || !deleteResponse.success) {
-      throw new Error(deleteResponse?.error || "deleteRemoteFile failed");
+      throw new Error(deleteResponse?.message || "deleteRemoteFile failed");
     }
     setStatus(saveStatusEl, `Deleted userfs://${SAVE_PATH}`);
   } catch (err) {
@@ -431,7 +431,7 @@ async function refreshSaveMeta() {
     const parent = SAVE_PATH.slice(0, SAVE_PATH.lastIndexOf("/")) || "";
     const listResponse = await Wavedash.listRemoteDirectory(parent);
     if (!listResponse || !listResponse.success) {
-      throw new Error(listResponse?.error || "listRemoteDirectory failed");
+      throw new Error(listResponse?.message || "listRemoteDirectory failed");
     }
     const entry = listResponse.data.find((f) => f.key === SAVE_PATH);
     if (entry) {
@@ -471,7 +471,7 @@ async function publish() {
       UGC_VISIBILITY_PUBLIC,
       SAVE_PATH
     );
-    if (!response || !response.success) throw new Error(response?.error || "createUGCItem failed");
+    if (!response || !response.success) throw new Error(response?.message || "createUGCItem failed");
 
     publishedUgcId = response.data;
     localStorage.setItem(PUBLISH_UGC_ID_KEY, publishedUgcId);
@@ -494,14 +494,8 @@ async function updatePublish() {
     const wrote = await Wavedash.writeLocalFile(SAVE_PATH, bytes);
     if (!wrote) throw new Error("writeLocalFile failed");
 
-    const response = await Wavedash.updateUGCItem(
-      publishedUgcId,
-      undefined, // title unchanged
-      undefined, // description unchanged
-      undefined, // visibility unchanged
-      SAVE_PATH
-    );
-    if (!response || !response.success) throw new Error(response?.error || "updateUGCItem failed");
+    const response = await Wavedash.updateUGCItem(publishedUgcId, { filePath: SAVE_PATH });
+    if (!response || !response.success) throw new Error(response?.message || "updateUGCItem failed");
 
     setStatus(publishStatusEl, `Updated · ${formatBytes(bytes.length)}`);
   } catch (err) {
@@ -518,7 +512,7 @@ async function unpublish() {
   setStatus(publishStatusEl, "Unpublishing…");
   try {
     const response = await Wavedash.deleteUGCItem(publishedUgcId);
-    if (!response || !response.success) throw new Error(response?.error || "deleteUGCItem failed");
+    if (!response || !response.success) throw new Error(response?.message || "deleteUGCItem failed");
 
     publishedUgcId = null;
     localStorage.removeItem(PUBLISH_UGC_ID_KEY);
@@ -561,7 +555,7 @@ async function importScene() {
     // Scratch path — we don't want to clobber the player's own save file
     // with someone else's scene. The local sandbox is per-user anyway.
     const response = await Wavedash.downloadUGCItem(id, IMPORT_SCRATCH_PATH);
-    if (!response || !response.success) throw new Error(response?.error || "downloadUGCItem failed");
+    if (!response || !response.success) throw new Error(response?.message || "downloadUGCItem failed");
     const bytes = await Wavedash.readLocalFile(IMPORT_SCRATCH_PATH);
     if (!bytes) throw new Error("readLocalFile returned null");
     const count = applySceneFromBytes(bytes);

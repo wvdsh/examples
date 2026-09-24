@@ -13,14 +13,14 @@ Pong in Phaser 4 + Vite, deployed to Wavedash.
 
 ## Wavedash integration
 
-The Wavedash host injects `window.Wavedash` as a `Promise`. `src/main.js` awaits it, starts the game, then calls `init()`:
+The Wavedash host injects `window.Wavedash` (the live SDK instance) before your code runs. `src/main.js` imports it from `@wvdsh/sdk-js`, starts the game, then calls `init()`:
 
 ```js
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 Wavedash.updateLoadProgressZeroToOne(0.5); // Phaser booting
 StartGame('game-container', Wavedash);
 // init() is called from postBoot in game/main.js once Phaser is fully up:
 //   callbacks: { postBoot: () => { Wavedash.updateLoadProgressZeroToOne(1); Wavedash.init(...); } }
 ```
 
-`@wvdsh/sdk-js` is listed as a **dev** dependency so its types are available at build time without getting bundled into the runtime output (the host provides the SDK at runtime).
+`@wvdsh/sdk-js` (v1.3+) is a thin wrapper: its default export is the host-injected `window.Wavedash`, typed. Importing it outside Wavedash (e.g. the Vite dev server) throws a clear error.

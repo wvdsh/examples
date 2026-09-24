@@ -6,11 +6,11 @@
 // --- EM_JS bindings: Wavedash SDK -------------------------------------------
 
 EM_JS(void, wavedash_init, (), {
-    WavedashJS.init({ debug: true });
+    Wavedash.init({ debug: true });
 });
 
 EM_JS(void, wavedash_progress, (double p), {
-    WavedashJS.updateLoadProgressZeroToOne(p);
+    Wavedash.updateLoadProgressZeroToOne(p);
 });
 
 // --- EM_JS bindings: canvas drawing -----------------------------------------

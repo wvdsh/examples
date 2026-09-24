@@ -1,5 +1,13 @@
+// node_modules/@wvdsh/sdk-js/dist/client.js
+var Wavedash = window.Wavedash;
+if (!Wavedash) {
+  throw new Error(
+    "Wavedash is not initialized. If you're running your game locally use the `wavedash dev` command to ensure the Wavedash SDK is loaded."
+  );
+}
+var client_default = Wavedash;
+
 // src/main.ts
-var WavedashJS = await window.WavedashJS;
 var canvas = document.getElementById("gameCanvas");
 var ctx = canvas.getContext("2d");
 function resize() {
@@ -155,10 +163,10 @@ function update(dt) {
     serving = true;
   }
 }
-WavedashJS.updateLoadProgressZeroToOne(0);
-WavedashJS.updateLoadProgressZeroToOne(0.5);
-WavedashJS.updateLoadProgressZeroToOne(1);
-WavedashJS.init({ debug: true });
+client_default.updateLoadProgressZeroToOne(0);
+client_default.updateLoadProgressZeroToOne(0.5);
+client_default.updateLoadProgressZeroToOne(1);
+client_default.init({ debug: true });
 var last = performance.now();
 function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1e3);

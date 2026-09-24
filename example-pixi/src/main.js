@@ -1,7 +1,7 @@
 import "pixi.js/browser";
 import * as PIXI from "pixi.js";
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 
 
 /* ── constants ─────────────────────────────────────────────── */

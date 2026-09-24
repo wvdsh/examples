@@ -8,10 +8,7 @@
 (function () {
   let _wdSdk = null;
   let _wdLatest = 0;
-  Promise.resolve(window.WavedashJS).then(function (sdk) {
-    _wdSdk = sdk;
-    if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(_wdLatest);
-  });
+  _wdSdk = window.Wavedash;
   window.__wavedashProgress = function (p) {
     _wdLatest = Math.max(_wdLatest, Math.min(1, p));
     if (_wdSdk) _wdSdk.updateLoadProgressZeroToOne(_wdLatest);

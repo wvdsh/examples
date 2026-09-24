@@ -29,14 +29,14 @@ local M = {}
 
 function M.init()
   os.execute([[javascript:
-    window.WavedashJS && window.WavedashJS.init({ debug: true })
+    window.Wavedash && window.Wavedash.init({ debug: true })
   ]])
 end
 
 function M.update_load_progress(fraction)
   local clamped = math.max(0, math.min(1, fraction or 0))
   os.execute(string.format([[javascript:
-    window.WavedashJS && window.WavedashJS.updateLoadProgressZeroToOne(%f)
+    window.Wavedash && window.Wavedash.updateLoadProgressZeroToOne(%f)
   ]], clamped))
 end
 
@@ -50,26 +50,27 @@ wavedash.update_load_progress(1)
 wavedash.init()
 ```
 
-No JS shim is needed — `WavedashJS` is injected by the Wavedash CLI before the game starts, and `os.execute` reaches it directly.
+No JS shim is needed — `window.Wavedash` is injected by the Wavedash CLI before the game starts, and `os.execute` reaches it directly.
 
 ### Adding another SDK method
 
-Pick any `WavedashJS` method — say `setMetadata(key, value)`. Add a Lua wrapper that embeds the arguments straight into the JS literal:
+Pick any SDK method — say `setAchievement(id)`. Add a Lua wrapper that embeds the arguments straight into the JS literal:
 
 ```lua
-function M.set_metadata(key, value)
+function M.set_achievement(id)
   os.execute(string.format([[javascript:
-    window.WavedashJS && window.WavedashJS.setMetadata(%q, %q)
-  ]], key, value))
+    window.Wavedash && window.Wavedash.setAchievement(%q, true)
+  ]], id))
 end
 ```
 
-For methods that return data back to Lua, append a `return` to the JS and read it via `io.read()` — `normalize1.lua` already wires that up:
+For methods that return data back to Lua, use the return value of `os.execute` — `normalize1.lua` already drains `io.read()` and returns the evaluated result:
 
 ```lua
 function M.get_username()
-  os.execute([[javascript:'return ' + (window.WavedashJS ? window.WavedashJS.getUsername() : '')]])
-  return io.read() or ""
+  return os.execute([[javascript:
+    window.Wavedash ? window.Wavedash.getUsername() : ''
+  ]]) or ""
 end
 ```
 

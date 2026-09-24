@@ -1,5 +1,5 @@
-// Resolve the WavedashJS promise injected by `wavedash dev`.
-const sdk = await window.WavedashJS;
+// window.Wavedash is injected by the host (or `wavedash dev`) before this script runs.
+const sdk = window.Wavedash;
 
 const canvas = document.getElementById("renderCanvas");
 const ctx = canvas.getContext("2d");
@@ -88,7 +88,7 @@ sdk.updateLoadProgressZeroToOne(0);
 // fetches each _framework asset (Pong.wasm, dotnet.native.wasm, runtime, etc.).
 // Reserve the last 5% for runtime startup after downloads finish.
 const { getAssemblyExports } = await dotnet
-  .withConfig({
+  .withModuleConfig({
     onDownloadResourceProgress: (loaded, total) => {
       if (total > 0) sdk.updateLoadProgressZeroToOne((loaded / total) * 0.95);
     },

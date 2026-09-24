@@ -1,14 +1,11 @@
-export async function waitForWavedash(timeoutMs = 15000) {
-  const deadline = Date.now() + timeoutMs;
-  while (!globalThis.WavedashJS) {
-    if (Date.now() > deadline) {
-      throw new Error(
-        "This example must run inside `wavedash dev`, where `window.WavedashJS` is injected."
-      );
-    }
-    await new Promise((resolve) => setTimeout(resolve, 50));
+// window.Wavedash is injected by the host before any page script runs.
+export function getWavedash() {
+  if (!globalThis.Wavedash) {
+    throw new Error(
+      "This example must run inside `wavedash dev`, where `window.Wavedash` is injected."
+    );
   }
-  return globalThis.WavedashJS;
+  return globalThis.Wavedash;
 }
 
 export function describeUser(sdk) {
@@ -18,7 +15,7 @@ export function describeUser(sdk) {
 
   try {
     const user = sdk.getUser();
-    return user?.username || user?.name || user?.id || "unavailable";
+    return user?.username || user?.id || "unavailable";
   } catch (error) {
     console.warn("[example-construct] Unable to read Wavedash user", error);
     return "unavailable";

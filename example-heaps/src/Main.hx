@@ -32,7 +32,7 @@ class Main extends hxd.App {
 
     override function init() {
         // Heaps engine and WebGL context are ready — report early progress.
-        js.Syntax.code("WavedashJS.updateLoadProgressZeroToOne(0.3)");
+        js.Syntax.code("Wavedash.updateLoadProgressZeroToOne(0.3)");
 
         // Design resolution: 1600x900, letterboxed.
         engine.backgroundColor = 0xFF0A0A0A;
@@ -60,8 +60,8 @@ class Main extends hxd.App {
         resetBall(1.0);
 
         // Scene built and game state initialized — signal fully loaded.
-        js.Syntax.code("WavedashJS.updateLoadProgressZeroToOne(1.0)");
-        js.Syntax.code("WavedashJS.init({ debug: true })");
+        js.Syntax.code("Wavedash.updateLoadProgressZeroToOne(1.0)");
+        js.Syntax.code("Wavedash.init({ debug: true })");
     }
 
     function resetBall(dir:Float) {

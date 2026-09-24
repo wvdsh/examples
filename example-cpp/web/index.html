@@ -35,8 +35,8 @@
       window.__ctx = c.getContext("2d");
       window.__ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // Resolve the WavedashJS promise injected by wavedash dev
-      const sdk = window.WavedashJS = await window.WavedashJS;
+      // window.Wavedash is injected by the host before this script runs
+      const sdk = window.Wavedash;
 
       // Stream the .wasm download so the SDK loading bar reflects real bytes.
       window.Module = {

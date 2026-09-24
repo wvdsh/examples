@@ -610,9 +610,9 @@ func (g *pongGame) syncHud() {
 // ---------------------------------------------------------------------------
 
 func main() {
-	sdk := js.Global().Get("WavedashJS")
+	sdk := js.Global().Get("Wavedash")
 	if !sdk.Truthy() {
-		panic("This example must run inside `wavedash dev`, where `window.WavedashJS` is injected.")
+		panic("This example must run inside `wavedash dev`, where `window.Wavedash` is injected.")
 	}
 
 	target := ensureTarget()

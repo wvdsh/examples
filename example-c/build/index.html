@@ -25,7 +25,7 @@
     <canvas id="renderCanvas"></canvas>
     <div id="scoreboard"><span id="playerScore">0</span><span id="aiScore">0</span></div>
     <script type="module">
-      const sdk = window.WavedashJS = await window.WavedashJS;
+      const sdk = window.Wavedash;
 
       // Stream the .wasm download so the SDK loading bar reflects real bytes.
       // Emscripten lets us short-circuit its wasm load via Module.instantiateWasm.

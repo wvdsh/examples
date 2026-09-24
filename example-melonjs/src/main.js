@@ -6,7 +6,7 @@ import {
   CANVAS,
 } from "melonjs";
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 Wavedash.updateLoadProgressZeroToOne(0.3);
 
 // --- Arena ---

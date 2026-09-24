@@ -11,31 +11,21 @@ https://github.com/Enichan/Pico8Platformer
 
 ## Build for web
 
-PICO-8 itself produces the web-playable bundle. You need the PICO-8 binary
-(https://www.lexaloffle.com/pico-8.php) — this repo does not ship a runnable
-build.
+PICO-8 itself produces the web-playable bundle. The exported `build/` is
+committed so the example runs as-is; to re-export you need the PICO-8 binary
+(https://www.lexaloffle.com/pico-8.php):
 
 ```
 > LOAD cart/platformer.p8
 > EXPORT -p game build/index.html
 ```
 
-PICO-8 writes a self-contained `build/index.html` (+ a few asset files).
+## Wavedash integration
 
-## Wire Wavedash into the cart
-
-Add to the cart's `_init()`:
-
-```lua
--- print() is intercepted by build/wavedash-bridge.js (see example-love2d
--- for the same trick) and forwarded to WavedashJS.
-print("[wavedash]progress:1.0")
-print("[wavedash]init")
-```
-
-…and add a small bridge script to `build/index.html` that turns those
-prefixed `print` lines into SDK calls. (See `example-love2d/build/wavedash-bridge.js`
-for the pattern.)
+The SDK is driven entirely from the HTML shell — the cart needs no changes.
+`build/index.html` streams `index.js` into `Wavedash.updateLoadProgressZeroToOne`
+and calls `Wavedash.init()` once it's fetched (see the PICO-8 guide in the docs).
+Re-apply that snippet after re-exporting, since PICO-8 overwrites `index.html`.
 
 ## Push
 

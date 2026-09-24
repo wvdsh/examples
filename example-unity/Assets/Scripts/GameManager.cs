@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
         if (launchParams != null && launchParams.TryGetValue("lobby", out var launchLobbyId) && !string.IsNullOrEmpty(launchLobbyId))
         {
             uiManager.ShowOnlinePanel();
-            _ = Wavedash.SDK.JoinLobby(launchLobbyId);
+            JoinLobbySafe(launchLobbyId);
         }
     }
 
@@ -164,13 +164,19 @@ public class GameManager : MonoBehaviour
 
     public async void CreateLobby()
     {
-        string lobbyId = await Wavedash.SDK.CreateLobby(
-            WavedashConstants.LobbyVisibility.PUBLIC, 2);
-        if (string.IsNullOrEmpty(lobbyId))
+        // Failed SDK calls throw (null is only returned outside WebGL builds).
+        string lobbyId;
+        try
         {
-            Debug.LogWarning("Failed to create lobby");
+            lobbyId = await Wavedash.SDK.CreateLobby(
+                WavedashConstants.LobbyVisibility.PUBLIC, 2);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"Failed to create lobby: {e.Message}");
             return;
         }
+        if (string.IsNullOrEmpty(lobbyId)) return;
 
         string username = Wavedash.SDK.GetUsername();
         if (!string.IsNullOrEmpty(username))
@@ -207,11 +213,15 @@ public class GameManager : MonoBehaviour
     public async void CopyInviteLink()
     {
         if (string.IsNullOrEmpty(currentLobbyId)) return;
-        string link = await Wavedash.SDK.GetLobbyInviteLink(copyToClipboard: true);
-        if (string.IsNullOrEmpty(link))
-            Debug.LogWarning("[GameManager] Failed to get lobby invite link");
-        else
+        try
+        {
+            string link = await Wavedash.SDK.GetLobbyInviteLink(copyToClipboard: true);
             Debug.Log($"[GameManager] Copied invite link: {link}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[GameManager] Failed to get lobby invite link: {e.Message}");
+        }
     }
 
     // ── Wavedash Events ─────────────────────────────────────────
@@ -378,10 +388,24 @@ public class GameManager : MonoBehaviour
         return Wavedash.SDK.GetUsername(peerId) ?? "Unknown";
     }
 
+    public static async void JoinLobbySafe(string lobbyId)
+    {
+        try { await Wavedash.SDK.JoinLobby(lobbyId); }
+        catch (System.Exception e) { Debug.LogWarning($"[GameManager] Failed to join lobby: {e.Message}"); }
+    }
+
     async System.Threading.Tasks.Task RefreshLobbies()
     {
-        var lobbies = await Wavedash.SDK.ListAvailableLobbies();
-        uiManager.PopulateLobbyList(lobbies);
+        try
+        {
+            var lobbies = await Wavedash.SDK.ListAvailableLobbies();
+            uiManager.PopulateLobbyList(lobbies);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[GameManager] Failed to list lobbies: {e.Message}");
+            uiManager.PopulateLobbyList(null);
+        }
     }
 
     // ── Cleanup ─────────────────────────────────────────────────
@@ -407,7 +431,8 @@ public class GameManager : MonoBehaviour
         {
             string lobbyId = currentLobbyId;
             currentLobbyId = null;
-            await Wavedash.SDK.LeaveLobby(lobbyId);
+            try { await Wavedash.SDK.LeaveLobby(lobbyId); }
+            catch (System.Exception e) { Debug.LogWarning($"[GameManager] Failed to leave lobby: {e.Message}"); }
         }
     }
 

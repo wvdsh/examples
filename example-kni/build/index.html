@@ -40,10 +40,7 @@
         let _wdLastReported = 0;
         const _wdTotals = {};
         const _wdReceived = {};
-        Promise.resolve(window.WavedashJS).then((sdk) => {
-            _wdSdk = sdk;
-            if (_wdSdk && _wdLastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_wdLastReported);
-        });
+        _wdSdk = window.Wavedash;
 
         async function _wdStreamedFetch(url, contentTypeOverride) {
             const response = await fetch(url, { cache: 'no-cache' });

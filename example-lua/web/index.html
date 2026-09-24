@@ -30,15 +30,14 @@
       const factory = new LuaFactory();
       const lua = await factory.createEngine();
 
-      // Resolve the Wavedash SDK promise in JS so Lua doesn't need to touch
-      // `.then` (which is a reserved word in Lua).
-      const WavedashJS = await window.WavedashJS;
+      // window.Wavedash is injected by the host before this script runs.
+      const Wavedash = window.Wavedash;
 
       // Bind the JS handles Lua needs as Lua globals.
       lua.global.set("window", window);
       lua.global.set("document", document);
       lua.global.set("Math", Math);
-      lua.global.set("WavedashJS", WavedashJS);
+      lua.global.set("Wavedash", Wavedash);
 
       const main = await fetch("./main.lua").then((r) => r.text());
       await lua.doString(main);

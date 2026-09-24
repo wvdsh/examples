@@ -16,6 +16,6 @@ Every push to `main` will build the game and push a new build to Wavedash. Open 
 | Command | Description |
 |---|---|
 | `npm install` | Install dependencies |
-| `npm run dev` | Start dev server on `localhost:8080` |
+| `npm run dev` | Vite dev server on `localhost:8080` (the SDK isn't injected here — use `npm run build` + `wavedash dev` to test SDK calls) |
 | `npm run build` | Build to `./dist` |
 | `wavedash dev` | Run the built `./dist` in the Wavedash sandbox |

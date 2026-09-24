@@ -13,9 +13,6 @@
     <script type="module">
       import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.mjs";
 
-      // Resolve the Wavedash SDK promise in JS so Python can call it synchronously.
-      window.WavedashJS = await window.WavedashJS;
-
       const pyodide = await loadPyodide({
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/",
       });

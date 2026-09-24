@@ -11,7 +11,7 @@
     <script type="module">
   // Stream binjgb.wasm + the GB rom through the SDK loading bar.
   let _wdSdk = null;
-  Promise.resolve(window.WavedashJS).then((sdk) => { _wdSdk = sdk; });
+  _wdSdk = window.Wavedash;
 
   const KNOWN = ["binjgb.wasm", ".gb"];
   const totals = {};
@@ -46,16 +46,13 @@
     });
   };
 
-  (async () => {
+  // Settle the bar at 1.0 once binjgb has had time to fetch both files.
+  setTimeout(() => {
     try {
-      const WavedashJS = await window.WavedashJS;
-      // Settle the bar at 1.0 once binjgb has had time to fetch both files.
-      setTimeout(() => {
-        WavedashJS.updateLoadProgressZeroToOne(1.0);
-        WavedashJS.init({ debug: true });
-      }, 400);
+      window.Wavedash.updateLoadProgressZeroToOne(1.0);
+      window.Wavedash.init({ debug: true });
     } catch (e) { console.warn("[wavedash] init failed:", e); }
-  })();
+  }, 400);
 </script>
   </head>
   <body>

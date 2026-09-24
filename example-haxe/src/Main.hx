@@ -47,13 +47,13 @@ class Main {
 
     static function main() {
         // Script is executing — DOM is being parsed.
-        js.Syntax.code("WavedashJS.updateLoadProgressZeroToOne(0.2)");
+        js.Syntax.code("Wavedash.updateLoadProgressZeroToOne(0.2)");
         Browser.window.addEventListener("load", onLoad);
     }
 
     static function onLoad(_) {
         // Window "load" fired — all subresources are ready.
-        js.Syntax.code("WavedashJS.updateLoadProgressZeroToOne(0.7)");
+        js.Syntax.code("Wavedash.updateLoadProgressZeroToOne(0.7)");
 
         canvas = cast Browser.document.getElementById("gameCanvas");
         ctx = canvas.getContext("2d");
@@ -81,8 +81,8 @@ class Main {
         ballVy = (0.25 / len) * BALL_SPEED;
 
         // Canvas, input, and game state are ready — signal fully loaded.
-        js.Syntax.code("WavedashJS.updateLoadProgressZeroToOne(1.0)");
-        js.Syntax.code("WavedashJS.init({ debug: true })");
+        js.Syntax.code("Wavedash.updateLoadProgressZeroToOne(1.0)");
+        js.Syntax.code("Wavedash.init({ debug: true })");
 
         lastTime = Browser.window.performance.now();
         Browser.window.requestAnimationFrame(loop);

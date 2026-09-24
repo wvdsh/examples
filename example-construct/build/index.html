@@ -21,10 +21,7 @@
 		(function () {
 			let _wdSdk = null;
 			let _lastReported = 0;
-			Promise.resolve(window.WavedashJS).then((sdk) => {
-				_wdSdk = sdk;
-				if (_wdSdk && _lastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
-			});
+			_wdSdk = window.Wavedash;
 
 			const totals = {};
 			const received = {};

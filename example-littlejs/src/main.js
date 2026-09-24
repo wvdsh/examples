@@ -1,7 +1,7 @@
 // LittleJS Pong — two-player-style with a tracking AI on the right.
 import { engineInit, vec2, drawRect, Color, WHITE, setCameraPos, setCameraScale, setCanvasFixedSize, timeDelta, keyIsDown } from 'littlejsengine';
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 Wavedash.updateLoadProgressZeroToOne(0.3);
 
 // --- Arena (world units, LittleJS uses tile coords by default) ---

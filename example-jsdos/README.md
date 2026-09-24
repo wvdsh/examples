@@ -1,6 +1,6 @@
 # js-dos
 
-A DOS game on Wavedash, played in the browser via the [js-dos v8](https://js-dos.com/) emulator. The platform automatically wraps your `.jsdos` bundle in js-dos and handles SDK initialization — no SDK code needed in your DOS game.
+A DOS game on Wavedash, played in the browser via the [js-dos v8](https://js-dos.com/) emulator. The platform automatically wraps your `.jsdos` bundle in js-dos handles load progress, and calls `Wavedash.loadComplete()` — no SDK code needed in your DOS game.
 
 ## Prerequisites
 
@@ -39,7 +39,7 @@ executable = "game.jsdos"
 loader_url = "loader.js"
 ```
 
-Place `loader.js` in `build/` alongside your bundle. In it, set `window.dosOptions` to a js-dos options object (or a `Promise` that resolves to one). It runs before js-dos is initialized and has access to `window.WavedashJS`.
+Place `loader.js` in `build/` alongside your bundle. In it, set `window.dosOptions` to a js-dos options object (or a `Promise` that resolves to one). It runs before js-dos is initialized and has access to `window.Wavedash`. The platform does not call `Wavedash.init()`; call it from `loader.js` if you need SDK events.
 
 Example `loader.js`:
 
@@ -48,7 +48,7 @@ window.dosOptions = {
   renderAspect: '4/3',
   onEvent: function(event, ci) {
     if (event === 'ci-ready') {
-      WavedashJS.loadComplete();
+      Wavedash.init(); // calls loadComplete() and enables SDK events
     }
   }
 };

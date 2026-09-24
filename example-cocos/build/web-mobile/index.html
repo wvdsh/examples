@@ -40,10 +40,7 @@
     // Wavedash: stream cocos-js/* and assets/* downloads to the SDK loading bar.
     (function () {
       let _wdSdk = null;
-      Promise.resolve(window.WavedashJS).then((sdk) => {
-        _wdSdk = sdk;
-        if (_wdSdk && _lastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
-      });
+      _wdSdk = window.Wavedash;
 
       const totals = {};
       const received = {};

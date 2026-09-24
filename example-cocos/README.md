@@ -25,4 +25,4 @@ Replace `game_id` in [`wavedash.toml`](./wavedash.toml) with your Wavedash game 
 
 ## Notes
 
-- The `build/` directory is not committed; you must build from Cocos Creator before running `wavedash dev`.
+- A built `build/web-mobile` is committed so the example runs as-is; rebuild from Cocos Creator (Web Mobile template) after changing the project, before running `wavedash dev`.

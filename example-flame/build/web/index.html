@@ -24,10 +24,7 @@
       (function () {
         let sdk = null;
         let latest = -1;
-        Promise.resolve(window.WavedashJS).then((s) => {
-          sdk = s;
-          if (latest >= 0) sdk.updateLoadProgressZeroToOne(latest);
-        });
+        sdk = window.Wavedash;
         const TRACKED = [".js", ".wasm", ".ttf", ".otf", "AssetManifest", "FontManifest"];
         const totals = {};
         const recvd = {};
@@ -67,8 +64,5 @@
     <script src="flutter_bootstrap.js" async></script>
   </head>
   <body>
-    <script type="module">
-      window.WavedashJS = await window.WavedashJS;
-    </script>
   </body>
 </html>

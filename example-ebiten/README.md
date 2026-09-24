@@ -2,7 +2,7 @@
 
 A minimal Ebiten Pong game on Wavedash, compiled to WebAssembly.
 
-[See it live](https://wavedash.com/playtest/ebiten-example/YOUR_GAME_ID_HERE)
+[See it live](https://wavedash.com/playtest/ebiten-example/314fe89c-26ab-4e41-b40a-cdb83e872a3f)
 
 ## Prerequisites
 

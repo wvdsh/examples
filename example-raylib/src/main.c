@@ -4,8 +4,8 @@
 
 // --- Wavedash SDK bridge ---
 
-EM_JS(void, wavedash_init, (), { WavedashJS.init(); });
-EM_JS(void, wavedash_progress, (double p), { WavedashJS.updateLoadProgressZeroToOne(p); });
+EM_JS(void, wavedash_init, (), { Wavedash.init(); });
+EM_JS(void, wavedash_progress, (double p), { Wavedash.updateLoadProgressZeroToOne(p); });
 
 // --- Constants ---
 

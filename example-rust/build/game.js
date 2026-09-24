@@ -1,5 +1,5 @@
-// Resolve the WavedashJS promise injected by `wavedash dev`.
-const sdk = await window.WavedashJS;
+// window.Wavedash is injected by the host (or `wavedash dev`) before this script runs.
+const sdk = window.Wavedash;
 
 const canvas = document.getElementById("renderCanvas");
 const ctx = canvas.getContext("2d");

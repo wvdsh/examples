@@ -22,16 +22,11 @@
     const _Scene_Boot_start = Scene_Boot.prototype.start;
     Scene_Boot.prototype.start = function() {
         _Scene_Boot_start.call(this);
-        (async () => {
-            try {
-                const WavedashJS = await window.WavedashJS;
-                WavedashJS.updateLoadProgressZeroToOne(1);
-                WavedashJS.init({
-                    debug: true
-                });
-            } catch (e) {
-                console.warn("[wavedash] init failed:", e);
-            }
-        })();
+        try {
+            window.Wavedash.updateLoadProgressZeroToOne(1);
+            window.Wavedash.init({ debug: true });
+        } catch (e) {
+            console.warn("[wavedash] init failed:", e);
+        }
     };
 })();

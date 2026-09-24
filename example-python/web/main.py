@@ -3,11 +3,11 @@
 Two players: W/S for left paddle, Up/Down for right paddle.
 Rendered directly to a Canvas 2D context via the ``js`` module Pyodide exposes.
 """
-from js import WavedashJS, document, window
+from js import Object, Wavedash, document, window
 from pyodide.ffi import create_proxy, to_js
 
 # Pyodide and the standard library have finished loading (~10 MB of WASM).
-WavedashJS.updateLoadProgressZeroToOne(0.5)
+Wavedash.updateLoadProgressZeroToOne(0.5)
 
 # --- Arena (logical units, matching example-bevy) ---
 LEFT_WALL, RIGHT_WALL = -450.0, 450.0
@@ -230,8 +230,9 @@ loop_proxy = create_proxy(loop)
 
 # --- Wavedash SDK ---
 # Game state and input handlers are ready — signal fully loaded.
-WavedashJS.updateLoadProgressZeroToOne(1.0)
-WavedashJS.init(to_js({"debug": True}))
+Wavedash.updateLoadProgressZeroToOne(1.0)
+# dict_converter makes a plain JS object; plain to_js would produce a Map the SDK ignores.
+Wavedash.init(to_js({"debug": True}, dict_converter=Object.fromEntries))
 
 state["last_time"] = window.performance.now()
 window.requestAnimationFrame(loop_proxy)

@@ -1,6 +1,6 @@
 # Ruffle
 
-A Flash (SWF) game on Wavedash, played in the browser via the [Ruffle](https://ruffle.rs/) emulator. The platform automatically wraps your SWF in Ruffle and handles SDK initialization — no SDK code needed in your Flash game.
+A Flash (SWF) game on Wavedash, played in the browser via the [Ruffle](https://ruffle.rs/) emulator. The platform automatically wraps your SWF in Ruffle handles load progress, and calls `Wavedash.loadComplete()` — no SDK code needed in your Flash game.
 
 ## Prerequisites
 
@@ -28,4 +28,4 @@ executable = "game.swf"
 loader_url = "loader.js"
 ```
 
-Place `loader.js` in `build/` alongside your SWF. It runs before the SWF loads and has access to `window.WavedashJS`.
+Place `loader.js` in `build/` alongside your SWF. It runs before the SWF loads and has access to `window.Wavedash`. The platform does not call `Wavedash.init()`; call it from `loader.js` if you need SDK events.

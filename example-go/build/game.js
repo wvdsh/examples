@@ -1,14 +1,4 @@
 (function () {
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = src;
-      script.onload = resolve;
-      script.onerror = () => reject(new Error(`Failed to load ${src}`));
-      document.head.appendChild(script);
-    });
-  }
-
   async function fetchWasmWithProgress(url, onProgress) {
     const response = await fetch(url);
     const total = +response.headers.get("Content-Length") || 0;
@@ -32,16 +22,15 @@
   }
 
   async function main() {
-    if (!window.WavedashJS) {
+    const sdk = window.Wavedash;
+    if (!sdk) {
       throw new Error(
-        "This example must run inside `wavedash dev`, where `window.WavedashJS` is injected."
+        "This example must run inside `wavedash dev`, where `window.Wavedash` is injected."
       );
     }
-
-    const sdk = await window.WavedashJS;
     sdk.updateLoadProgressZeroToOne(0);
 
-    await loadScript("./wasm_exec.js");
+    await sdk.loadScript("./wasm_exec.js");
 
     // Reserve the last 5% for compile/instantiate.
     const wasmBytes = await fetchWasmWithProgress("./game.wasm",

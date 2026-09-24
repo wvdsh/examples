@@ -331,13 +331,13 @@
       "url": "https://packages.unity.com"
     },
     "com.wavedash.sdk": {
-      "version": "https://github.com/wvdsh/sdk-unity.git",
+      "version": "https://github.com/wvdsh/sdk-unity.git#73a927464a0c5dff7aadef0b6d033b8a5dd61bbc",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2"
       },
-      "hash": "bf88a2e76b9b2c48747c9386edafbf6ce75525aa"
+      "hash": "73a927464a0c5dff7aadef0b6d033b8a5dd61bbc"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

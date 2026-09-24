@@ -114,10 +114,7 @@
         // Wavedash: forward loadAllAssets onProgress (0-100 percent) to the SDK.
         var _wdSdk = null;
         var _lastReported = 0;
-        Promise.resolve(window.WavedashJS).then(function (sdk) {
-            _wdSdk = sdk;
-            if (_wdSdk && _lastReported > 0) _wdSdk.updateLoadProgressZeroToOne(_lastReported);
-        });
+        _wdSdk = window.Wavedash;
 
         //Initialization
         var game = new gdjs.RuntimeGame(gdjs.projectData, {});

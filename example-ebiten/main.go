@@ -14,7 +14,7 @@ import (
 // --- Wavedash SDK bridge ---
 
 func wavedashInit() {
-	sdk := js.Global().Get("WavedashJS")
+	sdk := js.Global().Get("Wavedash")
 	sdk.Call("updateLoadProgressZeroToOne", 1)
 	sdk.Call("init")
 }

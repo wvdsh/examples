@@ -1,6 +1,6 @@
 import * as pc from "playcanvas";
 
-const Wavedash = await window.Wavedash;
+import Wavedash from "@wvdsh/sdk-js";
 
 
 /* ── PlayCanvas application ─────────────────────────────────── */

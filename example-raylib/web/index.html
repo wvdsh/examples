@@ -25,8 +25,8 @@
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="module">
       // Resolve the Wavedash SDK Promise before loading the game so the
-      // EM_JS bridge can call WavedashJS.init() synchronously.
-      const sdk = window.WavedashJS = await window.WavedashJS;
+      // EM_JS bridge can call Wavedash.init() synchronously.
+      const sdk = window.Wavedash;
       // raylib's Emscripten port reads Module.canvas during GL init, so
       // this has to be set before game.js starts executing.
       window.Module = {

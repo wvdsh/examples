@@ -2,11 +2,11 @@
 (function ($global) { "use strict";
 class Main {
 	static main() {
-		WavedashJS.updateLoadProgressZeroToOne(0.2);
+		Wavedash.updateLoadProgressZeroToOne(0.2);
 		window.addEventListener("load",Main.onLoad);
 	}
 	static onLoad(_) {
-		WavedashJS.updateLoadProgressZeroToOne(0.7);
+		Wavedash.updateLoadProgressZeroToOne(0.7);
 		Main.canvas = window.document.getElementById("gameCanvas");
 		Main.ctx = Main.canvas.getContext("2d");
 		Main.resize();
@@ -31,8 +31,8 @@ class Main {
 		let len = Math.sqrt(1.0625);
 		Main.ballVx = 1.0 / len * 400.0;
 		Main.ballVy = 0.25 / len * 400.0;
-		WavedashJS.updateLoadProgressZeroToOne(1.0);
-		WavedashJS.init({ debug: true });
+		Wavedash.updateLoadProgressZeroToOne(1.0);
+		Wavedash.init({ debug: true });
 		Main.lastTime = window.performance.now();
 		window.requestAnimationFrame(Main.loop);
 	}

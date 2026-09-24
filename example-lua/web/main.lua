@@ -1,6 +1,6 @@
 -- Minimal Pong in Lua, running in-browser via wasmoon.
 -- Two players: W/S for left paddle, Up/Down for right paddle.
--- `window`, `document`, `Math`, and `WavedashJS` are bound as globals by index.html.
+-- `window`, `document`, `Math`, and `Wavedash` are bound as globals by index.html.
 
 -- Arena (logical units, matching example-bevy)
 local LEFT_WALL, RIGHT_WALL = -450.0, 450.0
@@ -21,7 +21,7 @@ local BALL_SIZE = 20.0
 local BALL_SPEED = 400.0
 
 -- wasmoon runtime is loaded and this script has been fetched.
-WavedashJS:updateLoadProgressZeroToOne(0.5)
+Wavedash:updateLoadProgressZeroToOne(0.5)
 
 -- Canvas & context
 local canvas = document:getElementById("gameCanvas")
@@ -190,6 +190,6 @@ local function loop(now)
 end
 
 -- Game state and input handlers are ready — signal fully loaded.
-WavedashJS:updateLoadProgressZeroToOne(1.0)
-WavedashJS:init({ debug = true })
+Wavedash:updateLoadProgressZeroToOne(1.0)
+Wavedash:init({ debug = true })
 window:requestAnimationFrame(loop)

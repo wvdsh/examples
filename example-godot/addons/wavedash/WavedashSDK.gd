@@ -19,14 +19,21 @@ var _cached_lobby_id : String = ""
 var _p2p_outgoing_buffer : JavaScriptObject
 var _p2p_outgoing_buffer_size : int = 0
 
+var _js_cast : JavaScriptObject
+
 # Godot compatibility checks for which P2P method to use
 # Initialized at startup
 var _has_js_buffer_transfer : bool = false
 var _eval_returns_byte_array : bool = false
 
+var _builds_origin : String = ""
+
 # Handle events broadcasted from JS to Godot
 # JS -> GD
 var _js_callback_receiver : JavaScriptObject
+var _listener_track_timer : Timer
+var _listener_track_callbacks : Array = []
+var _untracked_listener_signals : Array = []
 
 # Per-request tracking for async JS calls (GD -> JS -> GD)
 # Each call gets a unique ID so concurrent awaits don't cross-wire responses
@@ -47,19 +54,27 @@ signal lobby_invite(payload)
 signal sent_lobby_invite(payload)
 signal got_lobby_invite_link(payload)
 signal got_lobbies(payload)
+signal got_lobby(payload)
 signal got_leaderboard(payload)
 signal got_leaderboard_entries(payload)
 signal posted_leaderboard_score(payload)
 signal ugc_item_created(payload)
 signal ugc_item_updated(payload)
 signal ugc_item_downloaded(payload)
+signal ugc_item_deleted(payload)
+signal got_ugc_items(payload)
 signal remote_file_downloaded(payload)
 signal remote_file_uploaded(payload)
+signal remote_file_deleted(payload)
+signal got_remote_file_exists(payload)
 signal remote_directory_downloaded(payload)
 signal got_remote_directory_listing(payload)
 signal p2p_connection_established(payload)
 signal p2p_connection_failed(payload)
 signal p2p_peer_disconnected(payload)
+signal p2p_peer_reconnecting(payload)
+signal p2p_peer_reconnected(payload)
+signal p2p_packet_dropped(payload)
 signal current_stats_received(payload)
 signal stats_stored(payload)
 signal backend_connected(payload)
@@ -67,6 +82,18 @@ signal backend_reconnecting(payload)
 signal backend_disconnected(payload)
 signal user_avatar_loaded(texture: Texture2D, user_id: String)
 signal got_friends(payload)
+signal got_user_jwt(payload)
+signal fullscreen_changed(payload)
+## Retained for compatibility. This signal is no longer emitted.
+## @deprecated: Manage game audio locally. This signal will be removed in a future major release.
+@warning_ignore("unused_signal")
+signal mute_changed(payload)
+signal user_presence_updated(payload)
+signal got_is_entitled(payload)
+signal got_entitlements(payload)
+signal paywall_resolved(payload)
+signal entitlements_granted(payload)
+signal content_downloaded(payload)
 
 func _log(msg: String) -> void:
 	if OS.is_debug_build():
@@ -75,10 +102,20 @@ func _log(msg: String) -> void:
 func _web_unsupported(method_name: String) -> Dictionary:
 	return {"success": false, "data": null, "message": "%s is only supported in Web builds" % method_name}
 
+func _install_js_cast() -> void:
+	JavaScriptBridge.eval("window.__wavedashCast = { asString: (v) => String(v), asNumber: (v) => Number(v), asBool: (v) => Boolean(v) };")
+	_js_cast = JavaScriptBridge.get_interface("__wavedashCast")
+	if not _js_cast:
+		push_error("WavedashSDK: could not install the JS value casting interface")
+		return
+
 func _enter_tree():
 	_log("_enter_tree() called, platform: %s" % OS.get_name())
 	_entered_tree = true
 	if _is_web:
+		var origin = JavaScriptBridge.eval("location.origin")
+		if origin is String:
+			_builds_origin = origin
 		WavedashJS = JavaScriptBridge.get_interface("WavedashJS")
 		if not WavedashJS:
 			push_error("WavedashSDK: WavedashJS not found on window")
@@ -91,6 +128,8 @@ func _enter_tree():
 		_has_js_buffer_transfer = JavaScriptBridge.has_method("js_buffer_to_packed_byte_array")
 		if not _has_js_buffer_transfer:
 			_eval_returns_byte_array = JavaScriptBridge.eval("new Uint8Array([1,2,3])") is PackedByteArray
+		_install_js_cast()
+		_start_listener_tracking()
 
 func init(config: Dictionary):
 	assert(_entered_tree, "WavedashSDK.init() called before WavedashSDK was added to the tree")
@@ -107,6 +146,49 @@ func ready_for_events() -> void:
 func toggle_overlay() -> void:
 	if _is_web and WavedashJS:
 		WavedashJS.toggleOverlay()
+
+## Whether the game is currently presented in fullscreen.
+## Mirrored from the Wavedash host page, which owns the real fullscreen target.
+func is_fullscreen() -> bool:
+	if _is_web and WavedashJS:
+		return WavedashJS.isFullscreen()
+	return false
+
+## Ask the host page to enter (true) or exit (false) fullscreen.
+## Entering must happen inside a user-gesture handler (e.g. an InputEvent
+## triggered by a keypress or mouse click) for the browser to permit it.
+## Returns true if the host reports the operation succeeded, false otherwise.
+func request_fullscreen(fullscreen: bool) -> bool:
+	if _is_web and WavedashJS:
+		return await _invoke_js_returning_bool(WavedashJS.requestFullscreen(fullscreen))
+	return false
+
+## Toggle fullscreen. Like request_fullscreen(true), this must run inside a
+## user-gesture handler when entering fullscreen.
+## Returns true if the host reports the operation succeeded, false otherwise.
+func toggle_fullscreen() -> bool:
+	if _is_web and WavedashJS:
+		return await _invoke_js_returning_bool(WavedashJS.toggleFullscreen())
+	return false
+
+## No-op. Always returns false; site audio settings are independent of the game.
+## @deprecated: Manage game audio locally. This method will be removed in a future major release.
+func is_muted() -> bool:
+	push_warning("WavedashSDK.is_muted() is deprecated and is now a no-op. Manage game audio locally; this method will be removed in a future major release.")
+	return false
+
+## No-op. Always returns false; manage game audio locally.
+## @deprecated: Manage game audio locally. This method will be removed in a future major release.
+@warning_ignore("unused_parameter")
+func request_mute(muted: bool) -> bool:
+	push_warning("WavedashSDK.request_mute() is deprecated and is now a no-op. Manage game audio locally; this method will be removed in a future major release.")
+	return false
+
+## No-op. Always returns false; manage game audio locally.
+## @deprecated: Manage game audio locally. This method will be removed in a future major release.
+func toggle_mute() -> bool:
+	push_warning("WavedashSDK.toggle_mute() is deprecated and is now a no-op. Manage game audio locally; this method will be removed in a future major release.")
+	return false
 
 func _fetch_user() -> Dictionary:
 	if _cached_user.is_empty() and _is_web and WavedashJS:
@@ -135,6 +217,19 @@ func get_username(user_id: String = "") -> String:
 	if _username == "":
 		_fetch_user()
 	return _username
+
+## Returns the current user's gameplay JWT, fetching it if not already cached.
+## Use this to authenticate requests to your game's own backend, if you have one.
+## Response shape: { success, data: <jwt>, message }.
+func get_user_jwt():
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.getUserJwt())
+		got_user_jwt.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("get_user_jwt")
+		got_user_jwt.emit(result)
+		return result
 
 ## Returns the launch params that were passed via URL when the game was launched.
 ## {"lobby": "lobbyId123"}
@@ -268,9 +363,22 @@ func get_leaderboard_entries(leaderboard_id: String, offset: int, limit: int, fr
 		got_leaderboard_entries.emit(result)
 		return result
 
-func post_leaderboard_score(leaderboard_id: String, score: int, keep_best: bool, ugc_id: String = ""):
+## Posts a score to a leaderboard.
+## Pass ugc_id to attach a UGC item (e.g. a replay) to the entry, or "" for none.
+## metadata attaches small key/value data to the entry — String, int, float and bool
+## values only (e.g. {"character": "knight", "deaths": 3, "no_hit": true}).
+## Store larger payloads as UGC and attach them via ugc_id instead.
+## Metadata belongs to the score it was submitted with: a score that gets written
+## replaces it, and an empty dictionary clears it. A score that keep_best rejects leaves
+## the existing entry — metadata included — untouched.
+## Response shape: { success, data: <entry>, message }, where data.metadata carries
+## the persisted metadata back.
+func post_leaderboard_score(leaderboard_id: String, score: int, keep_best: bool, ugc_id: String = "", metadata: Dictionary = {}):
 	if _is_web and WavedashJS:
-		var result = await _invoke_js(WavedashJS.uploadLeaderboardScore(leaderboard_id, score, keep_best, ugc_id))
+		# The JS SDK parses the metadata JSON string, and reads null as an omitted argument.
+		var js_ugc_id = ugc_id if ugc_id != "" else null
+		var js_metadata = JSON.stringify(metadata) if not metadata.is_empty() else null
+		var result = await _invoke_js(WavedashJS.uploadLeaderboardScore(leaderboard_id, score, keep_best, js_ugc_id, js_metadata))
 		posted_leaderboard_score.emit(result)
 		return result
 	else:
@@ -354,6 +462,24 @@ func download_remote_file(file_path: String):
 		remote_file_downloaded.emit(result)
 		return result
 
+## Checks whether a remote file exists. Sends a lightweight HEAD request.
+## Path must be under user:// or OS.get_user_data_dir().
+## Response shape: { success, data: <bool>, message }.
+func remote_file_exists(file_path: String):
+	file_path = _normalize_user_path(file_path)
+	if _is_web and WavedashJS:
+		if not _validate_user_data_path(file_path, "remote_file_exists"):
+			var err = {"success": false, "data": null, "message": "Invalid path: must start with 'user://' or OS.get_user_data_dir()"}
+			got_remote_file_exists.emit(err)
+			return err
+		var result = await _invoke_js(WavedashJS.remoteFileExists(file_path))
+		got_remote_file_exists.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("remote_file_exists")
+		got_remote_file_exists.emit(result)
+		return result
+
 func upload_remote_file(file_path: String):
 	file_path = _normalize_user_path(file_path)
 	if _is_web and WavedashJS:
@@ -367,6 +493,24 @@ func upload_remote_file(file_path: String):
 	else:
 		var result = _web_unsupported("upload_remote_file")
 		remote_file_uploaded.emit(result)
+		return result
+
+## Deletes a remote file from cloud storage.
+## Path must be under user:// or OS.get_user_data_dir().
+## Response shape: { success, data: <file_path>, message }.
+func delete_remote_file(file_path: String):
+	file_path = _normalize_user_path(file_path)
+	if _is_web and WavedashJS:
+		if not _validate_user_data_path(file_path, "delete_remote_file"):
+			var err = {"success": false, "data": null, "message": "Invalid path: must start with 'user://' or OS.get_user_data_dir()"}
+			remote_file_deleted.emit(err)
+			return err
+		var result = await _invoke_js(WavedashJS.deleteRemoteFile(file_path))
+		remote_file_deleted.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("delete_remote_file")
+		remote_file_deleted.emit(result)
 		return result
 
 ## Requests to join a lobby. Returns true if the request was accepted.
@@ -400,6 +544,18 @@ func list_available_lobbies():
 		got_lobbies.emit(result)
 		return result
 
+## Fetches a lobby by ID.
+## Response shape: { success, data: <lobby>, message }.
+func get_lobby(lobby_id: String):
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.getLobby(lobby_id))
+		got_lobby.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("get_lobby")
+		got_lobby.emit(result)
+		return result
+
 func get_lobby_host_id(lobby_id: String) -> String:
 	if lobby_id == "":
 		return ""
@@ -412,23 +568,38 @@ func get_lobby_host_id(lobby_id: String) -> String:
 		return result if result else ""
 	return ""
 
+func has_lobby_data(lobby_id: String, key: String) -> bool:
+	if _is_web and WavedashJS:
+		return WavedashJS.getLobbyData(lobby_id, key) != null
+	return false
+
 func get_lobby_data_string(lobby_id: String, key: String) -> String:
 	if _is_web and WavedashJS:
 		var result = WavedashJS.getLobbyData(lobby_id, key)
-		return result if result != null else ""
+
+		return _js_cast.asString(result) if result != null else ""
 	return ""
 
 func get_lobby_data_int(lobby_id: String, key: String) -> int:
 	if _is_web and WavedashJS:
 		var result = WavedashJS.getLobbyData(lobby_id, key)
-		return int(result) if result != null else 0
+		if result == null:
+			return 0
+		var num: float = _js_cast.asNumber(result)
+		return int(num) if is_finite(num) else 0
 	return 0
 
 func get_lobby_data_float(lobby_id: String, key: String) -> float:
 	if _is_web and WavedashJS:
 		var result = WavedashJS.getLobbyData(lobby_id, key)
-		return float(result) if result != null else 0.0
+		return _js_cast.asNumber(result) if result != null else 0.0
 	return 0.0
+
+func get_lobby_data_bool(lobby_id: String, key: String) -> bool:
+	if _is_web and WavedashJS:
+		var result = WavedashJS.getLobbyData(lobby_id, key)
+		return _js_cast.asBool(result) if result != null else false
+	return false
 
 func set_lobby_data_string(lobby_id: String, key: String, value: String) -> bool:
 	if _is_web and WavedashJS:
@@ -436,11 +607,19 @@ func set_lobby_data_string(lobby_id: String, key: String, value: String) -> bool
 	return false
 
 func set_lobby_data_int(lobby_id: String, key: String, value: int) -> bool:
+	if value > Constants.JS_MAX_INTEGER or value < -Constants.JS_MAX_INTEGER:
+		push_error("set_lobby_data_int: %d exceeds JS safe integer range (±2^53). Use set_lobby_data_string for larger values." % value)
+		return false
 	if _is_web and WavedashJS:
 		return WavedashJS.setLobbyData(lobby_id, key, value)
 	return false
 
 func set_lobby_data_float(lobby_id: String, key: String, value: float) -> bool:
+	if _is_web and WavedashJS:
+		return WavedashJS.setLobbyData(lobby_id, key, value)
+	return false
+
+func set_lobby_data_bool(lobby_id: String, key: String, value: bool) -> bool:
 	if _is_web and WavedashJS:
 		return WavedashJS.setLobbyData(lobby_id, key, value)
 	return false
@@ -511,20 +690,52 @@ func create_ugc_item(ugcType: int, title: String = "", description: String = "",
 		ugc_item_created.emit(result)
 		return result
 
-func update_ugc_item(ugc_id: String, title: String = "", description: String = "", visibility: int = Constants.UGC_VISIBILITY_PUBLIC, local_file_path: Variant = null):
-	if local_file_path != null:
-		local_file_path = _normalize_user_path(local_file_path)
+## Updates an existing UGC item. Pass any subset of fields to update.
+## Supported keys: "title" (String), "description" (String),
+## "visibility" (int — one of Constants.UGC_VISIBILITY_*), "filePath" (String — user:// path).
+## Response shape: { success, data: <ugc_id>, message }.
+func update_ugc_item(ugc_id: String, updates: Dictionary = {}):
+	if updates.has("filePath") and updates["filePath"] != null:
+		updates["filePath"] = _normalize_user_path(updates["filePath"])
 	if _is_web and WavedashJS:
-		if local_file_path != null and not _validate_user_data_path(local_file_path, "update_ugc_item"):
+		if updates.has("filePath") and updates["filePath"] != null and not _validate_user_data_path(updates["filePath"], "update_ugc_item"):
 			var err = {"success": false, "data": null, "message": "Invalid path: must start with 'user://' or OS.get_user_data_dir()"}
 			ugc_item_updated.emit(err)
 			return err
-		var result = await _invoke_js(WavedashJS.updateUGCItem(ugc_id, title, description, visibility, local_file_path))
+		var result = await _invoke_js(WavedashJS.updateUGCItem(ugc_id, JSON.stringify(updates)))
 		ugc_item_updated.emit(result)
 		return result
 	else:
 		var result = _web_unsupported("update_ugc_item")
 		ugc_item_updated.emit(result)
+		return result
+
+## Deletes a UGC item: removes the item from the game's UGC collection and frees up the
+## user's storage quota by the size of the deleted upload.
+## Response shape: { success, data: <ugc_id>, message }.
+func delete_ugc_item(ugc_id: String):
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.deleteUGCItem(ugc_id))
+		ugc_item_deleted.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("delete_ugc_item")
+		ugc_item_deleted.emit(result)
+		return result
+
+## Lists UGC items with optional filters and pagination.
+## First page args: "createdBy" (String — user id), "ugcType" (int — one of
+##   Constants.UGC_TYPE_*), "titleSearch" (String), "numItems" (int).
+## Subsequent pages: pass ONLY "continueCursor".
+## Response shape: { success, data: { page, isDone, continueCursor }, message }.
+func list_ugc_items(args: Dictionary = {}):
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.listUGCItems(JSON.stringify(args)))
+		got_ugc_items.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("list_ugc_items")
+		got_ugc_items.emit(result)
 		return result
 
 func download_ugc_item(ugc_id: String, local_file_path: String):
@@ -581,11 +792,186 @@ func set_achievement(ach_name: String, store_now: bool = false) -> bool:
 	if _is_web and WavedashJS:
 		return WavedashJS.setAchievement(ach_name, store_now)
 	return false
-	
+
 func get_achievement(ach_name:String) -> bool:
 	if _is_web and WavedashJS:
 		return WavedashJS.getAchievement(ach_name)
 	return false
+
+## Updates rich user presence so friends can see what the player is doing in game.
+## Supported keys:
+##   "status"  — one-line activity shown as the primary line (e.g. "Traveling in a group")
+##   "details" — secondary context shown beneath the status (e.g. current zone or mode)
+## Pass an empty dictionary to clear all presence fields.
+## Response shape: { success, data: <bool>, message }.
+func update_user_presence(data: Dictionary):
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.updateUserPresence(JSON.stringify(data)))
+		user_presence_updated.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("update_user_presence")
+		user_presence_updated.emit(result)
+		return result
+
+## Returns true if the player owns the given paid content for this game.
+## Reads the `entitlements` claim from the gameplay JWT — this is a UX hint, not a
+## security check. The builds server re-verifies the JWT signature and gates
+## paid asset bytes on every request, so a tampered client return value
+## doesn't actually unlock anything. Pair with trigger_paywall() to drive
+## in-game UI.
+## Response shape: { success, data: <bool>, message }.
+func is_entitled(content_identifier: String):
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.isEntitled(content_identifier))
+		got_is_entitled.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("is_entitled")
+		got_is_entitled.emit(result)
+		return result
+
+## Returns the full list of paid-content identifiers the player owns for this game.
+## Reads the `entitlements` claim from the gameplay JWT — this is a UX hint,
+## not a security check (see is_entitled). Useful for access gating multiple
+## items at once without a call per content identifier.
+## Response shape: { success, data: [<string>], message }.
+func get_entitlements():
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.getEntitlements())
+		got_entitlements.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("get_entitlements")
+		got_entitlements.emit(result)
+		return result
+
+## Trigger the Wavedash-rendered paywall flow for the given content. Resolves
+## immediately with data `true` if the player already owns it; otherwise
+## opens the modal and resolves with whether the user completed the purchase.
+## After a successful purchase the JWT is refreshed automatically so a
+## subsequent resource fetch is authenticated with the new purchase, and is_entitled
+## will return true if the purchase was successful.
+## Response shape: { success, data: <bool>, message }.
+func trigger_paywall(content_identifier: String):
+	if _is_web and WavedashJS:
+		var result = await _invoke_js(WavedashJS.triggerPaywall(content_identifier))
+		paywall_resolved.emit(result)
+		return result
+	else:
+		var result = _web_unsupported("trigger_paywall")
+		paywall_resolved.emit(result)
+		return result
+
+func _validate_item_path(item_path: String, func_name: String) -> bool:
+	if item_path.is_empty():
+		push_error("[WavedashSDK] %s: item_path must not be empty" % func_name)
+		return false
+	if item_path.is_absolute_path():
+		push_error("[WavedashSDK] %s: item_path must be relative to your build root (e.g. 'dlc/full.pck'). Got: '%s'" % [func_name, item_path])
+		return false
+	for segment in item_path.split("/", false):
+		if segment == "..":
+			push_error("[WavedashSDK] %s: item_path must not contain '..' segments. Got: '%s'" % [func_name, item_path])
+			return false
+	return true
+
+func _content_url(item_path: String) -> String:
+	var segments = PackedStringArray()
+	for segment in item_path.split("/", false):
+		segments.append(segment.uri_encode())
+	return "%s/%s" % [_builds_origin, "/".join(segments)]
+
+func _content_error(message: String, code: int = 0, content_identifiers: Array = []) -> Dictionary:
+	return {"success": false, "data": null, "message": message, "code": code, "content_identifiers": content_identifiers}
+
+func _fetch_content(item_path: String, local_path: String):
+	if not _is_web:
+		var unsupported = _web_unsupported("download_content")
+		unsupported["code"] = 0
+		unsupported["content_identifiers"] = []
+		return unsupported
+
+	if not _validate_item_path(item_path, "download_content"):
+		return _content_error("Invalid item_path: must be relative to your build root, e.g. 'dlc/full.pck'")
+
+	if _builds_origin.is_empty():
+		return _content_error("Could not determine the origin this build is served from")
+
+	var dest_path = local_path
+	if dest_path.is_empty():
+		dest_path = "user://" + item_path
+
+	var url = _content_url(item_path)
+	_log("download_content: fetching %s" % url)
+
+	var http = HTTPRequest.new()
+	add_child(http)
+	var error = http.request(url)
+	if error != OK:
+		http.queue_free()
+		return _content_error("Failed to start request for '%s' (%s)" % [item_path, error_string(error)])
+
+	var response = await http.request_completed
+	http.queue_free()
+	var result: int = response[0]
+	var response_code: int = response[1]
+	var body: PackedByteArray = response[3]
+
+	if result != HTTPRequest.RESULT_SUCCESS:
+		return _content_error("Network error fetching '%s' (result %d)" % [item_path, result])
+
+	if response_code == Constants.RESULT_FORBIDDEN:
+		var identifiers: Array = []
+		var parsed = JSON.parse_string(body.get_string_from_utf8())
+		if parsed is Dictionary:
+			identifiers = parsed.get("contentIdentifiers", [])
+		var names = PackedStringArray()
+		for identifier in identifiers:
+			names.append(str(identifier))
+		var message = "'%s' is locked" % item_path
+		if not names.is_empty():
+			message = "'%s' is locked, player does not own: %s" % [item_path, ", ".join(names)]
+		return _content_error(message, response_code, identifiers)
+
+	if response_code != Constants.RESULT_OK:
+		return _content_error("Failed to fetch '%s' (HTTP %d)" % [item_path, response_code], response_code)
+
+	var dir_path = dest_path.get_base_dir()
+	if not dir_path.is_empty() and not DirAccess.dir_exists_absolute(dir_path):
+		var dir_error = DirAccess.make_dir_recursive_absolute(dir_path)
+		if dir_error != OK:
+			return _content_error("Failed to create directory '%s' (%s)" % [dir_path, error_string(dir_error)], response_code)
+
+	var file = FileAccess.open(dest_path, FileAccess.WRITE)
+	if file == null:
+		return _content_error("Failed to open '%s' for writing (%s)" % [dest_path, error_string(FileAccess.get_open_error())], response_code)
+	file.store_buffer(body)
+	file.close()
+
+	_log("download_content: saved %d bytes to %s" % [body.size(), dest_path])
+	# gdlint: ignore=max-returns
+	return {"success": true, "data": dest_path, "message": "", "code": response_code, "content_identifiers": []}
+
+## Downloads a file that shipped with your game build but isn't loaded yet, saving
+## it under user://. Use this for content you deliberately kept out of the initial
+## load - extra levels, high resolution assets, paid content.
+## `item_path` is relative to your build root (e.g. "dlc/full.pck"). `local_path`
+## overrides the default destination of "user://" + item_path.
+## The request is authenticated for you; the server re-checks ownership before it
+## serves paid bytes, so this is the real gate rather than is_entitled().
+## Response shape: { success, data: <local path>, message, code, content_identifiers }.
+## `code` is the HTTP status, or 0 if the request never completed. On 403 the file
+## is behind a paywall and `content_identifiers` lists what the player must own -
+## pass one to trigger_paywall().
+## To mount a downloaded .pck, hand the returned path to Godot:
+##     var result = await WavedashSDK.download_content("dlc/full.pck")
+##     if result.success:
+##         ProjectSettings.load_resource_pack(result.data)
+func download_content(item_path: String, local_path: String = ""):
+	var result = await _fetch_content(item_path, local_path)
+	content_downloaded.emit(result)
+	return result
 
 # P2P messaging
 # Send a P2P message from Godot. JS will only send the message if the peer is ready to receive
@@ -593,11 +979,11 @@ func send_p2p_message(target_user_id: String, payload: PackedByteArray, channel:
 	if payload.size() == 0:
 		push_warning("Dropping empty P2P message")
 		return false
-	
+
 	# Tried a few options here for getting a Godot PackedByteArray across the JS barrier into a Uint8Array.
 	# Logging them for clarity, Option 4 is the best for < 16KB payloads
 	# (TODO: Pass a direct view into the Godot WASM heap if Godot ever supports it the way Unity JSLib does)
-	
+
 	# Option 1: Can we get our PackedByteArray across the JS barrier into a Uint8Array? Godot doesn't support this natively
 	# var js_array = JavaScriptBridge.create_object("Uint8Array", payload)
 
@@ -633,7 +1019,7 @@ func send_p2p_message(target_user_id: String, payload: PackedByteArray, channel:
 func drain_p2p_channel(channel: int) -> Array[Dictionary]:
 	if not _is_web or not WavedashJS:
 		return []
-	
+
 	var messages: Array[Dictionary] = []
 	var raw_messages: PackedByteArray
 	if _has_js_buffer_transfer:
@@ -658,7 +1044,7 @@ func drain_p2p_channel(channel: int) -> Array[Dictionary]:
 		else:
 			push_warning("P2P message is malformed, dropping message")
 			continue
-	
+
 	return messages
 
 ## Pre-4.4 fallback for JavaScriptBridge.js_buffer_to_packed_byte_array().
@@ -719,6 +1105,72 @@ func _invoke_js(js_promise):
 	js_promise.then(_create_js_callback(req_id))
 	return await _await_request(req_id)
 
+# For JS calls that resolve to a raw boolean rather than a {success, data, message}
+# JSON envelope (e.g. requestFullscreen / toggleFullscreen).
+func _invoke_js_returning_bool(js_promise) -> bool:
+	_next_request_id += 1
+	var req_id = _next_request_id
+	var cb = JavaScriptBridge.create_callback(func(args):
+		_pending_results[req_id] = args[0] if args.size() > 0 else false
+		_request_resolved.emit(req_id)
+	)
+	_active_callbacks[req_id] = cb
+	js_promise.then(cb)
+	while not _pending_results.has(req_id):
+		await _request_resolved
+	var result = _pending_results[req_id]
+	_pending_results.erase(req_id)
+	_active_callbacks.erase(req_id)
+	return bool(result)
+
+
+# Godot does not notify us when a signal is connected.
+# Check every 5 seconds and notify JS if Godot is listening for a given event.
+# Stop entirely after every Wavedash event signal has been reported.
+func _start_listener_tracking() -> void:
+	_untracked_listener_signals = [
+		[lobby_message, Constants.JS_EVENT_LOBBY_MESSAGE],
+		[lobby_joined, Constants.JS_EVENT_LOBBY_JOINED],
+		[lobby_kicked, Constants.JS_EVENT_LOBBY_KICKED],
+		[lobby_users_updated, Constants.JS_EVENT_LOBBY_USERS_UPDATED],
+		[lobby_data_updated, Constants.JS_EVENT_LOBBY_DATA_UPDATED],
+		[lobby_invite, Constants.JS_EVENT_LOBBY_INVITE],
+		[p2p_connection_established, Constants.JS_EVENT_P2P_CONNECTION_ESTABLISHED],
+		[p2p_connection_failed, Constants.JS_EVENT_P2P_CONNECTION_FAILED],
+		[p2p_peer_disconnected, Constants.JS_EVENT_P2P_PEER_DISCONNECTED],
+		[p2p_peer_reconnecting, Constants.JS_EVENT_P2P_PEER_RECONNECTING],
+		[p2p_peer_reconnected, Constants.JS_EVENT_P2P_PEER_RECONNECTED],
+		[p2p_packet_dropped, Constants.JS_EVENT_P2P_PACKET_DROPPED],
+		[stats_stored, Constants.JS_EVENT_STATS_STORED],
+		[backend_connected, Constants.JS_EVENT_BACKEND_CONNECTED],
+		[backend_reconnecting, Constants.JS_EVENT_BACKEND_RECONNECTING],
+		[backend_disconnected, Constants.JS_EVENT_BACKEND_DISCONNECTED],
+		[fullscreen_changed, Constants.JS_EVENT_FULLSCREEN_CHANGED],
+		[entitlements_granted, Constants.JS_EVENT_ENTITLEMENTS_GRANTED],
+	]
+	_listener_track_timer = Timer.new()
+	_listener_track_timer.wait_time = 5.0
+	_listener_track_timer.timeout.connect(_poll_signal_listeners)
+	add_child(_listener_track_timer)
+	_listener_track_timer.start()
+
+func _poll_signal_listeners() -> void:
+	if WavedashJS == null:
+		return
+	var still_untracked: Array = []
+	for pair in _untracked_listener_signals:
+		var sig: Signal = pair[0]
+		if sig.get_connections().is_empty():
+			still_untracked.append(pair)
+			continue
+		var callback := JavaScriptBridge.create_callback(func(_args): pass)
+		_listener_track_callbacks.append(callback)
+		WavedashJS.addEventListener(pair[1], callback)
+	_untracked_listener_signals = still_untracked
+	if _untracked_listener_signals.is_empty() and _listener_track_timer:
+		_listener_track_timer.stop()
+		_listener_track_timer.queue_free()
+		_listener_track_timer = null
 
 # Handle events broadcasted from JS to Godot
 func _dispatch_js_event(args):
@@ -775,6 +1227,18 @@ func _dispatch_js_event(args):
 			var data = JSON.parse_string(payload)
 			_log("P2P peer disconnected: %s" % str(payload))
 			p2p_peer_disconnected.emit(data)
+		Constants.JS_EVENT_P2P_PEER_RECONNECTING:
+			var data = JSON.parse_string(payload)
+			_log("P2P peer reconnecting: %s" % str(payload))
+			p2p_peer_reconnecting.emit(data)
+		Constants.JS_EVENT_P2P_PEER_RECONNECTED:
+			var data = JSON.parse_string(payload)
+			_log("P2P peer reconnected: %s" % str(payload))
+			p2p_peer_reconnected.emit(data)
+		Constants.JS_EVENT_P2P_PACKET_DROPPED:
+			var data = JSON.parse_string(payload)
+			_log("P2P packet dropped: %s" % str(payload))
+			p2p_packet_dropped.emit(data)
 		Constants.JS_EVENT_STATS_STORED:
 			var data = JSON.parse_string(payload)
 			_log("Stats stored: %s" % str(payload))
@@ -791,6 +1255,14 @@ func _dispatch_js_event(args):
 			var data = JSON.parse_string(payload)
 			_log("Backend disconnected: %s" % str(payload))
 			backend_disconnected.emit(data)
+		Constants.JS_EVENT_FULLSCREEN_CHANGED:
+			var data = JSON.parse_string(payload)
+			_log("Fullscreen changed: %s" % str(payload))
+			fullscreen_changed.emit(data)
+		Constants.JS_EVENT_ENTITLEMENTS_GRANTED:
+			var data = JSON.parse_string(payload)
+			_log("Purchase completed: %s" % str(payload))
+			entitlements_granted.emit(data)
 		_:
 			push_warning("[WavedashSDK] Received unknown event from JS: " + method_name)
 
@@ -800,10 +1272,10 @@ func _decode_p2p_packet(data: PackedByteArray) -> Dictionary:
 	# Binary format: [fromUserId(32)][channel(4)][dataLength(4)][payload(...)]
 	if data.size() < 40:  # Minimum size for header
 		return {}
-	
+
 	var result = {}
 	var offset = 0
-	
+
 	# fromUserId (32 bytes, null-padded)
 	var from_user_bytes = data.slice(offset, offset + 32)
 	# Find first null byte to avoid Godot's Unicode warning when converting
@@ -812,20 +1284,20 @@ func _decode_p2p_packet(data: PackedByteArray) -> Dictionary:
 		from_user_bytes = from_user_bytes.slice(0, null_pos)
 	result["identity"] = from_user_bytes.get_string_from_ascii()
 	offset += 32
-	
+
 	# channel (4 bytes, little-endian)
 	var channel = data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16) | (data[offset + 3] << 24)
 	result["channel"] = channel
 	offset += 4
-	
+
 	# dataLength (4 bytes, little-endian)
 	var payload_length = data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16) | (data[offset + 3] << 24)
 	offset += 4
-	
+
 	# payload (variable length)
 	if payload_length > 0 and offset + payload_length <= data.size():
 		result["payload"] = data.slice(offset, offset + payload_length)
 	else:
 		result["payload"] = PackedByteArray()
-	
+
 	return result
