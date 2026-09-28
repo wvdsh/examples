@@ -1,6 +1,6 @@
 [project]
 title = example-defold
-dependencies#0 = https://github.com/wvdsh/sdk-defold/archive/refs/tags/1.2.0.zip
+dependencies#0 = https://github.com/wvdsh/sdk-defold/archive/refs/tags/1.2.1.zip
 
 [display]
 width = 960

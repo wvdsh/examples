@@ -95,6 +95,7 @@
       canvas.emscripten {
         display: none;
         border: 0px none;
+        outline: none;
         background-color: black;
         position: relative;
         transition: opacity 5s ease-in;
@@ -584,13 +585,9 @@
       </div>
     </div>
 
-   <script async
-     data-ad-client="ca-pub-123"
-     data-ad-frequency-hint="30s"
-     data-adbreak-test="on"
-     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
-   </script>
-
+   <!-- Google Ads test snippet removed: in Firefox, tracking protection kills its
+        requests and the uncaught NetworkError trips window.onerror, permanently
+        hiding the canvas. The stub below keeps the runner's ad hooks as no-ops. -->
    <script>
      window.adsbygoogle = window.adsbygoogle || [];
      const adBreak =  adConfig = function(o) {adsbygoogle.push(o);}
