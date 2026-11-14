@@ -4,3 +4,4 @@ manifest.private.der
 /.internal/
 /build/
 /dist/
+/.editor_settings

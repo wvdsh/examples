@@ -32,7 +32,7 @@ function wavedash_js_update_progress(progress) {
   }
 })();
 [LLVM-OPERAGX]
-EMSDKDir="/Users/erik/emsdk/emsdk_env.sh"
+EMSDKDir="/Users/xxxx/emsdk/emsdk_env.sh"
 [OperaGX]
 ProjectGuid=""
 [ext_wavedash]
